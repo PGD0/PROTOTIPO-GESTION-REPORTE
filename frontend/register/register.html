@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrar Usuario</title>
+  <link rel="stylesheet" href="register.css" />
+</head>
+<body>
+
+<div class="register">
+  <img src="../assets/logo_IUB.png" alt="Logo" class="register-logo">
+  <h1>Crear cuenta</h1>
+  
+  <form method="POST" action="ruta-de-registro">
+    <!-- Aquí iría el token CSRF si se usara backend -->
+
+    <div class="username">
+      <input type="text" name="name" placeholder="Nombre de usuario" required />
+      <!-- Aquí iría el mensaje de error si fallara -->
+    </div>
+
+    <div class="email">
+      <input type="email" name="email" placeholder="Correo electrónico" required />
+      <!-- Aquí iría el mensaje de error si fallara -->
+    </div>
+
+    <div class="contraseña">
+      <input type="password" name="password" placeholder="Contraseña" required />
+      <!-- Aquí iría el mensaje de error si fallara -->
+    </div>
+
+    <div class="password-confirm">
+      <input type="password" name="password_confirmation" placeholder="Confirmar contraseña" required />
+    </div>
+
+    <input type="submit" value="Registrarse" />
+
+    <div class="yatienescuenta">
+      <a href="../login/login.html">¿Ya tienes cuenta?</a>
+    </div>
+  </form>
+</div>
+
+</body>
+</html>

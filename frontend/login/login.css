@@ -1,0 +1,93 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #eef1f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login {
+  background: #fff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  width: 320px;
+  text-align: center;
+}
+
+.login h1 {
+  margin-bottom: 30px;
+  font-size: 24px;
+  color: #333;
+}
+
+
+.login-logo {
+  display: block;
+  margin: 0 0 15px 0; 
+  width: 210px;        
+  height: auto;
+  padding-bottom:16px ;
+  padding-top: 6px;
+}
+
+.username,
+.contraseña {
+  position: relative;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.username input,
+.contraseña input {
+  width: 100%;
+  padding: 14px 10px 8px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #aaa;
+  background: transparent;
+  color: #000;
+  outline: none;
+}
+
+.recuperar {
+  font-size: 12px;
+  color: #007bff;
+  margin-bottom: 20px;
+  cursor: pointer;
+  text-align: right;
+}
+
+input[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.registrarse {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.registrarse a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.registrarse a:hover {
+  text-decoration: underline;
+}
