@@ -6,21 +6,18 @@ import os
 
 load_dotenv()
 
-# Configuración para MySQL
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Configuración del engine para MySQL
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    pool_pre_ping=True,  # Verifica la conexión antes de usarla
-    pool_recycle=3600    # Recicla las conexiones cada hora
+    pool_pre_ping=True,  
+    pool_recycle=3600    
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Dependency
 def get_db():
     db = SessionLocal()
     try:
