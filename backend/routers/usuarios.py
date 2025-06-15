@@ -3,6 +3,7 @@ from schemas.UsuarioBase import UsuarioCreado,UsuarioSalida,UsuarioActualizar
 from sqlalchemy.orm import Session
 from database.database import get_db
 from models.models import Usuario
+from services.hash import hash_password
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -29,7 +30,7 @@ async def crear_usuario(usuario: UsuarioCreado, db: Session = Depends(get_db)):
         nombre=usuario.nombre,
         apellido=usuario.apellido,
         email=usuario.email,
-        contraseña=usuario.contraseña,
+        contraseña=hash_password(usuario.contraseña),
         rol=usuario.rol
     )
     db.add(nuevo_usuario)
