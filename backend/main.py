@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from database.database import engine, Base
 from models.models import Usuario, Rol, Sede, Salon, Equipo, Reporte
-from routers import usuarios
+from routers import usuarios, roles, sedes, salones, equipos, reportes
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,3 +16,8 @@ async def root():
     return {"status": "ok", "message": "API is running"}
 
 app.include_router(usuarios.router)
+app.include_router(roles.router)
+app.include_router(sedes.router)
+app.include_router(salones.router)
+app.include_router(equipos.router)
+app.include_router(reportes.router)
