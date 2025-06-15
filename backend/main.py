@@ -1,11 +1,7 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine, Base
-from dotenv import load_dotenv
-import os
-import json
-
-load_dotenv()
+from models.models import Usuario, Rol, Sede, Salon, Equipo, Reporte
+from routers import usuarios
 
 Base.metadata.create_all(bind=engine)
 
@@ -18,3 +14,5 @@ app = FastAPI(
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "API is running"}
+
+app.include_router(usuarios.router)

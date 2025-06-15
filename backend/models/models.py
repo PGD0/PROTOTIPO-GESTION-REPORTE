@@ -30,8 +30,8 @@ class Sede(Base):
     ID_sede = Column(Integer, primary_key=True, index=True)
     nombre_sede = Column(String(50))
 
-    salones = relationship("Salon", back_populates="sede")
-    equipos = relationship("Equipo", back_populates="sede")
+    salones = relationship("Salon", back_populates="sede_rel")
+    equipos = relationship("Equipo", back_populates="sede_rel")
 
 class Salon(Base):
     __tablename__ = "salones"
@@ -41,7 +41,7 @@ class Salon(Base):
     sede = Column(Integer, ForeignKey("sedes.ID_sede"))
 
     sede_rel = relationship("Sede", back_populates="salones")
-    equipos = relationship("Equipo", back_populates="salon")
+    equipos = relationship("Equipo", back_populates="salon_rel")
 
 class Equipo(Base):
     __tablename__ = "equipos"
