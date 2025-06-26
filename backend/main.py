@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from database.database import engine, Base
 from models.models import Usuario, Rol, Sede, Salon, Equipo, Reporte
-from routers import usuarios, roles, sedes, salones, equipos, reportes
+from routers import usuarios, roles, sedes, salones, equipos, reportes, auth
 
 Base.metadata.create_all(bind=engine)
 
@@ -21,3 +21,4 @@ app.include_router(sedes.router)
 app.include_router(salones.router)
 app.include_router(equipos.router)
 app.include_router(reportes.router)
+app.include_router(auth.router)

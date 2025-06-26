@@ -37,3 +37,7 @@ class UsuarioActualizar(BaseModel):
     email: Optional[EmailStr] = None
     contraseña: Optional[str] = None
     rol: Optional[int] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
