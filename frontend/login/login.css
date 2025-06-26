@@ -88,6 +88,11 @@ input[type="submit"]:hover {
   text-decoration: none;
 }
 
-.registrarse a:hover {
+.recuperar a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.registrarse a:hover, .recuperar a:hover {
   text-decoration: underline;
 }
