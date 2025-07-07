@@ -32,6 +32,17 @@ class Sede(Base):
 
     salones = relationship("Salon", back_populates="sede_rel")
     equipos = relationship("Equipo", back_populates="sede_rel")
+    bloques = relationship("Bloque", back_populates="sede_rel")
+
+class Bloque(Base):
+    __tablename__ = "bloques"
+
+    ID_bloque = Column(Integer, primary_key=True, index=True)
+    nombre_bloque = Column(String(50))
+    sede_id = Column(Integer, ForeignKey("sedes.ID_sede"))
+
+    sede_rel = relationship("Sede", back_populates="bloques")
+    salones = relationship("Salon", back_populates="bloque_rel")
 
 class Salon(Base):
     __tablename__ = "salones"
@@ -39,8 +50,10 @@ class Salon(Base):
     ID_salon = Column(Integer, primary_key=True, index=True)
     codigo_salon = Column(String(50))
     sede = Column(Integer, ForeignKey("sedes.ID_sede"))
+    bloque = Column(Integer, ForeignKey("bloques.ID_bloque"), nullable=True)
 
     sede_rel = relationship("Sede", back_populates="salones")
+    bloque_rel = relationship("Bloque", back_populates="salones")
     equipos = relationship("Equipo", back_populates="salon_rel")
 
 class Equipo(Base):
