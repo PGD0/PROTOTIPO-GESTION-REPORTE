@@ -1,0 +1,15 @@
+/* Fuentes del sistema */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+/* Asegurar que las clases de Bootstrap funcionen correctamente */
+.fw-bold {
+    font-weight: 600 !important;
+}
+
+.fw-semibold {
+    font-weight: 600 !important;
+} 

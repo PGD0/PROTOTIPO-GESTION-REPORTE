@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - IUB</title>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a class="sidebar-brand" id="sidebarBrand" style="cursor:pointer;">
+                <img src="../assets/img/logo_IUB.png" alt="Logo IUB" id="sidebarLogo">
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="homepage.html" class="nav-link" id="homepageLink">
+                    <i class="bi bi-house"></i>
+                    <span>Inicio</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="dashboard.html" class="nav-link" id="dashboardLink">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="reportes.html" class="nav-link active" id="reportesLink">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Reportes</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="hacer-reporte.html" class="nav-link" id="nuevoReporteLink">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Nuevo Reporte</span>
+                </a>
+            </div>
+            <hr class="my-3">
+            <div class="nav-item">
+                <a href="../index.html" class="nav-link" id="salirLink">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Salir</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content-wrapper" id="mainContent">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link d-lg-none me-3" id="mobileSidebarToggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h4 class="mb-0">Historial de Reportes</h4>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a href="hacer-reporte.html" class="btn btn-primary me-3">
+                        <i class="bi bi-plus-lg me-2"></i>Nuevo Reporte
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle fs-4"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="container-fluid">
+                <!-- Contenedor Unificado de Filtros y Reportes -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap align-items-end mb-3 gap-3">
+                            <div class="flex-grow-1" style="min-width:180px;max-width:220px;">
+                                <label for="filtro-estado" class="form-label fw-semibold">Estado</label>
+                                <select id="filtro-estado" class="form-select">
+                                    <option value="">Todos los estados</option>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="en-proceso">En Proceso</option>
+                                    <option value="resuelto">Resuelto</option>
+                                </select>
+                            </div>
+                            <div class="flex-grow-1" style="min-width:180px;max-width:220px;">
+                                <label for="filtro-sede" class="form-label fw-semibold">Sede</label>
+                                <select id="filtro-sede" class="form-select">
+                                    <option value="">Todas las sedes</option>
+                                    <option value="soledad">Soledad</option>
+                                    <option value="plaza">Plaza de la paz</option>
+                                    <option value="centro">Centro Histórico</option>
+                                </select>
+                            </div>
+                            <div class="flex-grow-1" style="min-width:180px;max-width:220px;">
+                                <label for="filtro-fecha-desde" class="form-label fw-semibold">Fecha desde</label>
+                                <input id="filtro-fecha-desde" type="date" class="form-control">
+                            </div>
+                            <div class="flex-grow-1" style="min-width:180px;max-width:220px;">
+                                <label for="filtro-fecha-hasta" class="form-label fw-semibold">Fecha hasta</label>
+                                <input id="filtro-fecha-hasta" type="date" class="form-control">
+                            </div>
+                            <div class="ms-auto">
+                                <button id="toggleViewBtn" class="btn btn-outline-secondary" type="button" title="Cambiar vista">
+                                    <i id="toggleViewIcon" class="bi bi-grid-3x3-gap"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Contenedor de Reportes -->
+                        <div id="reportesContainer" class="articulos-view row g-4 position-relative">
+                            <!-- Los reportes reales se insertan aquí dinámicamente por JS -->
+                        </div>
+                        <!-- Fin contenedor de reportes -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api-mock.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/reportes.js"></script>
+</body>
+</html>
