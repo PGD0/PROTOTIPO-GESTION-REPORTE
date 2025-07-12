@@ -1,4 +1,0 @@
-[
-  { "ID_equipo": 1, "codigo_barras": "EQ-001", "marca": "HP", "sede": 1, "salon": 1, "funcional": 1, "fecha_registro": "2024-07-07T08:20:00Z" },
-  { "ID_equipo": 2, "codigo_barras": "EQ-002", "marca": "Dell", "sede": 2, "salon": 2, "funcional": 0, "fecha_registro": "2024-07-07T08:25:00Z" }
-] 

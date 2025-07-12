@@ -1,30 +1,14 @@
 // main.js - Unificado (sidebar y vista de reportes)
+import api from './api.js';
 
 document.addEventListener('DOMContentLoaded', function() {
-    setupSidebar();
     setupVistaReportes();
     // Renderizar reportes siempre al cargar la página de reportes
     if (window.location.pathname.endsWith('reportes.html')) {
         const reportesContainer = document.getElementById('reportesContainer');
         if (reportesContainer) {
-            reportesContainer.classList.add('vista-tarjetas');
-            renderReportes('tarjetas');
+            renderReportes();
         }
-    }
-    // --- MOSTRAR ENLACE DE GESTIÓN DE USUARIOS EN SIDEBAR SOLO PARA ADMIN ---
-    const session = window.apiMock && window.apiMock.getSession && window.apiMock.getSession();
-    const roles = window.apiMock && window.apiMock.getRoles && window.apiMock.getRoles();
-    if (!session || !roles) return;
-    const rol = roles.find(r => r.ID_rol === session.rol);
-    if (rol && rol.tipo_rol === 'Administrador') {
-        document.querySelectorAll('.sidebar-nav').forEach(nav => {
-            if (!nav.querySelector('#gestionUsuariosSidebar')) {
-                const div = document.createElement('div');
-                div.className = 'nav-item';
-                div.innerHTML = `<a href="gestion-usuarios.html" class="nav-link" id="gestionUsuariosSidebar"><i class="bi bi-people"></i> <span>Gestión de Usuarios</span></a>`;
-                nav.insertBefore(div, nav.querySelector('hr.my-3'));
-            }
-        });
     }
 });
 
@@ -102,123 +86,129 @@ function setupSidebar() {
     }
 }
 
-function renderReportes(modo = 'tarjetas') {
+function renderReportes() {
     if (!window.apiMock) return;
     const reportes = window.apiMock.getReportes();
     const equipos = window.apiMock.getData('equipos');
     const usuarios = window.apiMock.getUsuarios();
     const container = document.getElementById('reportesContainer');
     if (!container) return;
+    
     container.innerHTML = '';
+    
     if (reportes.length === 0) {
-        container.innerHTML = '<div class="alert alert-info">No hay reportes registrados.</div>';
+        container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">No hay reportes registrados.</div></div>';
         return;
     }
-    if (modo === 'tarjetas') {
-        reportes.forEach(r => {
-            const equipo = equipos.find(e => e.ID_equipo === r.ID_equipo) || {};
-            // Estado visual y progreso
-            let estado = 'Pendiente', badge = 'bg-warning text-dark';
-            if (r.estado_equipo && r.estado_equipo.toLowerCase().includes('proceso')) {
-                estado = 'En Proceso'; badge = 'bg-warning text-dark';
-            } else if (r.resuelto) {
-                estado = 'Resuelto'; badge = 'bg-success';
-            }
-            const card = document.createElement('div');
-            card.className = 'reporte-card col-12 col-md-6 col-lg-4';
-            card.innerHTML = `
-                <div class="card h-100">
-                    <img src="../assets/img/${r.img_equipo || equipo.img || 'computer.png'}" class="card-img-top" alt="Equipo" style="object-fit: cover; height: 180px; min-height: 180px; max-height: 220px;">
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <span class="text-muted small d-block mb-1"><i class="bi bi-calendar me-1"></i>${r.fecha_registro ? r.fecha_registro.split('T')[0] : ''}</span>
-                                <h5 class="card-title fw-bold mb-1">${r.descripcion}</h5>
-                            </div>
-                            <span class="badge ${badge} align-self-start"><i class="bi ${estado === 'Resuelto' ? 'bi-check-circle' : estado === 'En Proceso' ? 'bi-clock' : 'bi-exclamation-circle'} me-1"></i>${estado}</span>
+    
+    reportes.forEach(r => {
+        const equipo = equipos.find(e => e.ID_equipo === r.ID_equipo) || {};
+        const usuario = usuarios.find(u => u.ID_usuarios === r.ID_usuario) || {};
+        
+        // Estado visual y badge
+        let estado = 'Pendiente', badge = 'bg-warning text-dark', icon = 'bi-exclamation-circle';
+        if (r.estado_equipo && r.estado_equipo.toLowerCase().includes('proceso')) {
+            estado = 'En Proceso'; 
+            badge = 'bg-info text-white'; 
+            icon = 'bi-clock';
+        } else if (r.resuelto) {
+            estado = 'Resuelto'; 
+            badge = 'bg-success'; 
+            icon = 'bi-check-circle';
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'col-12 col-sm-6 col-lg-4 col-xl-3 mb-4';
+        card.innerHTML = `
+            <div class="reporte-pin">
+                <div class="pin-image-container">
+                    <img src="../assets/img/${r.img_equipo || equipo.img || 'computer.png'}" 
+                         class="pin-image" 
+                         alt="Equipo">
+                    <div class="pin-overlay">
+                        <div class="pin-actions">
+                            <button class="btn btn-light btn-sm pin-action-btn" onclick="verDetalleReporte(${r.ID_reporte})">
+                                <i class="bi bi-eye"></i>
+                            </button>
                         </div>
-                        <p class="card-text text-muted mb-2">${equipo.salon || r.salon || ''}</p>
-                        <p class="card-text mb-0">${r.detalle || r.descripcion || ''}</p>
+                    </div>
+                    <div class="pin-status-badge ${badge}">
+                        <i class="bi ${icon}"></i>
                     </div>
                 </div>
-            `;
-            container.appendChild(card);
-        });
-    } else if (modo === 'lista') {
-        const table = document.createElement('table');
-        table.className = 'table table-striped';
-        table.innerHTML = `
-            <thead><tr><th>Fecha</th><th>Descripción</th><th>Estado</th><th>Equipo</th><th>Usuario</th><th>Resuelto</th></tr></thead>
-            <tbody>
-                ${reportes.map(r => {
-                    const equipo = equipos.find(e => e.ID_equipo === r.ID_equipo) || {};
-                    const usuario = usuarios.find(u => u.ID_usuarios === r.ID_usuario) || {};
-                    return `
-                    <tr>
-                        <td>${r.fecha_registro ? r.fecha_registro.split('T')[0] : ''}</td>
-                        <td>${r.descripcion}</td>
-                        <td>${r.estado_equipo || ''}</td>
-                        <td>${equipo.codigo_barras || ''}</td>
-                        <td>${usuario.nombre || ''}</td>
-                        <td>${r.resuelto ? 'Sí' : 'No'}</td>
-                    </tr>
-                `}).join('')}
-            </tbody>
+                <div class="pin-content">
+                    <div class="pin-header">
+                        <h6 class="pin-title" title="${r.descripcion}">
+                            ${r.descripcion}
+                        </h6>
+                        <div class="pin-meta">
+                            <span class="pin-date">
+                                <i class="bi bi-calendar3"></i>
+                                ${r.fecha_registro ? new Date(r.fecha_registro).toLocaleDateString('es-ES') : ''}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="pin-details">
+                        <div class="pin-detail-item">
+                            <i class="bi bi-pc-display"></i>
+                            <span>${equipo.codigo_barras || 'Equipo no especificado'}</span>
+                        </div>
+                        <div class="pin-detail-item">
+                            <i class="bi bi-person"></i>
+                            <span>${usuario.nombre ? `${usuario.nombre} ${usuario.apellido}` : 'Usuario no especificado'}</span>
+                        </div>
+                        <div class="pin-detail-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>${equipo.salon || r.salon || 'Ubicación no especificada'}</span>
+                        </div>
+                    </div>
+                    <div class="pin-description">
+                        <p>${r.detalle || r.descripcion || 'Sin descripción adicional'}</p>
+                    </div>
+                </div>
+            </div>
         `;
-        container.appendChild(table);
-    }
+        container.appendChild(card);
+    });
 }
 
 function setupVistaReportes() {
-    const toggleViewBtn = document.getElementById('toggleViewBtn');
-    const toggleViewIcon = document.getElementById('toggleViewIcon');
     const reportesContainer = document.getElementById('reportesContainer');
-    let isArticulosView = true;
-    if (toggleViewBtn && toggleViewIcon && reportesContainer) {
-        toggleViewBtn.addEventListener('click', function() {
-            isArticulosView = !isArticulosView;
-            if (isArticulosView) {
-                reportesContainer.classList.remove('vista-lista');
-                reportesContainer.classList.add('vista-tarjetas');
-                toggleViewIcon.classList.remove('bi-list-ul');
-                toggleViewIcon.classList.add('bi-grid-3x3-gap');
-                renderReportes('tarjetas');
-            } else {
-                reportesContainer.classList.remove('vista-tarjetas');
-                reportesContainer.classList.add('vista-lista');
-                toggleViewIcon.classList.remove('bi-grid-3x3-gap');
-                toggleViewIcon.classList.add('bi-list-ul');
-                renderReportes('lista');
-            }
-        });
-        // Render inicial
-        renderReportes('tarjetas');
+    if (reportesContainer) {
+        // Render inicial de tarjetas
+        renderReportes();
+    }
+}
+
+// Función para ver detalles del reporte
+function verDetalleReporte(idReporte) {
+    // Por ahora solo muestra un alert, pero se puede expandir para mostrar un modal
+    const reportes = window.apiMock.getReportes();
+    const reporte = reportes.find(r => r.ID_reporte === idReporte);
+    if (reporte) {
+        alert(`Detalles del reporte #${idReporte}:\n\nDescripción: ${reporte.descripcion}\nEstado: ${reporte.estado_equipo}\nFecha: ${reporte.fecha_registro ? new Date(reporte.fecha_registro).toLocaleDateString('es-ES') : 'No especificada'}`);
     }
 }
 
 // --- INTEGRACIÓN LOGIN ---
 if (window.location.pathname.endsWith('login.html')) {
-  document.addEventListener('DOMContentLoaded', async function() {
-    await window.apiMock.initMockDB();
+  document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('password');
     const errorDiv = document.createElement('div');
     errorDiv.className = 'alert alert-danger mt-3 d-none';
     form.appendChild(errorDiv);
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
       const email = emailInput.value.trim();
       const pass = passInput.value;
-      const res = window.apiMock.login(email, pass);
-      if (res.success) {
-        if (window.apiMock.isAdmin(res.user)) {
-          window.location.href = 'dashboard.html';
-        } else {
-          window.location.href = 'homepage.html';
-        }
-      } else {
-        errorDiv.textContent = res.message;
+      try {
+        await api.login(email, pass);
+        // Aquí podrías guardar info de usuario si el backend lo permite
+        window.location.href = 'homepage.html';
+      } catch (err) {
+        errorDiv.textContent = err.message;
         errorDiv.classList.remove('d-none');
       }
     });
@@ -227,8 +217,7 @@ if (window.location.pathname.endsWith('login.html')) {
 
 // --- INTEGRACIÓN REGISTRO ---
 if (window.location.pathname.endsWith('register.html')) {
-  document.addEventListener('DOMContentLoaded', async function() {
-    await window.apiMock.initMockDB();
+  document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('form');
     const nombre = document.getElementById('firstName');
     const apellido = document.getElementById('lastName');
@@ -237,20 +226,41 @@ if (window.location.pathname.endsWith('register.html')) {
     const errorDiv = document.createElement('div');
     errorDiv.className = 'alert alert-danger mt-3 d-none';
     form.appendChild(errorDiv);
-    form.addEventListener('submit', function(e) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'alert alert-success mt-3 d-none';
+    form.appendChild(successDiv);
+    
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
+      errorDiv.classList.add('d-none');
+      successDiv.classList.add('d-none');
+      
       const email = emailInput.value.trim();
       const pass = passInput.value;
-      const res = window.apiMock.register(
-        nombre.value.trim(),
-        apellido.value.trim(),
-        email,
-        pass
-      );
-      if (res.success) {
-        window.location.href = 'homepage.html';
-      } else {
-        errorDiv.textContent = res.message;
+      
+      console.log('Iniciando registro...');
+      
+      try {
+        const userData = await api.register({
+          nombre: nombre.value.trim(),
+          apellido: apellido.value.trim(),
+          email,
+          contraseña: pass,
+          rol: 2 // Por defecto usuario normal
+        });
+        
+        console.log('Registro exitoso:', userData);
+        successDiv.textContent = 'Usuario registrado exitosamente. Redirigiendo...';
+        successDiv.classList.remove('d-none');
+        
+        // Esperar un momento antes de redirigir
+        setTimeout(() => {
+          window.location.href = 'homepage.html';
+        }, 2000);
+        
+      } catch (err) {
+        console.error('Error en registro:', err);
+        errorDiv.textContent = err.message;
         errorDiv.classList.remove('d-none');
       }
     });
@@ -260,14 +270,12 @@ if (window.location.pathname.endsWith('register.html')) {
 // --- PROTECCIÓN DE DASHBOARD ---
 if (window.location.pathname.endsWith('dashboard.html')) {
   document.addEventListener('DOMContentLoaded', async function() {
-    await window.apiMock.initMockDB();
-    const session = window.apiMock.getSession();
-    if (!session || !window.apiMock.isAdmin(session)) {
+    const token = api.getToken();
+    if (!token) {
       window.location.href = 'homepage.html';
+      return;
     }
-    const reportes = window.apiMock.getReportes();
-    const equipos = window.apiMock.getData('equipos');
-    const usuarios = window.apiMock.getUsuarios();
+    // Aquí puedes cargar datos del dashboard usando api.getReportes(), api.getEquipos(), etc.
     // Indicadores
     const totalReportes = reportes.length;
     const pendientes = reportes.filter(r => !r.resuelto).length;
@@ -410,9 +418,8 @@ if (window.location.pathname.endsWith('dashboard.html')) {
 // --- AÑADIR REPORTE ---
 if (window.location.pathname.endsWith('hacer-reporte.html')) {
   document.addEventListener('DOMContentLoaded', async function() {
-    await window.apiMock.initMockDB();
-    const session = window.apiMock.getSession();
-    if (!session) {
+    const token = api.getToken();
+    if (!token) {
       window.location.href = 'login.html';
       return;
     }
@@ -426,13 +433,18 @@ if (window.location.pathname.endsWith('hacer-reporte.html')) {
     const successDiv = document.createElement('div');
     successDiv.className = 'alert alert-success mt-3 d-none';
     form.appendChild(successDiv);
-    // Opcional: cargar equipos en select
+    // Cargar equipos en select
     if (equipo && equipo.tagName === 'SELECT') {
-      const equipos = window.apiMock.getData('equipos');
-      equipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
-        equipos.map(eq => `<option value="${eq.ID_equipo}">${eq.codigo_barras} (${eq.marca})</option>`).join('');
+      try {
+        const equipos = await api.getEquipos();
+        equipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
+          equipos.map(eq => `<option value="${eq.ID_equipo}">${eq.codigo_barras} (${eq.marca})</option>`).join('');
+      } catch (err) {
+        errorDiv.textContent = 'Error cargando equipos';
+        errorDiv.classList.remove('d-none');
+      }
     }
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
       errorDiv.classList.add('d-none');
       successDiv.classList.add('d-none');
@@ -441,18 +453,24 @@ if (window.location.pathname.endsWith('hacer-reporte.html')) {
         errorDiv.classList.remove('d-none');
         return;
       }
-      const nuevo = {
-        ID_equipo: parseInt(equipo.value),
-        descripcion: desc.value.trim(),
-        img_equipo: '',
-        estado_equipo: 'Pendiente',
-        resuelto: 0,
-        ID_usuario: session.ID_usuarios
-      };
-      window.apiMock.addReporte(nuevo);
-      successDiv.textContent = 'Reporte añadido correctamente.';
-      successDiv.classList.remove('d-none');
-      form.reset();
+      try {
+        // Aquí deberías obtener el usuario actual (ID_usuario) de localStorage o backend
+        const ID_usuario = 1; // Ajustar según implementación real
+        await api.crearReporte({
+          ID_equipo: parseInt(equipo.value),
+          descripcion: desc.value.trim(),
+          estado_equipo: 'Pendiente',
+          ID_usuario,
+          resuelto: false,
+          imagen: new File([], 'placeholder.png') // Ajustar para subir imagen real
+        });
+        successDiv.textContent = 'Reporte añadido correctamente.';
+        successDiv.classList.remove('d-none');
+        form.reset();
+      } catch (err) {
+        errorDiv.textContent = err.message;
+        errorDiv.classList.remove('d-none');
+      }
     });
   });
 } 

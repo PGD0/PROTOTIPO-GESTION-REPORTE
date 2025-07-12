@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registro</title>
+</head>
+<body>
+    <h1>Test de Registro</h1>
+    <form id="testForm">
+        <div>
+            <label>Nombre: <input type="text" id="nombre" value="Test"></label>
+        </div>
+        <div>
+            <label>Apellido: <input type="text" id="apellido" value="User"></label>
+        </div>
+        <div>
+            <label>Email: <input type="email" id="email" value="test@test.com"></label>
+        </div>
+        <div>
+            <label>Contraseña: <input type="password" id="password" value="password123"></label>
+        </div>
+        <button type="submit">Registrar</button>
+    </form>
+    <div id="result"></div>
+
+    <script type="module">
+        import api from './frontend/js/api.js';
+        
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                const userData = await api.register({
+                    nombre: document.getElementById('nombre').value,
+                    apellido: document.getElementById('apellido').value,
+                    email: document.getElementById('email').value,
+                    contraseña: document.getElementById('password').value,
+                    rol: 2
+                });
+                
+                resultDiv.innerHTML = `<p style="color: green;">Registro exitoso: ${JSON.stringify(userData, null, 2)}</p>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,14 +1,15 @@
+import api from './api.js';
+
 document.addEventListener('DOMContentLoaded', async function() {
-  await window.apiMock.initMockDB();
-  const session = window.apiMock.getSession();
-  if (!session || !window.apiMock.isAdmin(session)) {
+  const token = api.getToken();
+  if (!token) {
     window.location.href = 'dashboard.html';
     return;
   }
   const container = document.getElementById('usuariosContainer');
-  function render() {
-    const usuarios = window.apiMock.getUsuarios();
-    const roles = window.apiMock.getRoles();
+  async function render() {
+    const usuarios = await api.getUsuarios();
+    const roles = await api.getRoles();
     container.innerHTML = `<table class="table table-bordered table-hover">
       <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
       <tbody>
@@ -32,22 +33,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     </table>`;
     // Eventos para cambiar rol
     container.querySelectorAll('.rol-select').forEach(sel => {
-      sel.addEventListener('change', function() {
+      sel.addEventListener('change', async function() {
         const id = parseInt(this.dataset.id);
-        window.apiMock.updateUsuario(id, { rol: parseInt(this.value) });
+        await api.updateUsuario(id, { rol: parseInt(this.value) });
         render();
       });
     });
     // Eventos para eliminar usuario
     container.querySelectorAll('.eliminar-usuario').forEach(btn => {
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', async function() {
         const id = parseInt(this.dataset.id);
         if (confirm('¿Seguro que deseas eliminar este usuario?')) {
-          window.apiMock.deleteUsuario(id);
+          await api.deleteUsuario(id);
           render();
         }
       });
     });
   }
-  render();
+  await render();
 }); 
