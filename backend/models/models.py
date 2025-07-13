@@ -10,11 +10,12 @@ class Usuario(Base):
     apellido = Column(String(100))
     email = Column(String(250), unique=True, index=True)
     contraseña = Column(String(250))
-    rol = Column(Integer, ForeignKey("roles.ID_rol"))
+    ID_rol = Column(Integer, ForeignKey("roles.ID_rol"))
     fecha_creacion = Column(DateTime, default=func.now())
 
     reportes = relationship("Reporte", back_populates="usuario")
     rol_rel = relationship("Rol", back_populates="usuarios")
+
 
 class Rol(Base):
     __tablename__ = "roles"
@@ -24,37 +25,37 @@ class Rol(Base):
 
     usuarios = relationship("Usuario", back_populates="rol_rel")
 
+
 class Sede(Base):
     __tablename__ = "sedes"
 
     ID_sede = Column(Integer, primary_key=True, index=True)
     nombre_sede = Column(String(50))
 
-    salones = relationship("Salon", back_populates="sede_rel")
-    equipos = relationship("Equipo", back_populates="sede_rel")
     bloques = relationship("Bloque", back_populates="sede_rel")
+
 
 class Bloque(Base):
     __tablename__ = "bloques"
 
     ID_bloque = Column(Integer, primary_key=True, index=True)
     nombre_bloque = Column(String(50))
-    sede_id = Column(Integer, ForeignKey("sedes.ID_sede"))
+    ID_sede = Column(Integer, ForeignKey("sedes.ID_sede"))
 
     sede_rel = relationship("Sede", back_populates="bloques")
     salones = relationship("Salon", back_populates="bloque_rel")
+
 
 class Salon(Base):
     __tablename__ = "salones"
 
     ID_salon = Column(Integer, primary_key=True, index=True)
     codigo_salon = Column(String(50))
-    sede = Column(Integer, ForeignKey("sedes.ID_sede"))
-    bloque = Column(Integer, ForeignKey("bloques.ID_bloque"), nullable=True)
+    ID_bloque = Column(Integer, ForeignKey("bloques.ID_bloque"), nullable=False)
 
-    sede_rel = relationship("Sede", back_populates="salones")
     bloque_rel = relationship("Bloque", back_populates="salones")
     equipos = relationship("Equipo", back_populates="salon_rel")
+
 
 class Equipo(Base):
     __tablename__ = "equipos"
@@ -62,14 +63,13 @@ class Equipo(Base):
     ID_equipo = Column(Integer, primary_key=True, index=True)
     codigo_barras = Column(String(50))
     marca = Column(String(50))
-    sede = Column(Integer, ForeignKey("sedes.ID_sede"))
-    salon = Column(Integer, ForeignKey("salones.ID_salon"))
+    ID_salon = Column(Integer, ForeignKey("salones.ID_salon"))
     funcional = Column(Boolean, default=True)
     fecha_registro = Column(DateTime, default=func.now())
 
-    sede_rel = relationship("Sede", back_populates="equipos")
     salon_rel = relationship("Salon", back_populates="equipos")
     reportes = relationship("Reporte", back_populates="equipo")
+
 
 class Reporte(Base):
     __tablename__ = "reportes"
@@ -85,4 +85,4 @@ class Reporte(Base):
     ID_usuario = Column(Integer, ForeignKey("usuarios.ID_usuarios"))
 
     equipo = relationship("Equipo", back_populates="reportes")
-    usuario = relationship("Usuario", back_populates="reportes") 
+    usuario = relationship("Usuario", back_populates="reportes")
