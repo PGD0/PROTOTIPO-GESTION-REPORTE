@@ -16,7 +16,7 @@ app = FastAPI(
 # Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especificar el dominio exacto
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,17 +26,16 @@ app.add_middleware(
 async def root():
     return {"status": "ok", "message": "API is running"}
 
-# Función para inicializar datos básicos
 def init_db():
     db = next(get_db())
     try:
-        # Verificar si ya existen roles
         if db.query(Rol).count() == 0:
-            # Crear roles básicos
             admin_rol = Rol(tipo_rol="Administrador")
             user_rol = Rol(tipo_rol="Usuario")
+            profesor_rol = Rol(tipo_rol="Profesor")
             db.add(admin_rol)
             db.add(user_rol)
+            db.add(profesor_rol)
             db.commit()
             print("Roles inicializados")
     except Exception as e:
@@ -44,7 +43,6 @@ def init_db():
     finally:
         db.close()
 
-# Inicializar datos al arrancar
 init_db()
 
 app.include_router(usuarios.router)
