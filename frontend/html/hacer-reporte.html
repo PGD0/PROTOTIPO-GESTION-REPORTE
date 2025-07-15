@@ -13,6 +13,7 @@
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="../css/styles.css">
+    
 </head>
 <body>
     <!-- Sidebar Overlay for Mobile -->
@@ -91,10 +92,10 @@
                 <div class="d-flex align-items-center">
                     <div class="dropdown">
                         <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle fs-4"></i>
+                            <i class="bi bi-person-circle fs-4 text-dark"></i>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="perfil.html"><i class="bi bi-person me-2"></i>Perfil</a></li>
                             <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
@@ -111,9 +112,9 @@
                     <div class="col-12 col-lg-10">
                         <div class="card shadow-sm">
                             <div class="card-header bg-white border-0">
-                                <h5 class="mb-0 fw-bold">
+                                <h4 class="mb-0 fw-bold pt-4 pl-5">
                                     <i class="bi bi-clipboard-plus me-2"></i>Información del Reporte
-                                </h5>
+                                </h4>
                             </div>
                             <div class="card-body">
                                 <form>
@@ -121,7 +122,7 @@
                                         <!-- Sede -->
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Sede</label>
-                                            <select class="form-select" required>
+                                            <select class="form-select" id="sedeSelect" required>
                                                 <option value="">Seleccionar sede</option>
                                                 <option value="soledad">Soledad</option>
                                                 <option value="plaza">Plaza de la paz</option>
@@ -129,22 +130,41 @@
                                             </select>
                                         </div>
 
+                                        <!-- Bloque (solo para Soledad) -->
+                                        <div class="col-md-6" id="bloqueContainer" style="display: none;">
+                                            <label class="form-label fw-semibold">Bloque</label>
+                                            <select class="form-select" id="bloqueSelect">
+                                                <option value="">Seleccionar bloque</option>
+                                            </select>
+                                        </div>
+
                                         <!-- Salón -->
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" id="salonContainer">
                                             <label class="form-label fw-semibold">Salón</label>
-                                            <input type="text" class="form-control" placeholder="Ej: Salón 18" required>
+                                            <select class="form-select" id="salonSelect" required>
+                                                <option value="">Seleccionar salón</option>
+                                            </select>
                                         </div>
 
                                         <!-- Código del equipo -->
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Código del equipo</label>
-                                            <input type="text" class="form-control" placeholder="Ej: 32013391" required>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="codigoEquipo" placeholder="Ej: 32013391" required>
+                                                <button class="btn btn-outline-secondary" type="button" id="btnEscanear" data-bs-toggle="modal" data-bs-target="#escanearModal">
+                                                    <i class="bi bi-upc-scan"></i>
+                                                </button>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                Puedes escribir el código manualmente o escanear el código de barras del equipo
+                                            </div>
                                         </div>
 
                                         <!-- Tipo de problema -->
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Tipo de problema</label>
-                                            <select class="form-select" required>
+                                            <select class="form-select" id="tipoProblema" required>
                                                 <option value="">Seleccionar tipo</option>
                                                 <option value="hardware">Hardware</option>
                                                 <option value="software">Software</option>
@@ -156,26 +176,26 @@
                                         <!-- Título del reporte -->
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Título del reporte</label>
-                                            <input type="text" class="form-control" placeholder="Ej: Pantalla dañada" required>
+                                            <input type="text" class="form-control" id="tituloReporte" placeholder="Ej: Pantalla dañada" required>
                                         </div>
 
                                         <!-- Descripción -->
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Descripción detallada</label>
-                                            <textarea class="form-control" rows="4" placeholder="Describe el problema con el mayor detalle posible..." required></textarea>
+                                            <textarea class="form-control" id="descripcionReporte" rows="4" placeholder="Describe el problema con el mayor detalle posible..." required></textarea>
                                         </div>
 
                                         <!-- Imagen -->
                                         <div class="col-12">
                                             <label class="form-label fw-semibold">Imagen del problema (opcional)</label>
-                                            <input type="file" class="form-control" accept="image/*">
+                                            <input type="file" class="form-control" id="imagenReporte" accept="image/*">
                                             <div class="form-text">Formatos permitidos: JPG, PNG, GIF. Máximo 5MB.</div>
                                         </div>
 
                                         <!-- Prioridad -->
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Prioridad</label>
-                                            <select class="form-select" required>
+                                            <select class="form-select" id="prioridadReporte" required>
                                                 <option value="">Seleccionar prioridad</option>
                                                 <option value="baja">Baja</option>
                                                 <option value="media">Media</option>
@@ -187,7 +207,7 @@
                                         <!-- Contacto -->
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Contacto (opcional)</label>
-                                            <input type="email" class="form-control" placeholder="tu@email.com">
+                                            <input type="email" class="form-control" id="contactoReporte" placeholder="tu@email.com">
                                         </div>
 
                                         <!-- Botones -->
@@ -212,9 +232,128 @@
         </div>
     </div>
 
+    <!-- Modal para escanear código QR -->
+    <div class="modal fade" id="escanearModal" tabindex="-1" aria-labelledby="escanearModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="escanearModalLabel">
+                        <i class="bi bi-upc-scan me-2"></i>Escanear Código de Barras
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-camera me-2"></i>Usar Cámara
+                                    </h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div id="cameraContainer" class="mb-3">
+                                        <video id="cameraVideo" class="img-fluid rounded" style="max-width: 100%; height: 200px; object-fit: cover;" autoplay></video>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="btnIniciarCamara">
+                                        <i class="bi bi-camera me-2"></i>Iniciar Cámara
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="btnDetenerCamara" style="display: none;">
+                                        <i class="bi bi-stop-circle me-2"></i>Detener Cámara
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-image me-2"></i>Subir Imagen
+                                    </h6>
+                                </div>
+                                <div class="card-body text-center">
+                                                                            <div class="mb-3">
+                                            <input type="file" class="form-control" id="imagenQR" accept="image/*" style="display: none;">
+                                            <button type="button" class="btn btn-outline-primary" id="btnSeleccionarImagen">
+                                                <i class="bi bi-image me-2"></i>Seleccionar Imagen
+                                            </button>
+                                            <div class="form-text mt-2">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                Formatos permitidos: JPG, PNG, GIF, WEBP. Máximo 5MB.
+                                            </div>
+                                        </div>
+                                    <div id="imagenPreview" class="mb-3" style="display: none;">
+                                        <img id="previewQR" class="img-fluid rounded" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-info" id="resultadoEscaneo" style="display: none;">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <span id="textoResultado">Código detectado: </span>
+                                <strong id="codigoDetectado"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnUsarCodigo" style="display: none;">
+                        <i class="bi bi-check-circle me-2"></i>Usar Código
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="../js/api-mock.js"></script>
     <script src="../js/sidebar.js"></script>
     <script src="../js/main.js"></script>
+    <script src="../js/hacer-reporte.js"></script>
+    <script src="../js/escanear-simple.js"></script>
+    <script>
+    // Esperar a que el DOM esté listo para asegurar que el botón existe
+    document.addEventListener('DOMContentLoaded', function() {
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            const darkModeIcon = darkModeToggle.querySelector('i');
+
+            function setDarkMode(enabled) {
+                if (enabled) {
+                    document.body.classList.add('dark-mode');
+                    darkModeIcon.classList.remove('bi-moon');
+                    darkModeIcon.classList.add('bi-brightness-high');
+                    darkModeToggle.title = 'Desactivar modo oscuro';
+                    localStorage.setItem('modoOscuro', '1');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    darkModeIcon.classList.remove('bi-brightness-high');
+                    darkModeIcon.classList.add('bi-moon');
+                    darkModeToggle.title = 'Activar modo oscuro';
+                    localStorage.setItem('modoOscuro', '0');
+                }
+            }
+
+            darkModeToggle.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('dark-mode');
+                setDarkMode(!isDark);
+            });
+
+            // Al cargar la página, aplicar preferencia guardada
+            if (localStorage.getItem('modoOscuro') === '1') {
+                setDarkMode(true);
+            } else {
+                setDarkMode(false);
+            }
+        }
+    });
+    </script>
 </body>
 </html>
