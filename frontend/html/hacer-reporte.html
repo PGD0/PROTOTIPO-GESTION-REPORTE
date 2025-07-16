@@ -13,6 +13,8 @@
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="../css/styles.css">
+
+    
     
 </head>
 <body>
@@ -151,7 +153,7 @@
                                             <label class="form-label fw-semibold">Código del equipo</label>
                                             <div class="input-group">
                                                 <input type="text" class="form-control" id="codigoEquipo" placeholder="Ej: 32013391" required>
-                                                <button class="btn btn-outline-secondary" type="button" id="btnEscanear" data-bs-toggle="modal" data-bs-target="#escanearModal">
+                                                <button class="btn btn-outline-secondary" type="button" id="reader" data-bs-toggle="modal" data-bs-target="#escanearModal">
                                                     <i class="bi bi-upc-scan"></i>
                                                 </button>
                                             </div>
@@ -318,42 +320,9 @@
     <script src="../js/main.js"></script>
     <script src="../js/hacer-reporte.js"></script>
     <script src="../js/escanear-simple.js"></script>
-    <script>
-    // Esperar a que el DOM esté listo para asegurar que el botón existe
-    document.addEventListener('DOMContentLoaded', function() {
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        if (darkModeToggle) {
-            const darkModeIcon = darkModeToggle.querySelector('i');
+   <!-- SCANAPP -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
-            function setDarkMode(enabled) {
-                if (enabled) {
-                    document.body.classList.add('dark-mode');
-                    darkModeIcon.classList.remove('bi-moon');
-                    darkModeIcon.classList.add('bi-brightness-high');
-                    darkModeToggle.title = 'Desactivar modo oscuro';
-                    localStorage.setItem('modoOscuro', '1');
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    darkModeIcon.classList.remove('bi-brightness-high');
-                    darkModeIcon.classList.add('bi-moon');
-                    darkModeToggle.title = 'Activar modo oscuro';
-                    localStorage.setItem('modoOscuro', '0');
-                }
-            }
-
-            darkModeToggle.addEventListener('click', () => {
-                const isDark = document.body.classList.contains('dark-mode');
-                setDarkMode(!isDark);
-            });
-
-            // Al cargar la página, aplicar preferencia guardada
-            if (localStorage.getItem('modoOscuro') === '1') {
-                setDarkMode(true);
-            } else {
-                setDarkMode(false);
-            }
-        }
-    });
-    </script>
+   
 </body>
 </html>
