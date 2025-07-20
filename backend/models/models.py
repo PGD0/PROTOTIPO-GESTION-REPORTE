@@ -12,6 +12,8 @@ class Usuario(Base):
     contraseña = Column(String(250))
     rol = Column(Integer, ForeignKey("roles.ID_rol"))
     fecha_creacion = Column(DateTime, default=func.now())
+    descripcion = Column(String(500), nullable=True)     
+    img_usuario = Column(String(500), nullable=True)       
 
     reportes = relationship("Reporte", back_populates="usuario")
     rol_rel = relationship("Rol", back_populates="usuarios")
