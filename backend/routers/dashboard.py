@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy import func, extract
 from database.database import get_db
@@ -8,15 +8,22 @@ from services.jwt import obtener_usuario_actual
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
+def solo_admin(usuario: dict = Depends(obtener_usuario_actual)):
+    if usuario["rol"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acceso restringido para administradores"
+        )
+    return usuario
 
-@router.get("/reportes-estado")
+@router.get("/admin/reportes-estado", dependencies=[Depends(solo_admin)])
 def reportes_estado(db: Session = Depends(get_db)):
     resueltos = db.query(func.count()).select_from(models.Reporte).filter(models.Reporte.resuelto == True).scalar()
     pendientes = db.query(func.count()).select_from(models.Reporte).filter(models.Reporte.resuelto == False).scalar()
     return {"resueltos": resueltos, "pendientes": pendientes}
 
 
-@router.get("/reportes-por-sede")
+@router.get("/admin/reportes-por-sede", dependencies=[Depends(solo_admin)])
 def reportes_por_sede(db: Session = Depends(get_db)):
     data = (
         db.query(models.Sede.nombre_sede, func.count(models.Reporte.ID_reporte))
@@ -28,14 +35,14 @@ def reportes_por_sede(db: Session = Depends(get_db)):
     return [{"sede": sede, "cantidad": cantidad} for sede, cantidad in data]
 
 
-@router.get("/equipos-estado")
+@router.get("/admin/equipos-estado", dependencies=[Depends(solo_admin)])
 def equipos_estado(db: Session = Depends(get_db)):
     funcionales = db.query(func.count()).select_from(models.Equipo).filter(models.Equipo.funcional == True).scalar()
     no_funcionales = db.query(func.count()).select_from(models.Equipo).filter(models.Equipo.funcional == False).scalar()
     return {"funcionales": funcionales, "no_funcionales": no_funcionales}
 
 
-@router.get("/usuarios-por-rol")
+@router.get("/admin/usuarios-por-rol", dependencies=[Depends(solo_admin)])
 def usuarios_por_rol(db: Session = Depends(get_db)):
     data = (
         db.query(models.Rol.tipo_rol, func.count(models.Usuario.ID_usuarios))
@@ -46,7 +53,7 @@ def usuarios_por_rol(db: Session = Depends(get_db)):
     return [{"rol": rol, "cantidad": cantidad} for rol, cantidad in data]
 
 
-@router.get("/equipos-por-salon")
+@router.get("/admin/equipos-por-salon", dependencies=[Depends(solo_admin)])
 def equipos_por_salon(db: Session = Depends(get_db)):
     data = (
         db.query(models.Salon.codigo_salon, func.count(models.Equipo.ID_equipo))
@@ -57,7 +64,7 @@ def equipos_por_salon(db: Session = Depends(get_db)):
     return [{"salon": salon, "cantidad": cantidad} for salon, cantidad in data]
 
 
-@router.get("/reportes-por-mes")
+@router.get("/admin/reportes-por-mes", dependencies=[Depends(solo_admin)])
 def reportes_por_mes(db: Session = Depends(get_db)):
     current_year = datetime.now().year
     data = (
