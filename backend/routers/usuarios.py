@@ -1,10 +1,15 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
-from schemas.UsuarioBase import UsuarioCreado,UsuarioSalida,UsuarioActualizar
+from schemas.UsuarioBase import UsuarioCreado,UsuarioSalida, UsuarioActualizar
 from sqlalchemy.orm import Session
 from database.database import get_db
-from models.models import Usuario
+from models.models import Rol, Usuario
 from services.hash import hash_password
 from services.cloudinary import subir_imagen 
+from pydantic import EmailStr
+import shutil
+import os
+import uuid
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
 
@@ -36,12 +41,24 @@ async def crear_usuario(
     usuario_existente = db.query(Usuario).filter(Usuario.email == email).first()
     if usuario_existente:
         raise HTTPException(status_code=400, detail="El email ya está en uso")
+
     url_imagen = None
     if imagen:
         try:
-            url_imagen = await subir_imagen(imagen)
+            os.makedirs("temp", exist_ok=True)
+            temp_filename = f"temp/{uuid.uuid4().hex}_{imagen.filename}"
+
+            with open(temp_filename, "wb") as buffer:
+                shutil.copyfileobj(imagen.file, buffer)
+
+            with open(temp_filename, "rb") as file_data:
+                url_imagen = subir_imagen(file_data)
+
+            os.remove(temp_filename)
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error al subir imagen: {str(e)}")
+
     nuevo_usuario = Usuario(
         nombre=nombre,
         apellido=apellido,
@@ -58,40 +75,58 @@ async def crear_usuario(
 
     return nuevo_usuario
 
-@router.put("/{id}", response_model=UsuarioSalida)
+@router.put("/usuarios/{id}", response_model=UsuarioSalida)
 async def actualizar_usuario(
     id: int,
-    nombre: str = Form(None),
-    apellido: str = Form(None),
-    email: str = Form(None),
-    contraseña: str = Form(None),
-    rol: int = Form(None),
-    descripcion: str = Form(None),
-    imagen: UploadFile = File(None),
+    nombre: Optional[str] = Form(None),
+    apellido: Optional[str] = Form(None),
+    email: Optional[EmailStr] = Form(None),
+    contraseña: Optional[str] = Form(None),
+    rol: Optional[int] = Form(None),
+    descripcion: Optional[str] = Form(None),
+    imagen: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
     usuario = db.query(Usuario).filter(Usuario.ID_usuarios == id).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if nombre is not None and nombre != "":
+        usuario.nombre = nombre
+    if apellido is not None and apellido != "":
+        usuario.apellido = apellido
+    if email is not None and email != "":
+        usuario.email = email
+    if contraseña is not None and contraseña != "":
+        usuario.contraseña = hash_password(contraseña)
+    if rol is not None and str(rol).strip() != "":
+        try:
+            rol = int(rol)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="El rol debe ser un número válido")
+        
+        rol_existente = db.query(Rol).filter(Rol.ID_rol == rol).first()
+        if not rol_existente:
+            raise HTTPException(status_code=400, detail="El rol especificado no existe")
+    usuario.rol = rol
+    if descripcion is not None and descripcion != "":
+        usuario.descripcion = descripcion
+    usuario.img_usuario = usuario.img_usuario
     if imagen:
         try:
-            url_imagen = await subir_imagen(imagen)
-            usuario.img_usuario = url_imagen
+            os.makedirs("temp", exist_ok=True)
+            temp_filename = f"temp/{uuid.uuid4().hex}_{imagen.filename}"
+
+            with open(temp_filename, "wb") as buffer:
+                shutil.copyfileobj(imagen.file, buffer)
+
+            with open(temp_filename, "rb") as file_data:
+                url_imagen = subir_imagen(file_data)
+
+            os.remove(temp_filename)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error al subir imagen: {str(e)}")
-    if nombre is not None:
-        usuario.nombre = nombre
-    if apellido is not None:
-        usuario.apellido = apellido
-    if email is not None:
-        usuario.email = email
-    if contraseña is not None:
-        usuario.contraseña = hash_password(contraseña)
-    if rol is not None:
-        usuario.rol = rol
-    if descripcion is not None:
-        usuario.descripcion = descripcion
-
+        usuario.img_usuario = url_imagen
     db.commit()
     db.refresh(usuario)
     return usuario
