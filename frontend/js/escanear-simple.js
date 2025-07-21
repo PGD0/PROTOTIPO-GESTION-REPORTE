@@ -1,6 +1,8 @@
+import api from './api.js';
+
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('escanearModal');
-    const video = document.getElementById('cameraVideo'); // Puedes ocultarlo si ya no lo usas
+    const video = document.getElementById('cameraVideo');
     const btnIniciarCamara = document.getElementById('btnIniciarCamara');
     const btnDetenerCamara = document.getElementById('btnDetenerCamara');
     const btnSeleccionarImagen = document.getElementById('btnSeleccionarImagen');
@@ -11,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const codigoDetectado = document.getElementById('codigoDetectado');
     const btnUsarCodigo = document.getElementById('btnUsarCodigo');
     const codigoEquipoInput = document.getElementById('codigoEquipo');
+    const btnEscanear = document.getElementById('btnEscanear'); // Referencia al botón de escaneo
 
     let html5QrcodeScanner = null;
 
@@ -139,4 +142,22 @@ document.addEventListener('DOMContentLoaded', function () {
             btnIniciarCamara.title = 'Tu navegador no soporta acceso a la cámara';
         }
     });
+
+    // Asegurarse de que el botón de escaneo esté siempre visible
+    // Esto evita que el botón desaparezca cuando se abre el menú
+    if (btnEscanear) {
+        // Restaurar visibilidad del botón si se oculta
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && 
+                    (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+                    if (btnEscanear.style.display === 'none') {
+                        btnEscanear.style.display = 'inline-block';
+                    }
+                }
+            });
+        });
+
+        observer.observe(btnEscanear, { attributes: true });
+    }
 });

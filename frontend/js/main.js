@@ -12,98 +12,110 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function setupSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
-    const sidebarBrand = document.getElementById('sidebarBrand');
-    const sidebarLogo = document.getElementById('sidebarLogo');
-    const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+// Eliminar la función setupSidebar() de aquí, ya que está definida en sidebar.js
 
-    function isMobile() {
-        return window.innerWidth <= 991.98;
-    }
+// Variables globales para almacenar los datos
+let todosLosReportes = [];
+let todosLosEquipos = [];
+let todosLosUsuarios = [];
 
-    function toggleSidebar() {
-        if (!isMobile()) {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('sidebar-collapsed');
-            if (sidebar.classList.contains('collapsed')) {
-                sidebarLogo.src = '../assets/img/IUB_Logo2.png';
-            } else {
-                sidebarLogo.src = '../assets/img/logo_IUB.png';
-            }
-        }
-    }
-    function toggleMobileSidebar() {
-        sidebar.classList.toggle('show');
-        sidebarOverlay.classList.toggle('show');
-        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
-    }
-    function closeMobileSidebar() {
-        sidebar.classList.remove('show');
-        sidebarOverlay.classList.remove('show');
-        document.body.style.overflow = '';
-    }
-    if (sidebarToggle) sidebarToggle.addEventListener('click', toggleSidebar);
-    if (mobileSidebarToggle) mobileSidebarToggle.addEventListener('click', toggleMobileSidebar);
-    if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeMobileSidebar);
-    document.addEventListener('click', function(e) {
-        if (isMobile()) {
-            if (!sidebar.contains(e.target) && (!mobileSidebarToggle || !mobileSidebarToggle.contains(e.target))) {
-                closeMobileSidebar();
-            }
-        }
-    });
-    window.addEventListener('resize', function() {
-        if (isMobile()) {
-            sidebar.classList.remove('collapsed');
-            mainContent.classList.remove('sidebar-collapsed');
-            sidebarLogo.src = '../assets/img/logo_IUB.png';
-            closeMobileSidebar();
-        } else {
-            closeMobileSidebar();
-        }
-    });
-    navLinks.forEach(function(link) {
-        link.addEventListener('click', function() {
-            if (isMobile()) {
-                closeMobileSidebar();
-            }
-        });
-    });
-    if (sidebarBrand) {
-        sidebarBrand.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (isMobile()) {
-                closeMobileSidebar();
-            } else {
-                toggleSidebar();
-            }
-        });
-    }
-}
-
-function renderReportes() {
-    if (!window.apiMock) return;
-    const reportes = window.apiMock.getReportes();
-    const equipos = window.apiMock.getData('equipos');
-    const usuarios = window.apiMock.getUsuarios();
+function renderReportes(filtros = {}) {
+    // Usar API real
     const container = document.getElementById('reportesContainer');
     if (!container) return;
     
-    container.innerHTML = '';
+    // Si no tenemos datos cargados, los obtenemos primero
+    if (todosLosReportes.length === 0) {
+        container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">Cargando reportes...</div></div>';
+        
+        Promise.all([
+            api.getReportes(),
+            api.getEquipos(),
+            api.getUsuarios()
+        ])
+        .then(([reportes, equipos, usuarios]) => {
+            todosLosReportes = reportes || [];
+            todosLosEquipos = equipos || [];
+            todosLosUsuarios = usuarios || [];
+            
+            renderReportesFiltrados(filtros);
+        })
+        .catch(error => {
+            console.error('Error al cargar reportes:', error);
+            container.innerHTML = `<div class="col-12"><div class="alert alert-danger text-center">Error al cargar reportes: ${error.message}</div></div>`;
+        });
+    } else {
+        renderReportesFiltrados(filtros);
+    }
+}
+
+function renderReportesFiltrados(filtros = {}) {
+    const container = document.getElementById('reportesContainer');
+    if (!container) return;
     
-    if (reportes.length === 0) {
-        container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">No hay reportes registrados.</div></div>';
+    // Aplicar filtros
+    let reportesFiltrados = todosLosReportes;
+    
+    // Filtro por estado
+    if (filtros.estado) {
+        reportesFiltrados = reportesFiltrados.filter(r => {
+            if (filtros.estado === 'pendiente') {
+                return r.estado_equipo === 'Pendiente' || !r.estado_equipo;
+            } else if (filtros.estado === 'en-proceso') {
+                // Modificación: Considerar como "en proceso" los reportes que no están resueltos
+                // y tienen un estado_equipo que no es "Pendiente" ni "Solucionado"
+                return !r.resuelto && r.estado_equipo && 
+                       r.estado_equipo !== 'Pendiente' && 
+                       r.estado_equipo !== 'Solucionado';
+            } else if (filtros.estado === 'resuelto') {
+                return r.resuelto;
+            }
+            return true;
+        });
+    }
+    
+    // Filtro por sede
+    if (filtros.sede) {
+        reportesFiltrados = reportesFiltrados.filter(r => {
+            const equipo = todosLosEquipos.find(e => e.ID_equipo === r.ID_equipo) || {};
+            const ubicacion = equipo.salon || r.salon || '';
+            return ubicacion.toLowerCase().includes(filtros.sede.toLowerCase());
+        });
+    }
+    
+    // Filtro por fecha desde
+    if (filtros.fechaDesde) {
+        const fechaDesde = new Date(filtros.fechaDesde);
+        fechaDesde.setHours(0, 0, 0, 0);
+        reportesFiltrados = reportesFiltrados.filter(r => {
+            if (!r.fecha_registro) return false;
+            const fechaReporte = new Date(r.fecha_registro);
+            return fechaReporte >= fechaDesde;
+        });
+    }
+    
+    // Filtro por fecha hasta
+    if (filtros.fechaHasta) {
+        const fechaHasta = new Date(filtros.fechaHasta);
+        fechaHasta.setHours(23, 59, 59, 999);
+        reportesFiltrados = reportesFiltrados.filter(r => {
+            if (!r.fecha_registro) return false;
+            const fechaReporte = new Date(r.fecha_registro);
+            return fechaReporte <= fechaHasta;
+        });
+    }
+    
+    // Mostrar mensaje si no hay reportes
+    if (reportesFiltrados.length === 0) {
+        container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">No hay reportes que coincidan con los filtros seleccionados.</div></div>';
         return;
     }
     
-    reportes.forEach(r => {
-        const equipo = equipos.find(e => e.ID_equipo === r.ID_equipo) || {};
-        const usuario = usuarios.find(u => u.ID_usuarios === r.ID_usuario) || {};
+    // Renderizar reportes filtrados
+    container.innerHTML = '';
+    reportesFiltrados.forEach(r => {
+        const equipo = todosLosEquipos.find(e => e.ID_equipo === r.ID_equipo) || {};
+        const usuario = todosLosUsuarios.find(u => u.ID_usuarios === r.ID_usuario) || {};
         
         // Estado visual y badge
         let estado = 'Pendiente', badge = 'bg-warning text-dark', icon = 'bi-exclamation-circle';
@@ -122,7 +134,7 @@ function renderReportes() {
         card.innerHTML = `
             <div class="reporte-pin">
                 <div class="pin-image-container">
-                    <img src="../assets/img/${r.img_equipo || equipo.img || 'computer.png'}" 
+                    <img src="${r.img_equipo && r.img_equipo.startsWith('http') ? r.img_equipo : `../assets/img/${r.img_equipo || equipo.img || 'computer.png'}`}" 
                          class="pin-image" 
                          alt="Equipo">
                     <div class="pin-overlay">
@@ -174,19 +186,53 @@ function renderReportes() {
 
 function setupVistaReportes() {
     const reportesContainer = document.getElementById('reportesContainer');
-    if (reportesContainer) {
-        // Render inicial de tarjetas
-        renderReportes();
+    if (!reportesContainer) return;
+    
+    // Configurar eventos de filtros
+    const filtroEstado = document.getElementById('filtro-estado');
+    const filtroSede = document.getElementById('filtro-sede');
+    const filtroFechaDesde = document.getElementById('filtro-fecha-desde');
+    const filtroFechaHasta = document.getElementById('filtro-fecha-hasta');
+    
+    // Función para aplicar filtros
+    function aplicarFiltros() {
+        const filtros = {
+            estado: filtroEstado ? filtroEstado.value : '',
+            sede: filtroSede ? filtroSede.value : '',
+            fechaDesde: filtroFechaDesde ? filtroFechaDesde.value : '',
+            fechaHasta: filtroFechaHasta ? filtroFechaHasta.value : ''
+        };
+        renderReportes(filtros);
     }
+    
+    // Asignar eventos de cambio a los filtros
+    if (filtroEstado) filtroEstado.addEventListener('change', aplicarFiltros);
+    if (filtroSede) filtroSede.addEventListener('change', aplicarFiltros);
+    if (filtroFechaDesde) filtroFechaDesde.addEventListener('change', aplicarFiltros);
+    if (filtroFechaHasta) filtroFechaHasta.addEventListener('change', aplicarFiltros);
+    
+    // Render inicial de tarjetas
+    renderReportes();
 }
 
 // Función para ver detalles del reporte
 function verDetalleReporte(idReporte) {
     // Por ahora solo muestra un alert, pero se puede expandir para mostrar un modal
-    const reportes = window.apiMock.getReportes();
-    const reporte = reportes.find(r => r.ID_reporte === idReporte);
+    const reporte = todosLosReportes.find(r => r.ID_reporte === idReporte);
     if (reporte) {
         alert(`Detalles del reporte #${idReporte}:\n\nDescripción: ${reporte.descripcion}\nEstado: ${reporte.estado_equipo}\nFecha: ${reporte.fecha_registro ? new Date(reporte.fecha_registro).toLocaleDateString('es-ES') : 'No especificada'}`);
+    } else {
+        api.getReportes()
+            .then(reportes => {
+                const reporte = reportes.find(r => r.ID_reporte === idReporte);
+                if (reporte) {
+                    alert(`Detalles del reporte #${idReporte}:\n\nDescripción: ${reporte.descripcion}\nEstado: ${reporte.estado_equipo}\nFecha: ${reporte.fecha_registro ? new Date(reporte.fecha_registro).toLocaleDateString('es-ES') : 'No especificada'}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener detalles del reporte:', error);
+                alert('Error al obtener detalles del reporte');
+            });
     }
 }
 
@@ -203,10 +249,34 @@ if (window.location.pathname.endsWith('login.html')) {
       e.preventDefault();
       const email = emailInput.value.trim();
       const pass = passInput.value;
+      errorDiv.classList.add('d-none');
+      // Validación básica
+      if (!email || !pass) {
+        errorDiv.textContent = 'Por favor, completa todos los campos.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
       try {
-        await api.login(email, pass);
-        // Aquí podrías guardar info de usuario si el backend lo permite
-        window.location.href = 'homepage.html';
+        const data = await api.login(email, pass);
+        if (!data || !data.access_token) {
+          throw new Error('No se recibió el token de autenticación.');
+        }
+        
+        // Obtener información del usuario actual
+        const usuarios = await api.getUsuarios();
+        const currentUser = usuarios.find(user => user.email === email);
+        
+        // Guardar información del usuario en localStorage
+        if (currentUser) {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
+        // Redirigir según el rol del usuario
+        if (currentUser && currentUser.rol === 1) { // Administrador
+          window.location.href = 'dashboard.html';
+        } else { // Usuario normal
+          window.location.href = 'homepage.html';
+        }
       } catch (err) {
         errorDiv.textContent = err.message;
         errorDiv.classList.remove('d-none');
@@ -473,4 +543,4 @@ if (window.location.pathname.endsWith('hacer-reporte.html')) {
       }
     });
   });
-} 
+}

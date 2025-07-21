@@ -46,9 +46,17 @@ function renderSidebarNav() {
     const token = api.getToken();
     let esAdmin = false;
     if (token) {
-        const roles = await api.getRoles();
-        // Aquí deberías obtener el usuario actual y su rol
-        // esAdmin = ...
+        try {
+            // Obtener el usuario actual del localStorage (guardado por auth.js)
+            const currentUserStr = localStorage.getItem('currentUser');
+            if (currentUserStr) {
+                const currentUser = JSON.parse(currentUserStr);
+                // Verificar si el usuario es administrador (rol = 1)
+                esAdmin = currentUser && currentUser.rol === 1;
+            }
+        } catch (error) {
+            console.error('Error al verificar el rol de administrador:', error);
+        }
     }
     if (esAdmin) {
         const linksAdmin = [
@@ -175,4 +183,4 @@ function setupSidebar() {
             }
         });
     }
-} 
+}
