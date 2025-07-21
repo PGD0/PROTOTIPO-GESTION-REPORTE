@@ -22,6 +22,7 @@ async def obtener_usuario(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return {"message": f"Usuario con ID {id}", "usuario": id_usuario}
 
+@router.post("/", response_model=UsuarioCreado)
 async def crear_usuario(
     nombre: str = Form(...),
     apellido: str = Form(...),
@@ -57,6 +58,7 @@ async def crear_usuario(
 
     return nuevo_usuario
 
+@router.put("/{id}", response_model=UsuarioSalida)
 async def actualizar_usuario(
     id: int,
     nombre: str = Form(None),
