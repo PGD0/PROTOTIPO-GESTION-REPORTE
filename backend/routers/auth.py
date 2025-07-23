@@ -16,5 +16,11 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     if not user or not verify_password(form_data.password, user.contraseña):
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
     
-    access_token = create_access_token(data={"sub": user.email})
+    token_data = {
+        "sub": user.email,
+        "id": user.ID_usuarios,
+        "rol": user.rol,
+        "nombre": user.nombre
+    }
+    access_token = create_access_token(data=token_data)
     return {"access_token": access_token, "token_type": "bearer"}

@@ -91,3 +91,14 @@ async def eliminar_reporte(id: int, db: Session = Depends(get_db)):
     db.delete(reporte_existente)
     db.commit()
     return {"message": f"Reporte con ID {id} eliminado exitosamente"}
+
+@router.get("/usuario/{id}/ultimos", response_model=list[ReporteSalida])
+async def obtener_ultimos_reportes_usuario(id: int, db: Session = Depends(get_db)):
+    reportes = (
+        db.query(Reporte)
+        .filter(Reporte.ID_usuario == id)
+        .order_by(Reporte.fecha_registro.desc())
+        .limit(6)
+        .all()
+    )
+    return reportes

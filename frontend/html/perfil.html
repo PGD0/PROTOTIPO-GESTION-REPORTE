@@ -14,7 +14,6 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/perfil.css">
-    <link rel="stylesheet" href="/perfil.css">
     
     <!-- Script de autenticación -->
     <script type="module" src="../js/auth.js"></script>
@@ -119,7 +118,7 @@
                                 <img src="../assets/img/perfil.jpg" alt="Foto de Perfil" class="perfil-foto">
                             </div>
                             <div class="perfil-nombre">
-                                <h1>Gustavo</h1>
+                                <h1 id="nombreUsuario"></h1>
                             </div>
                             <div class="boton-editar">
                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
@@ -129,21 +128,22 @@
                         </div>
                         <div class="descripcion-perfil">
                             <h5>Descripción</h5>
-                                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt qui cum optio rem cumque corporis quibusdam ullam, mollitia, quos non aliquid velit sunt autem fuga sit, ratione nemo porro molestiae!</p>
-                            </div>
+                            <p id="descripcionUsuario"></p>    
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4 mt-5">
                     <div class="titulo pt-5"> <h5>Información de usuario</h5> </div> 
                     <div class="seccion-lateral">                 
                         <h6>Correo electrónico</h6>
-                        <p>gustavo@gmail.com</p>
+                        <p id="correoUsuario"></p>
+
                         <h6>Rol</h6>
-                        <p>Administrador</p>
+                        <p id="rolUsuario"></p>
+
                         <h6>Fecha de creación</h6>
-                        <p>2021-01-01</p>
-                        <h6>Último inicio de sesión</h6>
-                        <p>2021-01-01 12:00:00</p>
+                        <p id="fechaCreacionUsuario"></p>
+
                         <h6>Estado</h6>
                         <p><i class="bi bi-circle-fill text-success me-2"></i>Activo</p>
                     </div>
@@ -158,104 +158,7 @@
                     <div class="reportes-seccion-completa">
                         <div class="titulo"> <h4>Reportes recientes</h4> </div> 
                         <hr>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <div class="card reporte-card">
-                                    <img src="../assets/img/pc1.jpg" class="card-img-top" alt="Reporte 1">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="card-title mb-0">Reporte #001</h6>
-                                            <span class="badge bg-warning text-dark">En proceso</span>
-                                        </div>
-                                        <p class="card-text text-muted small">Pantalla dañada - Salón 18</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">2024-01-15</small>
-                                            <i class="bi bi-arrow-right text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card reporte-card">
-                                    <img src="../assets/img/pc2.jpg" class="card-img-top" alt="Reporte 2">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="card-title mb-0">Reporte #002</h6>
-                                            <span class="badge bg-success">Completado</span>
-                                        </div>
-                                        <p class="card-text text-muted small">Teclado no funciona - Lab 3</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">2024-01-10</small>
-                                            <i class="bi bi-arrow-right text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card reporte-card">
-                                    <img src="../assets/img/pc3.jpg" class="card-img-top" alt="Reporte 3">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="card-title mb-0">Reporte #003</h6>
-                                            <span class="badge bg-info">Pendiente</span>
-                                        </div>
-                                        <p class="card-text text-muted small">Sin internet - Oficina 5</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">2024-01-08</small>
-                                            <i class="bi bi-arrow-right text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card reporte-card">
-                                    <img src="../assets/img/pc4.jpg" class="card-img-top" alt="Reporte 4">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="card-title mb-0">Reporte #004</h6>
-                                            <span class="badge bg-danger">Urgente</span>
-                                        </div>
-                                        <p class="card-text text-muted small">No enciende - Lab 2</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">2024-01-05</small>
-                                            <i class="bi bi-arrow-right text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card reporte-card">
-                                    <img src="../assets/img/pc5.jpg" class="card-img-top" alt="Reporte 5">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="card-title mb-0">Reporte #005</h6>
-                                            <span class="badge bg-secondary">En revisión</span>
-                                        </div>
-                                        <p class="card-text text-muted small">Mouse defectuoso - Oficina 3</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">2024-01-03</small>
-                                            <i class="bi bi-arrow-right text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="card reporte-card">
-                                    <img src="../assets/img/pc6.jpg" class="card-img-top" alt="Reporte 6">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <h6 class="card-title mb-0">Reporte #006</h6>
-                                            <span class="badge bg-success">Completado</span>
-                                        </div>
-                                        <p class="card-text text-muted small">Problema de audio - Salón 12</p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">2024-01-01</small>
-                                            <i class="bi bi-arrow-right text-dark"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="row" id="ultimosReportesUsuario"></div>
                     </div>
                 </div>
             </div>
@@ -305,7 +208,7 @@
                     <label for="descripcionPerfil" class="form-label">
                       <i class="bi bi-chat-quote me-2"></i>Descripción
                     </label>
-                    <textarea class="form-control" id="descripcionPerfil" rows="4" placeholder="Cuéntanos algo sobre ti...">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nesciunt qui cum optio rem cumque corporis quibusdam ullam, mollitia, quos non aliquid velit sunt autem fuga sit, ratione nemo porro molestiae!</textarea>
+                    <textarea class="form-control" id="descripcionPerfil" rows="4" placeholder="Cuéntanos algo sobre ti..."></textarea>
                   </div>
                 </div>
               </div>

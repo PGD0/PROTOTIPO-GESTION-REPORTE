@@ -75,7 +75,7 @@ async def crear_usuario(
 
     return nuevo_usuario
 
-@router.put("/usuarios/{id}", response_model=UsuarioSalida)
+@router.put("/{id}", response_model=UsuarioSalida)
 async def actualizar_usuario(
     id: int,
     nombre: Optional[str] = Form(None),
@@ -99,16 +99,16 @@ async def actualizar_usuario(
         usuario.email = email
     if contraseña is not None and contraseña != "":
         usuario.contraseña = hash_password(contraseña)
+    print(f"ROL del usuario antes de retornar: {usuario.rol}")
     if rol is not None and str(rol).strip() != "":
         try:
             rol = int(rol)
+            rol_existente = db.query(Rol).filter(Rol.ID_rol == rol).first()
+            if not rol_existente:
+                raise HTTPException(status_code=400, detail="El rol especificado no existe")
+            usuario.rol = rol 
         except ValueError:
             raise HTTPException(status_code=400, detail="El rol debe ser un número válido")
-        
-        rol_existente = db.query(Rol).filter(Rol.ID_rol == rol).first()
-        if not rol_existente:
-            raise HTTPException(status_code=400, detail="El rol especificado no existe")
-    usuario.rol = rol
     if descripcion is not None and descripcion != "":
         usuario.descripcion = descripcion
     usuario.img_usuario = usuario.img_usuario

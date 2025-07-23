@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database.database import engine, Base, get_db
 from models.models import Usuario, Rol, Sede, Salon, Equipo, Reporte
-from routers import usuarios, roles, sedes, salones, equipos, reportes, auth, bloques
+from routers import usuarios, roles, sedes, salones, equipos, reportes, auth, bloques, dashboard
 from sqlalchemy.orm import Session
 
 Base.metadata.create_all(bind=engine)
@@ -45,6 +45,7 @@ def init_db():
 
 init_db()
 
+app.include_router(dashboard.router)
 app.include_router(usuarios.router)
 app.include_router(roles.router)
 app.include_router(sedes.router)

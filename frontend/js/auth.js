@@ -13,7 +13,6 @@ const PUBLIC_PAGES = [
 
 // Páginas que requieren rol de administrador (ID_rol = 1)
 const ADMIN_PAGES = [
-  'dashboard.html',
   'gestion-reportes.html',
   'gestion-usuarios.html'
 ];

@@ -38,16 +38,21 @@ async function login(email, password) {
   return data;
 }
 
-async function register({ nombre, apellido, email, contraseña, rol }) {
+async function register({ nombre, apellido, email, contraseña, rol, descripcion = "", imagen = null }) {
   try {
-    console.log('Intentando registrar usuario:', { nombre, apellido, email, rol });
+    console.log('Intentando registrar usuario:', { nombre, apellido, email, contraseña, rol });
+
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('apellido', apellido);
+    formData.append('email', email);
+    formData.append('contraseña', contraseña);
+    formData.append('rol', rol);
+    formData.append('descripcion', descripcion);
+
     const res = await fetch(`${API_URL}/usuarios/`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ nombre, apellido, email, contraseña, rol })
+      body: formData
     });
     console.log('Respuesta del servidor:', res.status, res.statusText);
     
@@ -128,6 +133,17 @@ async function crearReporte({ ID_equipo, descripcion, estado_equipo, ID_usuario,
   return await res.json();
 }
 
+async function getDashboard() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_URL}/dashboard/`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+  if (!res.ok) throw new Error('No se pudo cargar el dashboard');
+  return res.json();
+}
+
 export default {
   login,
   register,
@@ -142,5 +158,6 @@ export default {
   getToken,
   setToken,
   clearToken,
-  authHeaders
+  authHeaders,
+  getDashboard
 }; 

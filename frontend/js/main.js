@@ -337,150 +337,199 @@ if (window.location.pathname.endsWith('register.html')) {
   });
 }
 
+function pintarGraficasUsuario(data) {
+  // GRAFICA 1 - Resueltos vs Pendientes
+  new Chart(document.getElementById('grafica1'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Pendientes', 'Resueltos'],
+      datasets: [{
+        data: [data.pendientes, data.resueltos],
+        backgroundColor: ['#ffc107', '#198754']
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // GRAFICA 2 - Reportes por mes (propios)
+  if (data.reportes_mensuales && Object.keys(data.reportes_mensuales).length > 0) {
+    new Chart(document.getElementById('grafica2'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(data.reportes_mensuales),
+        datasets: [{
+          label: 'Tus Reportes por Mes',
+          data: Object.values(data.reportes_mensuales),
+          backgroundColor: '#0dcaf0'
+        }]
+      },
+      options: { plugins: { legend: { display: false } } }
+    });
+  }
+
+  // GRAFICA 3 - Total equipos reportados (gráfico de barras simple)
+  new Chart(document.getElementById('grafica3'), {
+    type: 'bar',
+    data: {
+      labels: ['Equipos reportados'],
+      datasets: [{
+        label: 'Total',
+        data: [data.equipos_reportados],
+        backgroundColor: '#fd7e14'
+      }]
+    },
+    options: { plugins: { legend: { display: false } } }
+  });
+
+  // GRAFICA 4 - Últimos reportes por estado
+  if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
+    const fechas = data.ultimos_reportes.map(r => new Date(r.fecha).toLocaleDateString('es-ES'));
+    const estados = data.ultimos_reportes.map(r => r.estado === 'Resuelto' ? 1 : 0);
+    new Chart(document.getElementById('grafica4'), {
+      type: 'line',
+      data: {
+        labels: fechas,
+        datasets: [{
+          label: 'Estado de últimos reportes',
+          data: estados,
+          backgroundColor: 'rgba(13,110,253,0.2)',
+          borderColor: '#0d6efd',
+          fill: true
+        }]
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.raw === 1 ? 'Resuelto' : 'Pendiente'
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              callback: v => v === 1 ? 'Resuelto' : 'Pendiente'
+            },
+            stepSize: 1,
+            min: 0,
+            max: 1
+          }
+        }
+      }
+    });
+  }
+}
+
+function pintarGraficasAdmin(data) {
+  // GRAFICA 1: Pendientes vs Resueltos
+  new Chart(document.getElementById('grafica1'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Pendientes', 'Resueltos'],
+      datasets: [{
+        data: [data.pendientes, data.resueltos],
+        backgroundColor: ['#ffc107', '#198754']
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // GRAFICA 2: Equipos funcionales vs no funcionales
+  new Chart(document.getElementById('grafica2'), {
+    type: 'pie',
+    data: {
+      labels: ['Funcionales', 'No Funcionales'],
+      datasets: [{
+        data: [data.equipos_funcionales, data.equipos_no_funcionales],
+        backgroundColor: ['#0d6efd', '#dc3545']
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // GRAFICA 3: Reportes por sede
+  const sedes = data.reportes_por_sede.map(d => d.sede);
+  const cantidadesSedes = data.reportes_por_sede.map(d => d.cantidad);
+  new Chart(document.getElementById('grafica3'), {
+    type: 'bar',
+    data: {
+      labels: sedes,
+      datasets: [{
+        label: 'Reportes por Sede',
+        data: cantidadesSedes,
+        backgroundColor: '#6610f2'
+      }]
+    },
+    options: { plugins: { legend: { display: false } } }
+  });
+
+  // GRAFICA 4: Reportes por mes
+  const meses = data.reportes_por_mes.map(d => `Mes ${d.mes}`);
+  const cantidadesMes = data.reportes_por_mes.map(d => d.cantidad);
+  new Chart(document.getElementById('grafica4'), {
+    type: 'line',
+    data: {
+      labels: meses,
+      datasets: [{
+        label: 'Reportes por Mes',
+        data: cantidadesMes,
+        borderColor: '#0d6efd',
+        backgroundColor: 'rgba(13,110,253,0.2)',
+        fill: true
+      }]
+    },
+    options: { plugins: { legend: { display: true } } }
+  });
+
+  // GRAFICA 5: Equipos por salón
+  const salones = data.equipos_por_salon.map(d => d.salon);
+  const cantidadesSalon = data.equipos_por_salon.map(d => d.cantidad);
+  new Chart(document.getElementById('grafica5'), {
+    type: 'bar',
+    data: {
+      labels: salones,
+      datasets: [{
+        label: 'Equipos por Salón',
+        data: cantidadesSalon,
+        backgroundColor: '#fd7e14'
+      }]
+    },
+    options: { plugins: { legend: { display: false } } }
+  });
+
+  // GRAFICA 6: Usuarios por rol
+  const roles = data.usuarios_por_rol.map(d => d.rol);
+  const cantidadesRol = data.usuarios_por_rol.map(d => d.cantidad);
+  new Chart(document.getElementById('grafica6'), {
+    type: 'pie',
+    data: {
+      labels: roles,
+      datasets: [{
+        data: cantidadesRol,
+        backgroundColor: ['#198754', '#0dcaf0', '#6f42c1']
+      }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+
+
 // --- PROTECCIÓN DE DASHBOARD ---
 if (window.location.pathname.endsWith('dashboard.html')) {
   document.addEventListener('DOMContentLoaded', async function() {
-    const token = api.getToken();
-    if (!token) {
-      window.location.href = 'homepage.html';
-      return;
-    }
-    // Aquí puedes cargar datos del dashboard usando api.getReportes(), api.getEquipos(), etc.
-    // Indicadores
-    const totalReportes = reportes.length;
-    const pendientes = reportes.filter(r => !r.resuelto).length;
-    const resueltos = reportes.filter(r => r.resuelto).length;
-    const totalEquipos = equipos.length;
-    const indicadoresRow = document.getElementById('indicadoresRow');
-    if (indicadoresRow) {
-      indicadoresRow.innerHTML = `
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="card shadow-sm text-center">
-            <div class="card-body">
-              <div class="mb-2"><i class="bi bi-clipboard-data text-primary fs-2"></i></div>
-              <h3 class="fw-bold">${totalReportes}</h3>
-              <div class="text-muted">Total de Reportes</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="card shadow-sm text-center">
-            <div class="card-body">
-              <div class="mb-2"><i class="bi bi-clock text-warning fs-2"></i></div>
-              <h3 class="fw-bold text-warning">${pendientes}</h3>
-              <div class="text-muted">Pendientes</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="card shadow-sm text-center">
-            <div class="card-body">
-              <div class="mb-2"><i class="bi bi-check-circle text-success fs-2"></i></div>
-              <h3 class="fw-bold text-success">${resueltos}</h3>
-              <div class="text-muted">Resueltos</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-3">
-          <div class="card shadow-sm text-center">
-            <div class="card-body">
-              <div class="mb-2"><i class="bi bi-pc-display text-info fs-2"></i></div>
-              <h3 class="fw-bold text-info">${totalEquipos}</h3>
-              <div class="text-muted">Equipos Registrados</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-    // Gráficas (ejemplo de datos)
-    if (window.Chart) {
-      // 1. Reportes por estado
-      new Chart(document.getElementById('grafica1'), {
-        type: 'doughnut',
-        data: {
-          labels: ['Pendientes', 'Resueltos'],
-          datasets: [{
-            data: [pendientes, resueltos],
-            backgroundColor: ['#ffc107', '#198754']
-          }]
-        },
-        options: { plugins: { legend: { position: 'bottom' } } }
-      });
-      // 2. Reportes por equipo
-      const equiposLabels = equipos.map(e => e.codigo_barras);
-      const reportesPorEquipo = equipos.map(e => reportes.filter(r => r.ID_equipo === e.ID_equipo).length);
-      new Chart(document.getElementById('grafica2'), {
-        type: 'bar',
-        data: {
-          labels: equiposLabels,
-          datasets: [{ label: 'Reportes por Equipo', data: reportesPorEquipo, backgroundColor: '#0d6efd' }]
-        },
-        options: { plugins: { legend: { display: false } } }
-      });
-      // 3. Reportes por día (últimos 7 días)
-      const dias = Array.from({length: 7}, (_,i) => {
-        const d = new Date(); d.setDate(d.getDate()-i);
-        return d.toISOString().split('T')[0];
-      }).reverse();
-      const reportesPorDia = dias.map(dia => reportes.filter(r => r.fecha_registro && r.fecha_registro.startsWith(dia)).length);
-      new Chart(document.getElementById('grafica3'), {
-        type: 'line',
-        data: {
-          labels: dias,
-          datasets: [{ label: 'Reportes por Día', data: reportesPorDia, borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.1)', fill: true }]
-        },
-        options: { plugins: { legend: { display: false } } }
-      });
-      // 4. Reportes por usuario
-      const usuariosLabels = usuarios.map(u => u.nombre);
-      const reportesPorUsuario = usuarios.map(u => reportes.filter(r => r.ID_usuario === u.ID_usuarios).length);
-      new Chart(document.getElementById('grafica4'), {
-        type: 'bar',
-        data: {
-          labels: usuariosLabels,
-          datasets: [{ label: 'Reportes por Usuario', data: reportesPorUsuario, backgroundColor: '#6610f2' }]
-        },
-        options: { plugins: { legend: { display: false } } }
-      });
-      // 5. Equipos funcionales vs no funcionales
-      const funcionales = equipos.filter(e => e.funcional).length;
-      const noFuncionales = equipos.length - funcionales;
-      new Chart(document.getElementById('grafica5'), {
-        type: 'pie',
-        data: {
-          labels: ['Funcionales', 'No funcionales'],
-          datasets: [{ data: [funcionales, noFuncionales], backgroundColor: ['#198754', '#dc3545'] }]
-        },
-        options: { plugins: { legend: { position: 'bottom' } } }
-      });
-      // 6. Reportes por estado_equipo
-      const estados = Array.from(new Set(reportes.map(r => r.estado_equipo)));
-      const reportesPorEstado = estados.map(est => reportes.filter(r => r.estado_equipo === est).length);
-      new Chart(document.getElementById('grafica6'), {
-        type: 'bar',
-        data: {
-          labels: estados,
-          datasets: [{ label: 'Reportes por Estado', data: reportesPorEstado, backgroundColor: '#fd7e14' }]
-        },
-        options: { plugins: { legend: { display: false } } }
-      });
-    }
-    // Tabla de registros recientes
-    const tabla = document.getElementById('tablaRegistrosDashboard');
-    if (tabla) {
-      const equiposMap = Object.fromEntries(equipos.map(e => [e.ID_equipo, e]));
-      const usuariosMap = Object.fromEntries(usuarios.map(u => [u.ID_usuarios, u]));
-      const ultimos = [...reportes].sort((a,b) => (b.fecha_registro||'').localeCompare(a.fecha_registro||''))
-        .slice(0, 10);
-      tabla.querySelector('tbody').innerHTML = ultimos.map(r => `
-        <tr>
-          <td>${r.fecha_registro ? r.fecha_registro.split('T')[0] : ''}</td>
-          <td>${equiposMap[r.ID_equipo]?.codigo_barras || '-'}</td>
-          <td>${r.descripcion}</td>
-          <td><span class="badge ${r.resuelto ? 'bg-success' : 'bg-warning text-dark'}">${r.estado_equipo}</span></td>
-          <td>${usuariosMap[r.ID_usuario]?.nombre || '-'}</td>
-        </tr>
-      `).join('');
+    try {
+      const data = await api.getDashboard();
+      console.log('Datos del dashboard:', data);
+      const rol = data.rol === 1 ? "admin" : "usuario";
+
+      if (rol === 'admin') {
+        pintarGraficasAdmin(data);
+      } else {
+        pintarGraficasUsuario(data);
+      }
+    } catch (error) {
+      console.error('Error al cargar dashboard:', err);
     }
   });
 }
@@ -543,4 +592,200 @@ if (window.location.pathname.endsWith('hacer-reporte.html')) {
       }
     });
   });
+}
+
+// --- PERFIL DE USUARIO ---
+if (window.location.pathname.endsWith('perfil.html')) {
+  document.addEventListener('DOMContentLoaded', function () {
+    cargarDatosUsuario();
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const userId = payload.id;
+      if (userId) {
+        cargarUltimosReportes(userId, token);
+      }
+    }
+  });
+}
+
+async function cargarDatosUsuario() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  // Decodificar el JWT (sin verificar firma, solo extraer payload)
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  const userId = payload.id;
+
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/usuarios/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error('Error al obtener el perfil de usuario');
+    const data = await res.json();
+    const user = data.usuario;
+    let rolTexto = 'Desconocido';
+    if (user.rol === 1) {
+      rolTexto = 'Administrador';
+    } else if (user.rol === 2) {
+      rolTexto = 'Estudiante';
+    } else if (user.rol === 3) {
+      rolTexto = 'Profesor';
+    }
+
+    // Rellenar elementos en la vista
+    document.getElementById('nombreUsuario').textContent = user.nombre;
+    document.getElementById('descripcionUsuario').textContent = user.descripcion || 'Sin descripción';
+    document.getElementById('correoUsuario').textContent = user.email;
+    document.getElementById('rolUsuario').textContent = rolTexto;
+    document.getElementById('fechaCreacionUsuario').textContent = user.fecha_creacion || 'N/D';
+
+    // Rellenar modal de edición
+    document.getElementById('nombrePerfil').value = user.nombre;
+    document.getElementById('emailPerfil').value = user.email;
+    document.getElementById('descripcionPerfil').value = user.descripcion || '';
+
+    // Imagen si existe
+    if (user.img_usuario) {
+      document.querySelector('.perfil-foto').src = user.img_usuario;
+      document.getElementById('modalPerfilFoto').src = user.img_usuario;
+    }
+  } catch (err) {
+    console.error('Error al cargar datos del usuario:', err);
+  }
+}
+
+if (window.location.pathname.endsWith('perfil.html')) {
+  document.addEventListener('DOMContentLoaded', () => {
+    cargarDatosUsuario();
+    document.getElementById('guardarPerfilBtn').addEventListener('click', actualizarPerfil);
+  });
+}
+
+async function actualizarPerfil() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  const payload = JSON.parse(atob(token.split('.')[1]));
+  const userId = payload.id;
+  const rol = payload.rol;
+
+  const nombre = document.getElementById('nombrePerfil').value.trim();
+  const email = document.getElementById('emailPerfil').value.trim();
+  const descripcion = document.getElementById('descripcionPerfil').value.trim();
+  const imagen = document.getElementById('fotoPerfilInput').files[0];
+
+  if (!nombre || !email) {
+    alert('El nombre y el correo son obligatorios.');
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append('nombre', nombre);
+  formData.append('email', email);
+  formData.append('descripcion', descripcion);
+  formData.append('rol', rol); // Asegurarse de que el rol sea un número válido
+  if (imagen) formData.append('imagen', imagen);
+
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/usuarios/${userId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      },
+      body: formData
+    });
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || 'Error al actualizar el perfil');
+    }
+
+    const updatedUser = await res.json();
+
+    // Actualizar datos visuales en pantalla
+    cargarDatosUsuario();
+
+    // Cerrar modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('editarPerfilModal'));
+    modal.hide();
+
+    alert('Perfil actualizado exitosamente');
+  } catch (err) {
+    console.error('Error al actualizar perfil:', err);
+    alert('Ocurrió un error al actualizar el perfil');
+  }
+}
+
+export async function cargarUltimosReportes(idUsuario, token) {
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/reportes/usuario/${idUsuario}/ultimos`, {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    });
+
+    const contenedor = document.getElementById("ultimosReportesUsuario");
+    contenedor.innerHTML = '';
+
+    if (!res.ok) throw new Error("No se pudieron obtener los reportes");
+
+    const reportes = await res.json();
+
+    if (reportes.length === 0) {
+      contenedor.innerHTML = `<p class="text-muted">No hay reportes recientes.</p>`;
+      return;
+    }
+
+    // Crear contenedor con row y espaciado entre columnas
+    const row = document.createElement('div');
+    row.className = 'row g-3';
+
+    reportes.forEach((reporte, index) => {
+      const col = document.createElement('div');
+      col.className = 'col-md-4';
+
+      // Determinar estado y badge
+      let badge = 'bg-warning text-dark';
+      let estadoTexto = 'En proceso';
+      if (reporte.estado_equipo?.toLowerCase() === 'pendiente') {
+        badge = 'bg-secondary';
+        estadoTexto = 'Pendiente';
+      } else if (reporte.resuelto) {
+        badge = 'bg-success';
+        estadoTexto = 'Resuelto';
+      }
+
+      const fecha = new Date(reporte.fecha_registro).toISOString().split('T')[0];
+      const descripcion = reporte.descripcion || 'Sin descripción';
+      const ubicacion = reporte.ubicacion || 'Ubicación desconocida';
+
+      col.innerHTML = `
+        <div class="card reporte-card">
+          <img src="${reporte.img_equipo || '../assets/img/pc1.jpg'}" class="card-img-top" alt="Reporte ${index + 1}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h6 class="card-title mb-0">Reporte #${reporte.ID_reporte}</h6>
+              <span class="badge ${badge}">${estadoTexto}</span>
+            </div>
+            <p class="card-text text-muted small">${descripcion} - ${ubicacion}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">${fecha}</small>
+              <i class="bi bi-arrow-right text-dark"></i>
+            </div>
+          </div>
+        </div>
+      `;
+
+      row.appendChild(col);
+    });
+
+    contenedor.appendChild(row);
+  } catch (err) {
+    console.error("Error al cargar reportes:", err);
+    const contenedor = document.getElementById("ultimosReportesUsuario");
+    contenedor.innerHTML = `<p class="text-muted">No hay reportes recientes.</p>`;
+  }
 }
