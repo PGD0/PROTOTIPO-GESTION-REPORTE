@@ -27,11 +27,19 @@
     color: #333;
     margin: 0;
     padding: 0;
+    word-wrap: break-word;
 }
 
-.perfil-nombre, .boton-editar {
+.perfil-nombre {
     padding-left: 0px;
     flex-grow: 1;
+    min-width: 0; /* Permite que el contenedor se encoja si es necesario */
+}
+
+.boton-editar {
+    padding-left: 0px;
+    flex-shrink: 0; /* Evita que el botón se encoja */
+    align-self: center; /* Alinea el botón verticalmente al centro */
 }
 
 .descripcion-perfil{
@@ -196,9 +204,10 @@
 /* Estilos para la sección del header del perfil */
 .perfil-header-section {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
     padding: 20px;
+    width: 100%;
 }
 
 /* Estilos para la foto de perfil */
@@ -207,6 +216,7 @@
     display: inline-block;
     margin-bottom: 0;
     flex-shrink: 0;
+    align-self: flex-start; /* Alinea la foto en la parte superior */
 }
 
 
@@ -555,4 +565,30 @@
     background: rgba(0, 0, 0, 0.247);
     border-radius: 20px;
     font-size: 0.9rem;
-} 
+}
+.perfil-header-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.perfil-info-container {
+    flex: 1;
+    min-width: 200px;
+}
+
+.perfil-nombre h1,
+#nombreUsuario {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    word-wrap: break-word;
+}
+
+.perfil-header-section button {
+    white-space: nowrap;
+}

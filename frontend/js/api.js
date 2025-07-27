@@ -133,6 +133,22 @@ async function crearReporte({ ID_equipo, descripcion, estado_equipo, ID_usuario,
   return await res.json();
 }
 
+async function updateReporte(id, data) {
+  const res = await fetch(`${API_URL}/reportes/${id}`, {
+    method: 'PUT',
+    headers: {
+      ...authHeaders(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Error al actualizar el reporte');
+  }
+  return await res.json();
+}
+
 async function getDashboard() {
   const token = localStorage.getItem('token');
   const res = await fetch(`${API_URL}/dashboard/`, {
@@ -155,6 +171,7 @@ export default {
   getEquipos,
   getReportes,
   crearReporte,
+  updateReporte,
   getToken,
   setToken,
   clearToken,

@@ -636,7 +636,7 @@ async function cargarDatosUsuario() {
     }
 
     // Rellenar elementos en la vista
-    document.getElementById('nombreUsuario').textContent = user.nombre;
+    document.getElementById('nombreUsuario').textContent = `${user.nombre} ${user.apellido || ''}`;
     document.getElementById('descripcionUsuario').textContent = user.descripcion || 'Sin descripción';
     document.getElementById('correoUsuario').textContent = user.email;
     document.getElementById('rolUsuario').textContent = rolTexto;

@@ -93,17 +93,9 @@
                     <h4 class="mb-0">Mi Perfil</h4>
                 </div>
                 <div class="d-flex align-items-center">
-                    <div class="dropdown">
-                        <button class="btn btn-link dropdown-toggle text-decoration-none" type="button" id="userDropdown" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle fs-4 text-dark"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="perfil.html"><i class="bi bi-person me-2"></i>Perfil</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="../index.html"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
-                        </ul>
-                    </div>
+                    <a href="perfil.html" class="btn btn-link text-decoration-none">
+                        <i class="bi bi-person-circle fs-4 text-dark"></i>
+                    </a>
                 </div>
             </div>
         </nav>
@@ -113,19 +105,21 @@
             <div class="row">
                 <div class="col-md-8">
                     <div class="perfil-container">
-                        <div class="perfil-header-section">
-                            <div class="perfil-foto-container">
-                                <img src="../assets/img/perfil.jpg" alt="Foto de Perfil" class="perfil-foto">
-                            </div>
-                            <div class="perfil-nombre">
-                                <h1 id="nombreUsuario"></h1>
-                            </div>
-                            <div class="boton-editar">
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
-                                    <i class="bi bi-pencil-square me-2"></i>Editar Perfil
-                                </button>
-                            </div>
-                        </div>
+                       <div class="perfil-header-section">
+    <div class="perfil-foto-container">
+        <img src="../assets/img/perfil.jpg" alt="Foto de Perfil" class="perfil-foto">
+    </div>
+
+    <div class="perfil-info-container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <h1 id="nombreUsuario" class="mb-2 me-3"></h1>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editarPerfilModal">
+                <i class="bi bi-pencil-square me-2"></i>Editar Perfil
+            </button>
+        </div>
+    </div>
+</div>
+
                         <div class="descripcion-perfil">
                             <h5>Descripción</h5>
                             <p id="descripcionUsuario"></p>    
