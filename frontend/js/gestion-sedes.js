@@ -242,35 +242,50 @@ async function editarBloque(id) {
         alert("Hubo un problema al cargar los datos del bloque.");
     }
 }
-
+// http://127.0.0.1:8000/salones/${id}
 async function editarSalon(id) {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/salones/${id}`, {
-            headers: api.authHeaders()
-        });
-        if (!response.ok) throw new Error("No se pudo obtener el salón");
-        const salon = await response.json().then(data => data.salon);
-        
-        // Abrir modal y llenar campos
-        const salonModal = new bootstrap.Modal(document.getElementById('salonModal'));
-        salonId.value = salon.ID_salon;
-        codigoSalon.value = salon.codigo_salon;
-        sedeSalon.value = salon.sede;
-        
-        // Verificar si la sede es Soledad para mostrar bloques
-        const sede = todasLasSedes.find(s => s.ID_sede === salon.sede);
-        if (sede && sede.nombre_sede.toLowerCase().includes("soledad")) {
-            bloqueSalonContainer.style.display = 'block';
-            await actualizarSelectBloques(salon.sede);
-            bloqueSalon.value = salon.bloque || "";
+        const response = await fetch(`http://localhost:8000/salones/${id}`);
+        if (!response.ok) throw new Error("No se pudo obtener la información del salón");
+
+        const data = await response.json();
+        const s = data.salon;
+
+        document.getElementById("salonId").value = s.ID_salon;
+        document.getElementById("codigoSalon").value = s.codigo_salon;
+        document.getElementById("sedeSalon").value = s.sede;
+
+        const sedeId = s.sede;
+        const bloqueId = s.bloque;
+
+        const bloqueResponse = await fetch(`http://localhost:8000/bloques/por_sede/${sedeId}`);
+        const bloques = await bloqueResponse.json();
+
+        const bloqueSelect = document.getElementById("bloqueSalon");
+        bloqueSelect.innerHTML = "";
+
+        if (bloques.length > 0) {
+            document.getElementById("bloqueSalonContainer").style.display = "block";
+
+            bloques.forEach(b => {
+                const option = document.createElement("option");
+                option.value = b.ID_bloque;
+                option.textContent = b.nombre_bloque;
+                if (b.ID_bloque == bloqueId) {
+                    option.selected = true;
+                }
+                bloqueSelect.appendChild(option);
+            });
         } else {
-            bloqueSalonContainer.style.display = 'none';
+            document.getElementById("bloqueSalonContainer").style.display = "none";
         }
-        
-        salonModal.show();
+
+        const modal = new bootstrap.Modal(document.getElementById("salonModal"));
+        modal.show();
+
     } catch (error) {
-        console.error("Error al editar salón:", error);
-        alert("Hubo un problema al cargar los datos del salón.");
+        console.error("Error al cargar el salón:", error);
+        alert("Ocurrió un error al cargar el salón. Intenta de nuevo.");
     }
 }
 
@@ -595,13 +610,15 @@ document.addEventListener('DOMContentLoaded', () => {
             bloqueSalonContainer.style.display = 'none';
             return;
         }
-        
-        const sede = todasLasSedes.find(s => s.ID_sede === sedeId);
-        if (sede && sede.nombre_sede.toLowerCase().includes("soledad")) {
+
+        const bloquesAsociados = todosLosBloques.filter(b => b.sede_id === sedeId);
+
+        if (bloquesAsociados.length > 0) {
             bloqueSalonContainer.style.display = 'block';
             actualizarSelectBloques(sedeId);
         } else {
             bloqueSalonContainer.style.display = 'none';
+            bloqueSalon.innerHTML = '<option value="">No hay bloques disponibles</option>';
         }
     });
 });

@@ -26,7 +26,7 @@ async def crear_salon(salon: SalonCreado, db: Session = Depends(get_db)):
     if salon_existente:
         raise HTTPException(status_code=400, detail="El salon ya existe")
 
-    nuevo_salon = Salon(codigo_salon=salon.codigo_salon, sede=salon.sede)
+    nuevo_salon = Salon(codigo_salon=salon.codigo_salon, sede=salon.sede, bloque=salon.bloque)
     db.add(nuevo_salon)
     db.commit()
     db.refresh(nuevo_salon)
@@ -40,6 +40,7 @@ async def actualizar_salon(id: int, salon: SalonCreado, db: Session = Depends(ge
 
     salon_existente.codigo_salon = salon.codigo_salon
     salon_existente.sede = salon.sede
+    salon_existente.bloque = salon.bloque
     db.commit()
     db.refresh(salon_existente)
     return salon_existente

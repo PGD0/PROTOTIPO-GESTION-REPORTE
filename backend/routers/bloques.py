@@ -55,3 +55,8 @@ async def eliminar_bloque(id: int, db: Session = Depends(get_db)):
     db.delete(bloque)
     db.commit()
     return {"message": f"Bloque con ID {id} eliminado exitosamente"} 
+
+@router.get("/por_sede/{sede_id}", response_model=List[BloqueSalida])
+async def obtener_bloques_por_sede(sede_id: int, db: Session = Depends(get_db)):
+    bloques = db.query(Bloque).filter(Bloque.sede_id == sede_id).all()
+    return bloques
