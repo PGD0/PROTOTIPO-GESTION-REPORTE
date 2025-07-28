@@ -87,9 +87,21 @@ async function getSedes() {
 }
 
 async function getBloques() {
-  const res = await fetch(`${API_URL}/bloques/`, { headers: authHeaders() });
-  if (!res.ok) throw new Error('No se pudieron obtener los bloques');
-  return await res.json();
+  try {
+    const res = await fetch(`${API_URL}/bloques/`, { headers: authHeaders() });
+    if (!res.ok) {
+      // Si el código de estado es 404, es porque no hay bloques
+      if (res.status === 404) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'No se encontraron bloques');
+      }
+      throw new Error('No se pudieron obtener los bloques');
+    }
+    return await res.json();
+  } catch (error) {
+    console.error('Error en getBloques:', error);
+    throw error; // Re-lanzar el error para manejarlo en cargarBloques()
+  }
 }
 
 async function getSalones() {
@@ -174,4 +186,4 @@ export default {
   clearToken,
   authHeaders,
   getDashboard
-}; 
+};

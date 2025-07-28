@@ -115,16 +115,20 @@
                                 <form>
                                     <div class="row g-4">
                                         <!-- Sede -->
+                                        <!-- Sede -->
+                                        <!-- Cambios en hacer-reporte.html
+                                        
+                                        También necesitamos modificar el archivo HTML para eliminar las opciones estáticas de sedes:
+                                        
+                                        <!-- Sede -->
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Sede</label>
                                             <select class="form-select" id="sedeSelect" required>
                                                 <option value="">Seleccionar sede</option>
-                                                <option value="soledad">Soledad</option>
-                                                <option value="plaza">Plaza de la paz</option>
-                                                <option value="centro">Centro Histórico</option>
+                                                <!-- Las opciones se cargarán dinámicamente desde la API -->
                                             </select>
                                         </div>
-
+                                        
                                         <!-- Bloque (solo para Soledad) -->
                                         <div class="col-md-6" id="bloqueContainer" style="display: none;">
                                             <label class="form-label fw-semibold">Bloque</label>

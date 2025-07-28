@@ -9,78 +9,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const salonContainer = document.getElementById('salonContainer');
     const salonSelect = document.getElementById('salonSelect');
 
-    // Datos mock de bloques y salones (solo como fallback)
-    const bloquesData = {
-        'soledad': [
-            { id: 1, nombre: 'Bloque A' },
-            { id: 2, nombre: 'Bloque B' },
-            { id: 3, nombre: 'Bloque C' },
-            { id: 4, nombre: 'Bloque D' },
-            { id: 5, nombre: 'Bloque E' },
-            { id: 6, nombre: 'Bloque F' }
-        ],
-        'plaza': [
-            { id: 7, nombre: 'Bloque 1' },
-            { id: 8, nombre: 'Bloque 2' }
-        ],
-        'centro': [
-            { id: 9, nombre: 'Bloque Norte' },
-            { id: 10, nombre: 'Bloque Sur' }
-        ]
-    };
-
-    const salonesData = {
-        'soledad': {
-            '1': [ // Bloque A
-                { id: 1, nombre: 'Salón 101' },
-                { id: 2, nombre: 'Salón 102' },
-                { id: 3, nombre: 'Salón 103' }
-            ],
-            '2': [ // Bloque B
-                { id: 4, nombre: 'Salón 201' },
-                { id: 5, nombre: 'Salón 202' },
-                { id: 6, nombre: 'Salón 203' }
-            ],
-            '3': [ // Bloque C
-                { id: 7, nombre: 'Salón 301' },
-                { id: 8, nombre: 'Salón 302' },
-                { id: 9, nombre: 'Salón 303' }
-            ],
-            '4': [ // Bloque D
-                { id: 10, nombre: 'Salón 401' },
-                { id: 11, nombre: 'Salón 402' },
-                { id: 12, nombre: 'Salón 403' }
-            ],
-            '5': [ // Bloque E
-                { id: 13, nombre: 'Salón 501' },
-                { id: 14, nombre: 'Salón 502' },
-                { id: 15, nombre: 'Salón 503' }
-            ],
-            '6': [ // Bloque F
-                { id: 16, nombre: 'Salón 601' },
-                { id: 17, nombre: 'Salón 602' },
-                { id: 18, nombre: 'Salón 603' }
-            ]
-        },
-        'plaza': {
-            '7': [ // Bloque 1
-                { id: 13, nombre: 'Oficina 1' },
-                { id: 14, nombre: 'Oficina 2' }
-            ],
-            '8': [ // Bloque 2
-                { id: 15, nombre: 'Oficina 3' }
-            ]
-        },
-        'centro': {
-            '9': [ // Bloque Norte
-                { id: 16, nombre: 'Aula 1' },
-                { id: 17, nombre: 'Aula 2' }
-            ],
-            '10': [ // Bloque Sur
-                { id: 18, nombre: 'Aula 3' }
-            ]
+    // Función para cargar sedes desde la API
+    async function cargarSedes() {
+        try {
+            const sedes = await api.getSedes();
+            console.log('Sedes obtenidas de la API:', sedes);
+            
+            // Limpiar y agregar opción por defecto
+            sedeSelect.innerHTML = '<option value="">Seleccionar sede</option>';
+            
+            // Poblar el select con las sedes de la base de datos
+            sedes.forEach(sede => {
+                const option = document.createElement('option');
+                option.value = sede.ID_sede;
+                option.textContent = sede.nombre_sede;
+                sedeSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error cargando sedes:', error);
+            mostrarMensaje('Error al cargar las sedes. Por favor, intenta más tarde.', 'danger');
         }
-    };
+    }
 
     // Función para cargar bloques desde la API
     async function cargarBloques(sedeId) {
@@ -92,8 +41,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return bloques.filter(bloque => bloque.sede_id == sedeId);
         } catch (error) {
             console.error('Error cargando bloques:', error);
-            // Fallback a datos mock
-            return bloquesData[sedeId] || [];
+            // Verificar si el error es "No se encontraron bloques"
+            if (error.message && error.message.includes('No se encontraron bloques')) {
+                console.log('No hay bloques disponibles en la base de datos');
+                return []; // Devolver array vacío sin mostrar mensaje de error
+            } else {
+                // Para otros errores, mostrar mensaje
+                mostrarMensaje('Error al cargar los bloques. Por favor, intenta más tarde.', 'danger');
+                return [];
+            }
         }
     }
 
@@ -107,44 +63,25 @@ document.addEventListener('DOMContentLoaded', function() {
             // Filtrar por sede y bloque si es necesario
             let salonesFiltrados;
             if (bloqueId) {
-                // Intentar filtrar por bloque, pero verificar si el campo existe
+                // Filtrar por bloque específico
                 salonesFiltrados = salones.filter(salon => {
                     const sedeCoincide = salon.sede == sedeId;
                     // Verificar si el salón tiene el campo bloque
                     const bloqueCoincide = salon.bloque ? salon.bloque == bloqueId : false;
                     return sedeCoincide && bloqueCoincide;
                 });
-                
-                // Si no hay resultados, intentar obtener todos los salones de la sede
-                if (salonesFiltrados.length === 0) {
-                    console.log('No se encontraron salones con el bloque especificado, mostrando todos los de la sede');
-                    salonesFiltrados = salones.filter(salon => salon.sede == sedeId);
-                }
             } else {
+                // Si no se especifica bloque, mostrar todos los salones de la sede
+                // incluyendo aquellos que no tienen bloque asignado
                 salonesFiltrados = salones.filter(salon => salon.sede == sedeId);
             }
             
             console.log('Salones filtrados:', salonesFiltrados);
-            return salonesFiltrados;
+            return salonesFiltrados || [];
         } catch (error) {
             console.error('Error cargando salones:', error);
-            // Fallback a datos mock
-            if (bloqueId && salonesData[sedeId] && salonesData[sedeId][bloqueId]) {
-                return salonesData[sedeId][bloqueId] || [];
-            } else if (sedeId && !bloqueId) {
-                // Si solo tenemos sede pero no bloque, intentar obtener todos los salones de esa sede
-                let todosLosSalones = [];
-                if (salonesData[sedeId]) {
-                    // Recorrer todos los bloques de la sede y agregar sus salones
-                    Object.values(salonesData[sedeId]).forEach(salones => {
-                        todosLosSalones = todosLosSalones.concat(salones);
-                    });
-                }
-                return todosLosSalones;
-            } else {
-                // Si no hay bloque seleccionado o no hay datos para ese bloque, devolver array vacío
-                return [];
-            }
+            mostrarMensaje('Error al cargar los salones. Por favor, intenta más tarde.', 'danger');
+            return [];
         }
     }
 
@@ -170,6 +107,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para poblar select de salones
     function poblarSalones(salones) {
         salonSelect.innerHTML = '<option value="">Seleccionar salón</option>';
+        
+        if (!salones || salones.length === 0) {
+            salonContainer.style.display = 'none';
+            console.warn('No se encontraron salones para mostrar');
+            mostrarMensaje('No se encontraron salones para la sede seleccionada', 'warning');
+            return;
+        }
+        
         salones.forEach(salon => {
             const option = document.createElement('option');
             option.value = salon.ID_salon || salon.id; // Compatibilidad con ambos formatos
@@ -178,13 +123,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Mostrar el contenedor de salones si hay opciones disponibles
-        if (salones.length > 0) {
-            salonContainer.style.display = 'block';
-        } else {
-            salonContainer.style.display = 'none';
-            console.warn('No se encontraron salones para mostrar');
-        }
+        salonContainer.style.display = 'block';
     }
+
+    // Cargar sedes al iniciar la página
+    cargarSedes();
 
     // Event listener para cambio de sede
     sedeSelect.addEventListener('change', async function() {
@@ -193,24 +136,29 @@ document.addEventListener('DOMContentLoaded', function() {
         // Limpiar selecciones previas
         bloqueSelect.innerHTML = '<option value="">Seleccionar bloque</option>';
         salonSelect.innerHTML = '<option value="">Seleccionar salón</option>';
-
+        bloqueContainer.style.display = 'none';
+        salonContainer.style.display = 'none';
+    
         if (sedeSeleccionada) {
-            // Cargar bloques para cualquier sede
-            const bloques = await cargarBloques(sedeSeleccionada);
-            poblarBloques(bloques);
-            
-            // Cargar todos los salones de la sede si no hay bloques o son pocos
-            if (bloques.length === 0 || bloques.length < 3) {
-                const salones = await cargarSalones(sedeSeleccionada);
-                poblarSalones(salones);
-            } else {
-                // Si hay muchos bloques, ocultar salones hasta que se seleccione un bloque
-                salonContainer.style.display = 'none';
+            try {
+                // Cargar bloques para la sede seleccionada
+                const bloques = await cargarBloques(sedeSeleccionada);
+                
+                // Verificar si la sede tiene bloques
+                if (bloques && bloques.length > 0) {
+                    // Si tiene bloques, mostrar el selector de bloques
+                    poblarBloques(bloques);
+                    // No cargar salones automáticamente, esperar a que se seleccione un bloque
+                } else {
+                    // Si no tiene bloques, cargar directamente los salones de la sede
+                    console.log('La sede no tiene bloques, cargando salones directamente');
+                    const salones = await cargarSalones(sedeSeleccionada);
+                    poblarSalones(salones);
+                }
+            } catch (error) {
+                console.error('Error al cargar datos para la sede:', error);
+                mostrarMensaje('Error al cargar datos para la sede seleccionada. Por favor, intenta más tarde.', 'danger');
             }
-        } else {
-            // Ocultar todo si no hay sede seleccionada
-            bloqueContainer.style.display = 'none';
-            salonContainer.style.display = 'none';
         }
     });
 
@@ -218,6 +166,10 @@ document.addEventListener('DOMContentLoaded', function() {
     bloqueSelect.addEventListener('change', async function() {
         const bloqueSeleccionado = this.value;
         const sedeSeleccionada = sedeSelect.value;
+        
+        // Limpiar selecciones previas de salones
+        salonSelect.innerHTML = '<option value="">Seleccionar salón</option>';
+        salonContainer.style.display = 'none';
         
         if (bloqueSeleccionado && sedeSeleccionada) {
             // Cargar salones del bloque seleccionado
@@ -227,10 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Si no hay bloque seleccionado pero sí hay sede, cargar todos los salones de la sede
             const salones = await cargarSalones(sedeSeleccionada);
             poblarSalones(salones);
-        } else {
-            // Si no hay sede seleccionada, limpiar salones
-            salonSelect.innerHTML = '<option value="">Seleccionar salón</option>';
-            salonContainer.style.display = 'none';
         }
     });
 
@@ -265,9 +213,17 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.disabled = true;
         mostrarMensaje('Enviando reporte...', 'info');
         try {
-            // Usar la función de API para crear el reporte
+            // Primero verificar si el equipo existe
+            const equipos = await api.getEquipos();
+            const equipo = equipos.find(eq => eq.codigo_barras === datos.codigoEquipo);
+            
+            if (!equipo) {
+                throw new Error('No se encontró ningún equipo con ese código. Verifica el código ingresado.');
+            }
+            
+            // Usar la función de API para crear el reporte con el ID del equipo
             await api.crearReporte({
-                ID_equipo: datos.codigoEquipo,
+                ID_equipo: equipo.ID_equipo, // Usar el ID del equipo encontrado
                 descripcion: datos.descripcion,
                 estado_equipo: datos.tipoProblema,
                 ID_usuario: localStorage.getItem('user_id') || 1,

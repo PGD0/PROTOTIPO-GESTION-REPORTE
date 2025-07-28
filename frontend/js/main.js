@@ -61,6 +61,9 @@ function renderReportesFiltrados(filtros = {}) {
     // Aplicar filtros
     let reportesFiltrados = todosLosReportes;
     
+    // Filtrar reportes resueltos (siempre se aplica este filtro)
+    reportesFiltrados = reportesFiltrados.filter(r => !r.resuelto);
+    
     // Filtro por estado
     if (filtros.estado) {
         reportesFiltrados = reportesFiltrados.filter(r => {
@@ -73,7 +76,7 @@ function renderReportesFiltrados(filtros = {}) {
                        r.estado_equipo !== 'Pendiente' && 
                        r.estado_equipo !== 'Solucionado';
             } else if (filtros.estado === 'resuelto') {
-                return r.resuelto;
+                return false; // No mostrar reportes resueltos aunque se seleccione este filtro
             }
             return true;
         });
