@@ -17,47 +17,7 @@
     <!-- Script de autenticación -->
     <script type="module" src="../js/auth.js"></script>
     <style>
-        .dashboard-box {
-            transition: var(--bs-transition);
-            border-radius: var(--bs-border-radius-lg);
-            overflow: hidden;
-            height: 100%;
-        }
-        
-        .dashboard-box:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--bs-box-shadow-lg) !important;
-        }
-        
-        .dashboard-box .card-header {
-            border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
-            padding: var(--bs-card-cap-padding-y) var(--bs-card-cap-padding-x);
-        }
-        
-        .dashboard-box .card-header h5 {
-            font-weight: var(--bs-font-semibold);
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .dashboard-box .card-header h5 i {
-            margin-right: var(--bs-spacer-2);
-            opacity: 0.7;
-        }
-        
-        .dashboard-box .card-body {
-            padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
-        }
-        
-        .dashboard-box .card-body canvas {
-            min-height: 220px;
-            max-height: 320px;
-            width: 100% !important;
-            height: auto !important;
-            aspect-ratio: 1.5/1;
-        }
-        
+        /* Estilos para las tarjetas de estadísticas */
         .stat-card {
             border-radius: var(--bs-border-radius-lg);
             overflow: hidden;
@@ -65,10 +25,7 @@
             height: 100%;
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--bs-box-shadow-lg) !important;
-        }
+        /* Eliminado el efecto de hover con zoom */
         
         .stat-card .icon-container {
             width: var(--bs-icon-size-lg);
@@ -97,17 +54,97 @@
             line-height: var(--bs-line-height-sm);
         }
         
+        /* Estilos para las secciones del dashboard unificado */
+        .dashboard-section {
+            background-color: var(--bs-white);
+            border-radius: var(--bs-border-radius);
+            padding: var(--bs-spacer-3);
+            height: 100%;
+            margin-bottom: var(--bs-spacer-3);
+        }
+        
+        .chart-container {
+            position: relative;
+            min-height: 220px;
+            max-height: 320px;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1.5/1;
+        }
+        
+        .chart-container canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+        
+        /* Estilos para las pestañas */
+        #dashboardTabs {
+            border-bottom: none;
+            padding: 0 var(--bs-spacer-3);
+        }
+        
+        #dashboardTabs .nav-link {
+            color: var(--bs-gray-700);
+            font-weight: var(--bs-font-semibold);
+            padding: var(--bs-spacer-2) var(--bs-spacer-3);
+            border: none;
+            border-radius: 0;
+            margin-right: var(--bs-spacer-2);
+            position: relative;
+        }
+        
+        #dashboardTabs .nav-link.active {
+            color: var(--bs-primary);
+            font-weight: var(--bs-font-weight-bold);
+            background-color: transparent;
+            border: none;
+        }
+        
+        #dashboardTabs .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--bs-primary);
+        }
+        
+        #dashboardTabs .nav-link i {
+            opacity: 0.7;
+        }
+        
+        #dashboardTabs .nav-link.active i {
+            opacity: 1;
+        }
+        
         @media (max-width: 991.98px) {
-            .dashboard-box .card-body canvas {
+            .chart-container {
                 min-height: 180px;
-                max-height: 220px;
+                max-height: 280px;
             }
         }
         
-        @media (max-width: 576px) {
-            .dashboard-box .card-body canvas {
+        @media (max-width: 767.98px) {
+            .chart-container {
+                min-height: 160px;
+                max-height: 240px;
+            }
+            
+            #dashboardTabs .nav-link {
+                padding: var(--bs-spacer-1) var(--bs-spacer-2);
+                font-size: var(--bs-font-size-sm);
+            }
+        }
+        
+        @media (max-width: 575.98px) {
+            .chart-container {
                 min-height: 140px;
-                max-height: 180px;
+                max-height: 200px;
+            }
+            
+            .dashboard-section {
+                padding: var(--bs-spacer-2);
             }
             
             .stat-card .icon-container {
@@ -201,76 +238,110 @@
                     </div>
                 </div>
 
-                <!-- Gráficos y Estadísticas -->
+                <!-- Dashboard Unified Container -->
                 <div class="row">
-                    <!-- Reportes por Estado -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="dashboard-box card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-header bg-white border-bottom-0">
+                                <h5 class="card-title"><i class="bi bi-graph-up text-primary"></i> Estadísticas y Análisis</h5>
                             </div>
-                            <div class="card-body">
-                                <canvas id="reportesPorEstadoChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reportes por Sede -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="dashboard-box card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title"><i class="bi bi-building text-primary"></i> Reportes por Sede</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="reportesPorSedeChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reportes por Mes -->
-                    <div class="col-lg-8 mb-4">
-                        <div class="dashboard-box card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Reportes por Mes</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="reportesPorMesChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Usuarios por Rol -->
-                    <div class="col-lg-4 mb-4">
-                        <div class="dashboard-box card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Usuarios por Rol</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="usuariosPorRolChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Equipos por Estado -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="dashboard-box card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title"><i class="bi bi-pc-display text-primary"></i> Equipos por Estado</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="equiposPorEstadoChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Equipos por Salón -->
-                    <div class="col-lg-6 mb-4">
-                        <div class="dashboard-box card border-0 shadow-sm">
-                            <div class="card-header bg-white">
-                                <h5 class="card-title"><i class="bi bi-geo-alt-fill text-primary"></i> Equipos por Salón</h5>
-                            </div>
-                            <div class="card-body">
-                                <canvas id="equiposPorSalonChart"></canvas>
+                            <div class="card-body p-0 pt-2">
+                                <!-- Navegación por pestañas -->
+                                <ul class="nav nav-tabs mb-3" id="dashboardTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="reportes-tab" data-bs-toggle="tab" data-bs-target="#reportes-tab-pane" type="button" role="tab" aria-controls="reportes-tab-pane" aria-selected="true">
+                                            <i class="bi bi-file-earmark-text me-2"></i>Reportes
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="equipos-tab" data-bs-toggle="tab" data-bs-target="#equipos-tab-pane" type="button" role="tab" aria-controls="equipos-tab-pane" aria-selected="false">
+                                            <i class="bi bi-pc-display me-2"></i>Equipos
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios-tab-pane" type="button" role="tab" aria-controls="usuarios-tab-pane" aria-selected="false">
+                                            <i class="bi bi-people me-2"></i>Usuarios
+                                        </button>
+                                    </li>
+                                </ul>
+                                
+                                <!-- Contenido de las pestañas -->
+                                <div class="tab-content px-3" id="dashboardTabsContent">
+                                    <!-- Pestaña de Reportes -->
+                                    <div class="tab-pane fade show active" id="reportes-tab-pane" role="tabpanel" aria-labelledby="reportes-tab" tabindex="0">
+                                        <div class="row">
+                                            <!-- Reportes por Estado -->
+                                            <div class="col-lg-6 mb-4">
+                                                <div class="dashboard-section shadow-sm rounded">
+                                                    <h6 class="fw-semibold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Reportes por Estado</h6>
+                                                    <div class="chart-container">
+                                                        <canvas id="reportesPorEstadoChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Reportes por Sede -->
+                                            <div class="col-lg-6 mb-4">
+                                                <div class="dashboard-section shadow-sm rounded">
+                                                    <h6 class="fw-semibold mb-3"><i class="bi bi-building text-primary me-2"></i>Reportes por Sede</h6>
+                                                    <div class="chart-container">
+                                                        <canvas id="reportesPorSedeChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Reportes por Mes -->
+                                            <div class="col-12">
+                                                <div class="dashboard-section shadow-sm rounded">
+                                                    <h6 class="fw-semibold mb-3"><i class="bi bi-calendar3 text-primary me-2"></i>Reportes por Mes</h6>
+                                                    <div class="chart-container">
+                                                        <canvas id="reportesPorMesChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pestaña de Equipos -->
+                                    <div class="tab-pane fade" id="equipos-tab-pane" role="tabpanel" aria-labelledby="equipos-tab" tabindex="0">
+                                        <div class="row">
+                                            <!-- Equipos por Estado -->
+                                            <div class="col-lg-6 mb-4">
+                                                <div class="dashboard-section shadow-sm rounded">
+                                                    <h6 class="fw-semibold mb-3"><i class="bi bi-pc-display text-primary me-2"></i>Equipos por Estado</h6>
+                                                    <div class="chart-container">
+                                                        <canvas id="equiposPorEstadoChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Equipos por Salón -->
+                                            <div class="col-lg-6 mb-4">
+                                                <div class="dashboard-section shadow-sm rounded">
+                                                    <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt-fill text-primary me-2"></i>Equipos por Salón</h6>
+                                                    <div class="chart-container">
+                                                        <canvas id="equiposPorSalonChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pestaña de Usuarios -->
+                                    <div class="tab-pane fade" id="usuarios-tab-pane" role="tabpanel" aria-labelledby="usuarios-tab" tabindex="0">
+                                        <div class="row">
+                                            <!-- Usuarios por Rol -->
+                                            <div class="col-md-8 mx-auto mb-4">
+                                                <div class="dashboard-section shadow-sm rounded">
+                                                    <h6 class="fw-semibold mb-3"><i class="bi bi-people-fill text-primary me-2"></i>Usuarios por Rol</h6>
+                                                    <div class="chart-container">
+                                                        <canvas id="usuariosPorRolChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
