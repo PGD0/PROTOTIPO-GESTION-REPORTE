@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <style>
         body {
-            background: #f4f6fa;
+            background: var(--bs-gray-100);
         }
         .index-hero {
             min-height: 100vh;
@@ -21,31 +21,31 @@
             width: 100%;
             max-width: 900px;
             margin: 0 auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 2px 16px rgba(60,60,90,0.06);
+            background: var(--bs-white);
+            border-radius: var(--bs-border-radius-lg);
+            box-shadow: var(--bs-box-shadow);
             padding: 3rem 2.5rem 2.5rem 2.5rem;
         }
         .index-logo {
             max-height: 75px;
-            margin-bottom: 2rem;
+            margin-bottom: var(--bs-spacer-4);
         }
         .index-title {
             font-size: 2.4rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: #2a2a2a;
+            font-weight: var(--bs-font-weight-bold);
+            margin-bottom: var(--bs-card-spacer-y);
+            color: var(--bs-gray-900);
         }
         .index-lead {
-            font-size: 1.2rem;
-            color: #5a5a5a;
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
+            font-size: var(--bs-font-size-lg);
+            color: var(--bs-gray-700);
+            margin-bottom: var(--bs-spacer-5);
+            line-height: var(--bs-line-height-base);
         }
         .index-actions .btn {
             min-width: 160px;
-            font-size: 1.1rem;
-            padding: 0.8rem 1.5rem;
+            font-size: var(--bs-font-size-md);
+            padding: var(--bs-btn-padding-y-sm) var(--bs-btn-padding-x-sm);
         }
         .index-illustration {
             max-width: 320px;
@@ -57,10 +57,10 @@
             .index-title { font-size: 1.3rem; }
             .index-logo { max-height: 40px; }
             .index-content { 
-                padding: 1.5rem 0.75rem; 
+                padding: var(--bs-card-spacer-y) var(--bs-spacer-2); 
                 max-width: 420px;
             }
-            .index-lead { font-size: 1rem; }
+            .index-lead { font-size: var(--bs-font-size-base); }
             .index-illustration { display: none; }
         }
     </style>

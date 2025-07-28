@@ -2,15 +2,14 @@
 
 /* Contenedor principal del perfil */
 .contenedor{
-    background-color: #FFFFFF;
+    background-color: var(--bs-white);
     margin: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow);
 }
 .perfil-container {
     max-width: 800px;
     margin: 0 auto;
-    
 }
 
 /* Estilos para la foto de perfil */
@@ -24,7 +23,7 @@
 .perfil-nombre h1 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #333;
+    color: var(--bs-gray-800);
     margin: 0;
     padding: 0;
     word-wrap: break-word;
@@ -44,8 +43,8 @@
 
 .descripcion-perfil{
     padding-top: 20px;
-    background-color: #F3F3F3;
-    border-radius: 10px;
+    background-color: var(--bs-gray-100);
+    border-radius: var(--bs-border-radius);
     padding: 20px;
     margin: 20px;
     margin-left: 50px;
@@ -53,7 +52,7 @@
 
 /* Estilos para el título de la sección lateral */
 .titulo h5 {
-    color: #333;
+    color: var(--bs-gray-800);
     font-weight: 600;
     margin-bottom: 15px;
     padding-left: 20px;
@@ -61,22 +60,22 @@
 
 /* Estilos para la sección lateral */
 .seccion-lateral {
-    background-color: #FFFFFF;
-    border-radius: 10px;
+    background-color: var(--bs-white);
+    border-radius: var(--bs-border-radius);
     padding: 20px;
     margin: 20px;
-    border: 1px solid #E0E0E0;
+    border: 1px solid var(--bs-border-color);
     height: fit-content;
 }
 
 .seccion-lateral h5 {
-    color: #333;
+    color: var(--bs-gray-800);
     font-weight: 600;
     margin-bottom: 15px;
 }
 
 .seccion-lateral p {
-    color: #666;
+    color: var(--bs-gray-600);
     margin-bottom: 0;
 }
 
@@ -90,8 +89,8 @@
 
 /* Estilos para las tarjetas de reportes */
 .reporte-card {
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
     transition: all 0.3s ease;
     cursor: pointer;
     overflow: hidden;
@@ -99,8 +98,8 @@
 
 .reporte-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-color: #0d6efd;
+    box-shadow: var(--bs-box-shadow);
+    border-color: var(--bs-primary);
 }
 
 .reporte-card .card-img-top {
@@ -115,7 +114,7 @@
 
 .reporte-card .card-title {
     font-weight: 600;
-    color: #333;
+    color: var(--bs-gray-800);
     font-size: 0.9rem;
 }
 
@@ -140,8 +139,8 @@
 
 /* Estilos para las tarjetas mini de reportes */
 .reporte-card-mini {
-    border: 1px solid #E0E0E0;
-    border-radius: 6px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm);
     transition: all 0.3s ease;
     cursor: pointer;
     margin-bottom: 8px;
@@ -149,14 +148,14 @@
 
 .reporte-card-mini:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-color: #0d6efd;
+    box-shadow: var(--bs-box-shadow-sm);
+    border-color: var(--bs-primary);
 }
 
 .reporte-card-mini .card-title {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #333;
+    color: var(--bs-gray-800);
     margin-bottom: 0.25rem;
 }
 
@@ -177,15 +176,15 @@
 
 /* Estilos para la sección completa de reportes */
 .reportes-seccion-completa {
-    background-color: #FFFFFF;
-    border-radius: 10px;
+    background-color: var(--bs-white);
+    border-radius: var(--bs-border-radius);
     padding: 20px;
     margin: 20px;
     margin-top: 10px;
 }
 
 .reportes-seccion-completa .titulo h5 {
-    color: #333;
+    color: var(--bs-gray-800);
     font-weight: 600;
     margin-bottom: 15px;
 }

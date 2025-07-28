@@ -3,22 +3,56 @@
 
 /* ===== VARIABLES CSS ===== */
 :root {
-    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --sidebar-width: 280px;
     --sidebar-collapsed-width: 100px;
+    
+    /* Variables de espaciado para Bootstrap */
+    --bs-spacer-1: 0.25rem;
+    --bs-spacer-2: 0.5rem;
+    --bs-spacer-3: 1rem;
+    --bs-spacer-4: 2rem;
+    --bs-spacer-5: 3rem;
+    
+    /* Variables de tamaño de fuente */
+    --bs-font-size-sm: 0.875rem;
+    --bs-font-size-base: 1rem;
+    --bs-font-size-md: 1.1rem;
+    --bs-font-size-lg: 1.15rem;
+    --bs-font-size-xl: 1.75rem;
+    
+    /* Variables de peso de fuente */
+    --bs-font-weight-normal: 400;
+    --bs-font-semibold: 600;
+    --bs-font-weight-bold: 700;
+    
+    /* Variables de altura de línea */
+    --bs-line-height-sm: 1.2;
+    --bs-line-height-base: 1.5;
+    
+    /* Variables de padding para botones */
+    --bs-btn-padding-y-sm: 0.5rem;
+    --bs-btn-padding-x-sm: 1rem;
+    
+    /* Variables para tarjetas */
+    --bs-card-spacer-y: 1.5rem;
+    --bs-card-spacer-x: 1.5rem;
+    --bs-card-cap-padding-y: 1rem;
+    --bs-card-cap-padding-x: 1.5rem;
+    
+    /* Variables para iconos */
+    --bs-icon-size-lg: 60px;
+    
+    /* Variables de transición */
+    --bs-transition: all 0.3s ease;
 }
 
-/* ===== TIPOGRAFÍA ===== */
-body {
-    font-family: var(--font-primary);
-    line-height: 1.6;
-    background-color: #f8f9fa;
+/* Bootstrap ya maneja la tipografía base, solo definimos las fuentes personalizadas */
+.font-inter {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
-    font-weight: 600;
+.font-poppins {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ===== LAYOUT CON SIDEBAR ===== */
@@ -28,8 +62,8 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     height: 100vh;
     width: var(--sidebar-width);
-    background: white;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    background-color: var(--bs-white);
+    box-shadow: var(--bs-box-shadow-sm);
     z-index: 1030;
     transition: all 0.3s ease;
     overflow-y: auto;
@@ -74,6 +108,16 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+
+/* Clases utilitarias para los filtros */
+.min-width-180 {
+    min-width: 180px;
+}
+
+.max-width-220 {
+    max-width: 220px;
+}
+
 @media (max-width: 991.98px) {
     .sidebar {
         transform: translateX(-100%);
@@ -105,7 +149,7 @@ h1, h2, h3, h4, h5, h6 {
         z-index: 1025;
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s ease;
+        transition: var(--bs-transition);
     }
     .sidebar-overlay.show {
         opacity: 1;
@@ -115,7 +159,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar-header {
     padding: 1.5rem;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--bs-border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -126,7 +170,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     text-decoration: none;
-    color: #495057;
+    color: var(--bs-gray-700);
     font-weight: 600;
     font-size: 1.1rem;
     transition: all 0.3s ease;
@@ -166,8 +210,8 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     padding: 0.875rem 1rem;
-    color: #6c757d;
-    border-radius: 8px;
+    color: var(--bs-gray-600);
+    border-radius: var(--bs-border-radius);
     transition: all 0.3s ease;
     text-decoration: none;
     font-weight: 500;
@@ -176,13 +220,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-nav .nav-link:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
 }
 
 .sidebar-nav .nav-link.active {
-    background-color: #0d6efd;
-    color: white;
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
 }
 
 .sidebar-nav .nav-link i {
@@ -212,18 +256,18 @@ h1, h2, h3, h4, h5, h6 {
 .sidebar-toggle {
     background: none;
     border: none;
-    color: #6c757d;
+    color: var(--bs-gray-600);
     font-size: 1.2rem;
     cursor: pointer;
     padding: 0.5rem;
-    border-radius: 6px;
+    border-radius: var(--bs-border-radius-sm);
     transition: all 0.3s ease;
     flex-shrink: 0;
 }
 
 .sidebar-toggle:hover {
-    background-color: #f8f9fa;
-    color: #495057;
+    background-color: var(--bs-gray-100);
+    color: var(--bs-gray-700);
 }
 
 .main-content-wrapper {
@@ -237,8 +281,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .top-navbar {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: var(--bs-white);
+    box-shadow: var(--bs-box-shadow);
     backdrop-filter: blur(10px);
     padding: 1rem 2rem;
     position: sticky;
@@ -252,13 +296,12 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ===== NAVBAR ===== */
 .navbar {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: var(--bs-box-shadow);
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.95) !important;
 }
 
 .navbar-brand {
-    font-family: var(--font-heading);
     font-weight: 600;
 }
 
@@ -271,52 +314,48 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link {
     font-weight: 500;
     transition: all 0.3s ease;
-    border-radius: 8px;
+    border-radius: var(--bs-border-radius);
     margin: 0 0.25rem;
-    color: #495057 !important;
+    color: var(--bs-gray-700) !important;
 }
 
 .nav-link:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-    color: #0d6efd !important;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary) !important;
 }
 
 .nav-link.active {
-    background-color: #0d6efd;
-    color: white !important;
+    background-color: var(--bs-primary);
+    color: var(--bs-white) !important;
 }
 
 /* ===== BOTONES ===== */
 .btn {
     font-weight: 500;
-    border-radius: 12px;
     transition: all 0.3s ease;
 }
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    box-shadow: var(--bs-box-shadow);
 }
 
 /* ===== FORMULARIOS ===== */
 .form-control {
-    border-radius: 12px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--bs-border-color);
     padding: 0.875rem 1rem;
-    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 .form-control:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.1);
 }
 
 /* ===== TARJETAS ===== */
 .card {
-    border-radius: 16px;
     border: none;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    box-shadow: var(--bs-box-shadow-lg);
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.95);
 }
@@ -340,9 +379,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ===== CONTENIDO PRINCIPAL ===== */
 .main-content {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    background: var(--bs-white);
+    border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--bs-box-shadow-lg);
     backdrop-filter: blur(10px);
 }
 
@@ -359,16 +398,6 @@ h1, h2, h3, h4, h5, h6 {
     
     .card-body {
         padding: 1.25rem;
-    }
-    
-    h1 { font-size: 1.75rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
-    h4 { font-size: 1.125rem; }
-    
-    .btn-lg { 
-        font-size: 0.95rem; 
-        padding: 0.5rem 1rem;
     }
     
     .top-navbar h4 {

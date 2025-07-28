@@ -18,36 +18,36 @@
     <script type="module" src="../js/auth.js"></script>
     <style>
         .dashboard-box {
-            transition: all 0.3s ease;
-            border-radius: 16px;
+            transition: var(--bs-transition);
+            border-radius: var(--bs-border-radius-lg);
             overflow: hidden;
             height: 100%;
         }
         
         .dashboard-box:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+            box-shadow: var(--bs-box-shadow-lg) !important;
         }
         
         .dashboard-box .card-header {
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            padding: 1rem 1.5rem;
+            border-bottom: var(--bs-border-width) solid var(--bs-border-color-translucent);
+            padding: var(--bs-card-cap-padding-y) var(--bs-card-cap-padding-x);
         }
         
         .dashboard-box .card-header h5 {
-            font-weight: 600;
+            font-weight: var(--bs-font-semibold);
             margin: 0;
             display: flex;
             align-items: center;
         }
         
         .dashboard-box .card-header h5 i {
-            margin-right: 10px;
+            margin-right: var(--bs-spacer-2);
             opacity: 0.7;
         }
         
         .dashboard-box .card-body {
-            padding: 1.5rem;
+            padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
         }
         
         .dashboard-box .card-body canvas {
@@ -59,25 +59,25 @@
         }
         
         .stat-card {
-            border-radius: 16px;
+            border-radius: var(--bs-border-radius-lg);
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: var(--bs-transition);
             height: 100%;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+            box-shadow: var(--bs-box-shadow-lg) !important;
         }
         
         .stat-card .icon-container {
-            width: 60px;
-            height: 60px;
+            width: var(--bs-icon-size-lg);
+            height: var(--bs-icon-size-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
-            margin-right: 1rem;
+            border-radius: var(--bs-border-radius);
+            margin-right: var(--bs-spacer-3);
         }
         
         .stat-card .stat-content {
@@ -85,16 +85,16 @@
         }
         
         .stat-card .stat-title {
-            font-size: 0.875rem;
-            color: #6c757d;
-            margin-bottom: 0.25rem;
+            font-size: var(--bs-font-size-sm);
+            color: var(--bs-gray-600);
+            margin-bottom: var(--bs-spacer-1);
         }
         
         .stat-card .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
+            font-size: var(--bs-font-size-xl);
+            font-weight: var(--bs-font-weight-bold);
             margin: 0;
-            line-height: 1.2;
+            line-height: var(--bs-line-height-sm);
         }
         
         @media (max-width: 991.98px) {

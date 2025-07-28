@@ -902,148 +902,240 @@ if (window.location.pathname.includes('dashboard.html')) {
       const data = await api.getDashboard();
       console.log('Datos del dashboard (API):', data);
       
-      // Restaurar contenido original
-      document.querySelector('.content-area').innerHTML = `
-        <!-- Resumen de Reportes -->
-        <div class="row mb-4">
-            <div class="col-12 mb-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-3">Bienvenido al Panel de Control</h5>
-                        <p class="text-muted mb-0">Aquí encontrarás un resumen de la actividad y estadísticas del sistema de gestión de reportes.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Resumen de Reportes -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3 mb-md-0">
-                <div class="stat-card card border-0 shadow-sm">
-                    <div class="card-body p-4 d-flex align-items-center">
-                        <div class="icon-container bg-primary bg-opacity-10">
-                            <i class="bi bi-file-earmark-text text-primary fs-4"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-title">Total Reportes</div>
-                            <div class="stat-value text-primary" id="totalReportes">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3 mb-md-0">
-                <div class="stat-card card border-0 shadow-sm">
-                    <div class="card-body p-4 d-flex align-items-center">
-                        <div class="icon-container bg-warning bg-opacity-10">
-                            <i class="bi bi-hourglass-split text-warning fs-4"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-title">Reportes Pendientes</div>
-                            <div class="stat-value text-warning" id="reportesPendientes">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card card border-0 shadow-sm">
-                    <div class="card-body p-4 d-flex align-items-center">
-                        <div class="icon-container bg-success bg-opacity-10">
-                            <i class="bi bi-check-circle text-success fs-4"></i>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-title">Reportes Resueltos</div>
-                            <div class="stat-value text-success" id="reportesResueltos">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Gráficos y Estadísticas -->
-        <div class="row">
-            <!-- Reportes por Estado -->
-            <div class="col-lg-6 mb-4">
-                <div class="dashboard-box card border-0 shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="reportesPorEstadoChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reportes por Sede -->
-            <div class="col-lg-6 mb-4">
-                <div class="dashboard-box card border-0 shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title"><i class="bi bi-building text-primary"></i> Reportes por Sede</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="reportesPorSedeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reportes por Mes -->
-            <div class="col-lg-8 mb-4">
-                <div class="dashboard-box card border-0 shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Reportes por Mes</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="reportesPorMesChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Usuarios por Rol -->
-            <div class="col-lg-4 mb-4">
-                <div class="dashboard-box card border-0 shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Usuarios por Rol</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="usuariosPorRolChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Equipos por Estado -->
-            <div class="col-lg-6 mb-4">
-                <div class="dashboard-box card border-0 shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title"><i class="bi bi-pc-display text-primary"></i> Equipos por Estado</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="equiposPorEstadoChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Equipos por Salón -->
-            <div class="col-lg-6 mb-4">
-                <div class="dashboard-box card border-0 shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="card-title"><i class="bi bi-geo-alt-fill text-primary"></i> Equipos por Salón</h5>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="equiposPorSalonChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-      `;
-      
-      // Actualizar contadores en las tarjetas (para ambos roles)
-      document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
-      document.getElementById('reportesPendientes').textContent = data.pendientes;
-      document.getElementById('reportesResueltos').textContent = data.resueltos;
-
       const rol = data.rol === 1 ? "admin" : "usuario";
+      
+      // Restaurar contenido original con diferente estructura según el rol
       if (rol === 'admin') {
+        // Contenido completo para administradores
+        document.querySelector('.content-area').innerHTML = `
+          <!-- Resumen de Reportes -->
+          <div class="row mb-4">
+              <div class="col-12 mb-4">
+                  <div class="card shadow-sm border-0">
+                      <div class="card-body p-4">
+                          <h5 class="fw-bold mb-3">Bienvenido al Panel de Control</h5>
+                          <p class="text-muted mb-0">Aquí encontrarás un resumen de la actividad y estadísticas del sistema de gestión de reportes.</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Resumen de Reportes -->
+          <div class="row mb-4">
+              <div class="col-md-4 mb-3 mb-md-0">
+                  <div class="stat-card card border-0 shadow-sm">
+                      <div class="card-body p-4 d-flex align-items-center">
+                          <div class="icon-container bg-primary bg-opacity-10">
+                              <i class="bi bi-file-earmark-text text-primary fs-4"></i>
+                          </div>
+                          <div class="stat-content">
+                              <div class="stat-title">Total Reportes</div>
+                              <div class="stat-value text-primary" id="totalReportes">0</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-4 mb-3 mb-md-0">
+                  <div class="stat-card card border-0 shadow-sm">
+                      <div class="card-body p-4 d-flex align-items-center">
+                          <div class="icon-container bg-warning bg-opacity-10">
+                              <i class="bi bi-hourglass-split text-warning fs-4"></i>
+                          </div>
+                          <div class="stat-content">
+                              <div class="stat-title">Reportes Pendientes</div>
+                              <div class="stat-value text-warning" id="reportesPendientes">0</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="stat-card card border-0 shadow-sm">
+                      <div class="card-body p-4 d-flex align-items-center">
+                          <div class="icon-container bg-success bg-opacity-10">
+                              <i class="bi bi-check-circle text-success fs-4"></i>
+                          </div>
+                          <div class="stat-content">
+                              <div class="stat-title">Reportes Resueltos</div>
+                              <div class="stat-value text-success" id="reportesResueltos">0</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Gráficos y Estadísticas -->
+          <div class="row">
+              <!-- Reportes por Estado -->
+              <div class="col-lg-6 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="reportesPorEstadoChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Reportes por Sede -->
+              <div class="col-lg-6 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-building text-primary"></i> Reportes por Sede</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="reportesPorSedeChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Reportes por Mes -->
+              <div class="col-lg-8 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Reportes por Mes</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="reportesPorMesChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Usuarios por Rol -->
+              <div class="col-lg-4 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Usuarios por Rol</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="usuariosPorRolChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Equipos por Estado -->
+              <div class="col-lg-6 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-pc-display text-primary"></i> Equipos por Estado</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="equiposPorEstadoChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Equipos por Salón -->
+              <div class="col-lg-6 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-geo-alt-fill text-primary"></i> Equipos por Salón</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="equiposPorSalonChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        `;
+        
+        // Actualizar contadores en las tarjetas
+        document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
+        document.getElementById('reportesPendientes').textContent = data.pendientes;
+        document.getElementById('reportesResueltos').textContent = data.resueltos;
+        
         pintarGraficasAdmin(data);
       } else {
+        // Contenido simplificado para usuarios regulares
+        document.querySelector('.content-area').innerHTML = `
+          <!-- Resumen de Reportes -->
+          <div class="row mb-4">
+              <div class="col-12 mb-4">
+                  <div class="card shadow-sm border-0">
+                      <div class="card-body p-4">
+                          <h5 class="fw-bold mb-3">Bienvenido al Panel de Control</h5>
+                          <p class="text-muted mb-0">Aquí encontrarás un resumen de tus reportes y estadísticas personales.</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Resumen de Reportes -->
+          <div class="row mb-4">
+              <div class="col-md-4 mb-3 mb-md-0">
+                  <div class="stat-card card border-0 shadow-sm">
+                      <div class="card-body p-4 d-flex align-items-center">
+                          <div class="icon-container bg-primary bg-opacity-10">
+                              <i class="bi bi-file-earmark-text text-primary fs-4"></i>
+                          </div>
+                          <div class="stat-content">
+                              <div class="stat-title">Total Reportes</div>
+                              <div class="stat-value text-primary" id="totalReportes">0</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-4 mb-3 mb-md-0">
+                  <div class="stat-card card border-0 shadow-sm">
+                      <div class="card-body p-4 d-flex align-items-center">
+                          <div class="icon-container bg-warning bg-opacity-10">
+                              <i class="bi bi-hourglass-split text-warning fs-4"></i>
+                          </div>
+                          <div class="stat-content">
+                              <div class="stat-title">Reportes Pendientes</div>
+                              <div class="stat-value text-warning" id="reportesPendientes">0</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <div class="stat-card card border-0 shadow-sm">
+                      <div class="card-body p-4 d-flex align-items-center">
+                          <div class="icon-container bg-success bg-opacity-10">
+                              <i class="bi bi-check-circle text-success fs-4"></i>
+                          </div>
+                          <div class="stat-content">
+                              <div class="stat-title">Reportes Resueltos</div>
+                              <div class="stat-value text-success" id="reportesResueltos">0</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Gráficos y Estadísticas -->
+          <div class="row">
+              <!-- Reportes por Estado -->
+              <div class="col-lg-6 mb-4">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="reportesPorEstadoChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- Reportes por Mes -->
+              <div class="col-lg-8 mb-4" id="reportesPorMesContainer">
+                  <div class="dashboard-box card border-0 shadow-sm">
+                      <div class="card-header bg-white">
+                          <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Tus Reportes por Mes</h5>
+                      </div>
+                      <div class="card-body">
+                          <canvas id="reportesPorMesChart"></canvas>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        `;
+        
+        // Actualizar contadores en las tarjetas
+        document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
+        document.getElementById('reportesPendientes').textContent = data.pendientes;
+        document.getElementById('reportesResueltos').textContent = data.resueltos;
+        
         pintarGraficasUsuario(data);
       }
     } catch (error) {
