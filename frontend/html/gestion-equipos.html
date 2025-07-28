@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Reportes - IUB</title>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../css/styles.css">
+    
+    <!-- Script de autenticación -->
+    <script type="module" src="../js/auth.js"></script>
+    <style>
+        /* ... estilos existentes ... */
+        /* Estilos de modo oscuro eliminados */
+    </style>
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a class="sidebar-brand" id="sidebarBrand" style="cursor:pointer;">
+                <img src="../assets/img/logo_IUB.png" alt="Logo IUB" id="sidebarLogo">
+            </a>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="homepage.html" class="nav-link" id="homepageLink">
+                    <i class="bi bi-house"></i>
+                    <span>Inicio</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="reportes.html" class="nav-link" id="reportesLink">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <span>Reportes</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="hacer-reporte.html" class="nav-link" id="nuevoReporteLink">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Nuevo Reporte</span>
+                </a>
+            </div>
+            <hr class="my-3">
+            <div class="nav-item">
+                <a href="dashboard.html" class="nav-link" id="dashboardLink">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="gestion-usuarios.html" class="nav-link" id="gestionUsuariosLink">
+                    <i class="bi bi-people"></i>
+                    <span>Gestión de Usuarios</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="gestion-reportes.html" class="nav-link active" id="gestionReportesLink">
+                    <i class="bi bi-clipboard-data"></i>
+                    <span>Gestión de Reportes</span>
+                </a>
+            </div>
+            <hr class="my-3">
+            <div class="nav-item">
+                <a href="../index.html" class="nav-link" id="salirLink">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Salir</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content-wrapper" id="mainContent">
+        <!-- Top Navbar -->
+        <nav class="top-navbar">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-link d-lg-none me-3" id="mobileSidebarToggle">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h3 class="mb-0">Gestión de Equipos</h3>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a href="perfil.html" class="btn btn-link text-decoration-none">
+                        <i class="bi bi-person-circle fs-4 text-dark"></i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="container-fluid">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 fw-bold pt-4 pl-5">
+                                <i class="bi-pc-display me-2"></i>Gestión de Equipos
+                            </h4>
+                            <a href="dashboard.html" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-left me-2"></i>Volver al Dashboard
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="equiposAdminContainer">
+                            <div class="mb-3 text-end">
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal">
+                                    <i class="bi bi-plus-circle me-1"></i>Agregar Equipo
+                                </button>
+                            </div>
+
+                            <table class="table table-bordered table-hover" id="tablaEquipos">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Código de Barras</th>
+                                        <th>Marca</th>
+                                        <th>Sede</th>
+                                        <th>Salón</th>
+                                        <th>Bloque</th>
+                                        <th>Funcional</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Filas generadas dinámicamente por JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal para Crear/Editar Equipo -->
+    <div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" id="formEquipo">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="equipoModalLabel">Agregar/Editar Equipo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="equipoId">
+                    
+                    <div class="mb-3">
+                        <label for="codigoBarras" class="form-label">Código de Barras</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="codigoBarras" placeholder="Ej: PC-12345678-ABC" required>
+                            <button class="btn btn-outline-secondary" type="button" id="btnEscanear" data-bs-toggle="modal" data-bs-target="#escanearModal">
+                                <i class="bi bi-upc-scan"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Puedes escribir el código manualmente o escanearlo con la cámara
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="marca" class="form-label">Marca</label>
+                        <input type="text" class="form-control" id="marca" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sede" class="form-label">ID de Sede</label>
+                        <select class="form-select" id="sede" required></select>
+                    </div>
+                    <div class="mb-3" id="bloqueContainer" style="display: none;">
+                        <label for="bloque" class="form-label">Bloque</label>
+                        <select class="form-select" id="bloque"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="salon" class="form-label">ID de Salón</label>
+                        <select class="form-select" id="salon" required></select>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="funcional" checked>
+                        <label class="form-check-label" for="funcional">Funcional</label>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para escanear código QR -->
+    <div class="modal fade" id="escanearModal" tabindex="-1" aria-labelledby="escanearModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="escanearModalLabel">
+                        <i class="bi bi-upc-scan me-2"></i>Escanear Código de Barras
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Cámara -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-camera me-2"></i>Usar Cámara</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div id="reader" style="width: 100%; height: 250px;"></div>
+                                    <button type="button" class="btn btn-primary mt-3" id="btnIniciarCamara">
+                                        <i class="bi bi-camera"></i> Iniciar Cámara
+                                    </button>
+                                    <button type="button" class="btn btn-secondary mt-3" id="btnDetenerCamara" style="display: none;">
+                                        <i class="bi bi-stop-circle"></i> Detener Cámara
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Imagen -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-image me-2"></i>Subir Imagen</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <input type="file" class="form-control mb-2" id="imagenQR" accept="image/*" style="display: none;">
+                                    <button type="button" class="btn btn-outline-primary" id="btnSeleccionarImagen">
+                                        <i class="bi bi-image"></i> Seleccionar Imagen
+                                    </button>
+                                    <div class="form-text mt-2">Formatos: JPG, PNG, GIF. Máx 5MB.</div>
+                                    <div id="imagenPreview" class="mt-3" style="display: none;">
+                                        <img id="previewQR" class="img-fluid rounded" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Resultado -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-info" id="resultadoEscaneo" style="display: none;">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <span id="textoResultado">Código detectado:</span>
+                                <strong id="codigoDetectado"></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-2"></i>Cancelar
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnUsarCodigo" style="display: none;">
+                        <i class="bi bi-check-circle me-2"></i>Usar Código
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/gestion-equipos.js"></script>
+    <script type="module" src="../js/sidebar.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.0.9/dist/html5-qrcode.min.js"></script>
+    <script type="module" src="../js/escanear-simple.js"></script>
+</body>
+</html>

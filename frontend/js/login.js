@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             await api.login(email, password);
-            // Redirigir a la página de inicio después del login exitoso
             window.location.href = 'homepage.html';
         } catch (error) {
             errorDiv.textContent = error.message || 'Error al iniciar sesión. Verifica tus credenciales.';

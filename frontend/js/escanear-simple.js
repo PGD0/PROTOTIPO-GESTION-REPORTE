@@ -1,5 +1,3 @@
-import api from './api.js';
-
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('escanearModal');
     const video = document.getElementById('cameraVideo');
@@ -12,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const resultadoEscaneo = document.getElementById('resultadoEscaneo');
     const codigoDetectado = document.getElementById('codigoDetectado');
     const btnUsarCodigo = document.getElementById('btnUsarCodigo');
-    const codigoEquipoInput = document.getElementById('codigoEquipo');
+    const codigoEquipoInput =  document.getElementById("codigoBarras") || document.getElementById('codigoEquipo');
     const btnEscanear = document.getElementById('btnEscanear'); // Referencia al botón de escaneo
 
     let html5QrcodeScanner = null;
@@ -160,4 +158,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         observer.observe(btnEscanear, { attributes: true });
     }
+    modal.addEventListener('hidden.bs.modal', limpiarEstado);
+
+    document.getElementById('escanearModal').addEventListener('hidden.bs.modal', () => {
+        const modalEquipo = document.getElementById('equipoModal');
+        if (!modalEquipo.classList.contains('show')) {
+            const modalInstance = new bootstrap.Modal(modalEquipo);
+            modalInstance.show();
+        }
+    });
 });

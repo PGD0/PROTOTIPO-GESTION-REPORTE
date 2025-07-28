@@ -33,6 +33,13 @@ function renderSidebarNav() {
             text: 'Nuevo Reporte',
             id: 'nuevoReporteLink',
             active: window.location.pathname.endsWith('hacer-reporte.html')
+        },
+        {
+            href: 'dashboard.html',
+            icon: 'bi-graph-up',
+            text: 'Dashboard',
+            id: 'dashboardLink',
+            active: window.location.pathname.endsWith('dashboard.html')
         }
     ];
     linksPublicos.forEach(link => {
@@ -61,13 +68,6 @@ function renderSidebarNav() {
     if (esAdmin) {
         const linksAdmin = [
             {
-                href: 'dashboard.html',
-                icon: 'bi-graph-up',
-                text: 'Dashboard',
-                id: 'dashboardLink',
-                active: window.location.pathname.endsWith('dashboard.html')
-            },
-            {
                 href: 'gestion-usuarios.html',
                 icon: 'bi-people',
                 text: 'Gestión de Usuarios',
@@ -80,6 +80,13 @@ function renderSidebarNav() {
                 text: 'Gestión de Reportes',
                 id: 'gestionReportesLink',
                 active: window.location.pathname.endsWith('gestion-reportes.html')
+            },
+            {
+                href: 'gestion-equipos.html',
+                icon: 'bi-pc-display',
+                text: 'Gestión de Equipos',
+                id: 'gestionEquiposLink',
+                active: window.location.pathname.endsWith('gestion-equipos.html')
             }
         ];
         linksAdmin.forEach(link => {

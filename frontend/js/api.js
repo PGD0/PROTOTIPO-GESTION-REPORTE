@@ -1,6 +1,3 @@
-// api.js
-// Módulo para consumir el backend real usando fetch y JWT
-
 const API_URL = 'http://127.0.0.1:8000';
 
 function getToken() {

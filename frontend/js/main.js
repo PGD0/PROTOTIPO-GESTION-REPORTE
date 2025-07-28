@@ -12,7 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Eliminar la función setupSidebar() de aquí, ya que está definida en sidebar.js
+function ocultarGraficaSiVacia(idCanvas, mostrar = true) {
+  const card = document.getElementById(idCanvas)?.closest('.col-12');
+  if (card) {
+    card.style.display = mostrar ? 'block' : 'none';
+  }
+}
 
 // Variables globales para almacenar los datos
 let todosLosReportes = [];
@@ -236,109 +241,9 @@ function verDetalleReporte(idReporte) {
     }
 }
 
-// --- INTEGRACIÓN LOGIN ---
-if (window.location.pathname.endsWith('login.html')) {
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const emailInput = document.getElementById('email');
-    const passInput = document.getElementById('password');
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'alert alert-danger mt-3 d-none';
-    form.appendChild(errorDiv);
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const email = emailInput.value.trim();
-      const pass = passInput.value;
-      errorDiv.classList.add('d-none');
-      // Validación básica
-      if (!email || !pass) {
-        errorDiv.textContent = 'Por favor, completa todos los campos.';
-        errorDiv.classList.remove('d-none');
-        return;
-      }
-      try {
-        const data = await api.login(email, pass);
-        if (!data || !data.access_token) {
-          throw new Error('No se recibió el token de autenticación.');
-        }
-        
-        // Obtener información del usuario actual
-        const usuarios = await api.getUsuarios();
-        const currentUser = usuarios.find(user => user.email === email);
-        
-        // Guardar información del usuario en localStorage
-        if (currentUser) {
-          localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        }
-        
-        // Redirigir según el rol del usuario
-        if (currentUser && currentUser.rol === 1) { // Administrador
-          window.location.href = 'dashboard.html';
-        } else { // Usuario normal
-          window.location.href = 'homepage.html';
-        }
-      } catch (err) {
-        errorDiv.textContent = err.message;
-        errorDiv.classList.remove('d-none');
-      }
-    });
-  });
-}
-
-// --- INTEGRACIÓN REGISTRO ---
-if (window.location.pathname.endsWith('register.html')) {
-  document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const nombre = document.getElementById('firstName');
-    const apellido = document.getElementById('lastName');
-    const emailInput = document.getElementById('email');
-    const passInput = document.getElementById('password');
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'alert alert-danger mt-3 d-none';
-    form.appendChild(errorDiv);
-    const successDiv = document.createElement('div');
-    successDiv.className = 'alert alert-success mt-3 d-none';
-    form.appendChild(successDiv);
-    
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      errorDiv.classList.add('d-none');
-      successDiv.classList.add('d-none');
-      
-      const email = emailInput.value.trim();
-      const pass = passInput.value;
-      
-      console.log('Iniciando registro...');
-      
-      try {
-        const userData = await api.register({
-          nombre: nombre.value.trim(),
-          apellido: apellido.value.trim(),
-          email,
-          contraseña: pass,
-          rol: 2 // Por defecto usuario normal
-        });
-        
-        console.log('Registro exitoso:', userData);
-        successDiv.textContent = 'Usuario registrado exitosamente. Redirigiendo...';
-        successDiv.classList.remove('d-none');
-        
-        // Esperar un momento antes de redirigir
-        setTimeout(() => {
-          window.location.href = 'homepage.html';
-        }, 2000);
-        
-      } catch (err) {
-        console.error('Error en registro:', err);
-        errorDiv.textContent = err.message;
-        errorDiv.classList.remove('d-none');
-      }
-    });
-  });
-}
-
 function pintarGraficasUsuario(data) {
   // GRAFICA 1 - Resueltos vs Pendientes
+  ocultarGraficaSiVacia('grafica1', true);
   new Chart(document.getElementById('grafica1'), {
     type: 'doughnut',
     data: {
@@ -348,11 +253,20 @@ function pintarGraficasUsuario(data) {
         backgroundColor: ['#ffc107', '#198754']
       }]
     },
-    options: { plugins: { legend: { position: 'bottom' } } }
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        title: {
+          display: true,
+          text: 'Reportes Pendientes vs Resueltos'
+        }
+      }
+    }
   });
 
   // GRAFICA 2 - Reportes por mes (propios)
   if (data.reportes_mensuales && Object.keys(data.reportes_mensuales).length > 0) {
+    ocultarGraficaSiVacia('grafica2', true);
     new Chart(document.getElementById('grafica2'), {
       type: 'bar',
       data: {
@@ -363,11 +277,22 @@ function pintarGraficasUsuario(data) {
           backgroundColor: '#0dcaf0'
         }]
       },
-      options: { plugins: { legend: { display: false } } }
+      options: {
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Tus Reportes por Mes'
+          }
+        }
+      }
     });
+  } else {
+    ocultarGraficaSiVacia('grafica2', false);
   }
 
   // GRAFICA 3 - Total equipos reportados (gráfico de barras simple)
+  ocultarGraficaSiVacia('grafica3', true);
   new Chart(document.getElementById('grafica3'), {
     type: 'bar',
     data: {
@@ -378,11 +303,20 @@ function pintarGraficasUsuario(data) {
         backgroundColor: '#fd7e14'
       }]
     },
-    options: { plugins: { legend: { display: false } } }
+    options: {
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Total de Equipos Reportados'
+        }
+      }
+    }
   });
 
   // GRAFICA 4 - Últimos reportes por estado
   if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
+    ocultarGraficaSiVacia('grafica4', true);
     const fechas = data.ultimos_reportes.map(r => new Date(r.fecha).toLocaleDateString('es-ES'));
     const estados = data.ultimos_reportes.map(r => r.estado === 'Resuelto' ? 1 : 0);
     new Chart(document.getElementById('grafica4'), {
@@ -399,6 +333,10 @@ function pintarGraficasUsuario(data) {
       },
       options: {
         plugins: {
+          title: {
+            display: true,
+            text: 'Estado de tus Últimos Reportes'
+          },
           tooltip: {
             callbacks: {
               label: ctx => ctx.raw === 1 ? 'Resuelto' : 'Pendiente'
@@ -417,7 +355,12 @@ function pintarGraficasUsuario(data) {
         }
       }
     });
+  } else {
+    ocultarGraficaSiVacia('grafica4', false);
   }
+
+  ocultarGraficaSiVacia('grafica5', false);
+  ocultarGraficaSiVacia('grafica6', false);
 }
 
 function pintarGraficasAdmin(data) {
@@ -431,7 +374,16 @@ function pintarGraficasAdmin(data) {
         backgroundColor: ['#ffc107', '#198754']
       }]
     },
-    options: { plugins: { legend: { position: 'bottom' } } }
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        title: {
+          display: true,
+          text: 'Reportes Pendientes vs Resueltos (Global)'
+        }
+      }
+    }
+
   });
 
   // GRAFICA 2: Equipos funcionales vs no funcionales
@@ -444,7 +396,16 @@ function pintarGraficasAdmin(data) {
         backgroundColor: ['#0d6efd', '#dc3545']
       }]
     },
-    options: { plugins: { legend: { position: 'bottom' } } }
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        title: {
+          display: true,
+          text: 'Estado de Equipos Tecnológicos'
+        }
+      }
+    }
+
   });
 
   // GRAFICA 3: Reportes por sede
@@ -460,7 +421,15 @@ function pintarGraficasAdmin(data) {
         backgroundColor: '#6610f2'
       }]
     },
-    options: { plugins: { legend: { display: false } } }
+    options: {
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Cantidad de Reportes por Sede'
+        }
+      }
+    }
   });
 
   // GRAFICA 4: Reportes por mes
@@ -478,7 +447,15 @@ function pintarGraficasAdmin(data) {
         fill: true
       }]
     },
-    options: { plugins: { legend: { display: true } } }
+    options: {
+      plugins: {
+        legend: { display: true },
+        title: {
+          display: true,
+          text: 'Tendencia de Reportes por Mes'
+        }
+      }
+    }
   });
 
   // GRAFICA 5: Equipos por salón
@@ -494,7 +471,15 @@ function pintarGraficasAdmin(data) {
         backgroundColor: '#fd7e14'
       }]
     },
-    options: { plugins: { legend: { display: false } } }
+    options: {
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: 'Distribución de Equipos por Salón'
+        }
+      }
+    }
   });
 
   // GRAFICA 6: Usuarios por rol
@@ -509,7 +494,15 @@ function pintarGraficasAdmin(data) {
         backgroundColor: ['#198754', '#0dcaf0', '#6f42c1']
       }]
     },
-    options: { plugins: { legend: { position: 'bottom' } } }
+    options: {
+      plugins: {
+        legend: { position: 'bottom' },
+        title: {
+          display: true,
+          text: 'Distribución de Usuarios por Rol'
+        }
+      }
+    }
   });
 }
 

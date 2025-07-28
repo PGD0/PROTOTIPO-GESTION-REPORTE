@@ -8,7 +8,8 @@ import api from './api.js';
 const PUBLIC_PAGES = [
   'index.html',
   'login.html',
-  'register.html'
+  'register.html',
+  'dashboard.html'
 ];
 
 // Páginas que requieren rol de administrador (ID_rol = 1)

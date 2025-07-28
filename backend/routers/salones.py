@@ -53,3 +53,21 @@ async def eliminar_salon(id: int, db: Session = Depends(get_db)):
     db.delete(salon_existente)
     db.commit()
     return {"message": f"Salon con ID {id} eliminado exitosamente"}
+
+@router.get("/por_sede/{sede_id}")
+async def salones_por_sede(sede_id: int, db: Session = Depends(get_db)):
+    from models.models import Bloque  # si no está ya importado
+
+    if sede_id == 2:
+        salones = db.query(Salon).filter(Salon.bloque_id != None, Salon.sede == sede_id).all()
+    else:
+        salones = db.query(Salon).filter(Salon.sede == sede_id).all()
+
+    return salones
+
+@router.get("/por_bloque/{bloque_id}")
+async def get_salones_por_bloque(bloque_id: int, db: Session = Depends(get_db)):
+    salones = db.query(Salon).filter(Salon.bloque == bloque_id).all()
+    if not salones:
+        raise HTTPException(status_code=404, detail="No se encontraron salones para este bloque")
+    return salones
