@@ -17,6 +17,39 @@
     <!-- Script de autenticación -->
     <script type="module" src="../js/auth.js"></script>
     <style>
+        .dashboard-box {
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            overflow: hidden;
+            height: 100%;
+        }
+        
+        .dashboard-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+        }
+        
+        .dashboard-box .card-header {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1rem 1.5rem;
+        }
+        
+        .dashboard-box .card-header h5 {
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .dashboard-box .card-header h5 i {
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+        
+        .dashboard-box .card-body {
+            padding: 1.5rem;
+        }
+        
         .dashboard-box .card-body canvas {
             min-height: 220px;
             max-height: 320px;
@@ -24,82 +57,72 @@
             height: auto !important;
             aspect-ratio: 1.5/1;
         }
+        
+        .stat-card {
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+        }
+        
+        .stat-card .icon-container {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-right: 1rem;
+        }
+        
+        .stat-card .stat-content {
+            flex: 1;
+        }
+        
+        .stat-card .stat-title {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
         @media (max-width: 991.98px) {
             .dashboard-box .card-body canvas {
                 min-height: 180px;
                 max-height: 220px;
             }
         }
+        
         @media (max-width: 576px) {
             .dashboard-box .card-body canvas {
                 min-height: 140px;
                 max-height: 180px;
             }
+            
+            .stat-card .icon-container {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .stat-card .stat-value {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar Overlay for Mobile -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a class="sidebar-brand" id="sidebarBrand" style="cursor:pointer;">
-                <img src="../assets/img/logo_IUB.png" alt="Logo IUB" id="sidebarLogo">
-            </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="bi bi-list"></i>
-            </button>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <div class="nav-item">
-                <a href="homepage.html" class="nav-link" id="homepageLink">
-                    <i class="bi bi-house"></i>
-                    <span>Inicio</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="reportes.html" class="nav-link" id="reportesLink">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Reportes</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="hacer-reporte.html" class="nav-link" id="nuevoReporteLink">
-                    <i class="bi bi-plus-circle"></i>
-                    <span>Nuevo Reporte</span>
-                </a>
-            </div>
-            <hr class="my-3">
-            <div class="nav-item">
-                <a href="dashboard.html" class="nav-link active" id="dashboardLink">
-                    <i class="bi bi-graph-up"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="gestion-usuarios.html" class="nav-link" id="gestionUsuariosLink">
-                    <i class="bi bi-people"></i>
-                    <span>Gestión de Usuarios</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="gestion-reportes.html" class="nav-link" id="gestionReportesLink">
-                    <i class="bi bi-clipboard-data"></i>
-                    <span>Gestión de Reportes</span>
-                </a>
-            </div>
-            <hr class="my-3">
-            <div class="nav-item">
-                <a href="../index.html" class="nav-link" id="salirLink">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Salir</span>
-                </a>
-            </div>
-        </nav>
-    </aside>
+    <!-- El sidebar se inyectará dinámicamente mediante JavaScript -->
 
     <!-- Main Content -->
     <div class="main-content-wrapper" id="mainContent">
@@ -110,7 +133,7 @@
                     <button class="btn btn-link d-lg-none me-3" id="mobileSidebarToggle">
                         <i class="bi bi-list fs-4"></i>
                     </button>
-                    <h4 class="mb-0">Panel de Control</h4>
+                    <h4 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Panel de Control</h4>
                 </div>
                 <div class="d-flex align-items-center">
                     <a href="perfil.html" class="btn btn-link text-decoration-none">
@@ -123,90 +146,131 @@
         <!-- Content Area -->
         <div class="content-area">
             <div class="container-fluid">
-                <div class="dashboard-box bg-white rounded shadow-sm p-4 mb-4">
-                    <h1 class="h2 mb-4">Dashboard</h1>
-                    <p class="text-muted">Bienvenido al panel de control.</p>
-                    <!-- Indicadores -->
-                    <div class="row g-4 mb-5" id="indicadoresRow">
-                        <!-- Aquí se insertarán los indicadores dinámicamente -->
+                <!-- Bienvenida y Resumen -->
+                <div class="row mb-4">
+                    <div class="col-12 mb-4">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3">Bienvenido al Panel de Control</h5>
+                                <p class="text-muted mb-0">Aquí encontrarás un resumen de la actividad y estadísticas del sistema de gestión de reportes.</p>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Gráficas -->
-                    <div class="row g-4" id="graficasRow">
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <canvas id="grafica1"></canvas>
+                </div>
+                
+                <!-- Resumen de Reportes -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="stat-card card border-0 shadow-sm">
+                            <div class="card-body p-4 d-flex align-items-center">
+                                <div class="icon-container bg-primary bg-opacity-10">
+                                    <i class="bi bi-file-earmark-text text-primary fs-4"></i>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <canvas id="grafica2"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <canvas id="grafica3"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <canvas id="grafica4"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <canvas id="grafica5"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm">
-                                <div class="card-body">
-                                    <canvas id="grafica6"></canvas>
+                                <div class="stat-content">
+                                    <div class="stat-title">Total Reportes</div>
+                                    <div class="stat-value text-primary" id="totalReportes">0</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Tabla de registros -->
-                    <div class="row mt-5">
-                        <div class="col-12">
-                            <div class="card shadow-sm">
-                                <div class="card-header bg-white border-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0 fw-bold">
-                                            <i class="bi bi-list-ul me-2"></i>Registros recientes
-                                        </h5>
-                                        <a href="reportes.html" class="btn btn-outline-primary btn-sm">
-                                            Ver Todos
-                                        </a>
-                                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="stat-card card border-0 shadow-sm">
+                            <div class="card-body p-4 d-flex align-items-center">
+                                <div class="icon-container bg-warning bg-opacity-10">
+                                    <i class="bi bi-hourglass-split text-warning fs-4"></i>
                                 </div>
-                                <div class="card-body p-0">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover mb-0" id="tablaRegistrosDashboard">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th class="border-0"><i class="bi bi-calendar me-1"></i>Fecha</th>
-                                                    <th class="border-0"><i class="bi bi-pc-display me-1"></i>Equipo</th>
-                                                    <th class="border-0"><i class="bi bi-chat-text me-1"></i>Descripción</th>
-                                                    <th class="border-0"><i class="bi bi-tag me-1"></i>Estado</th>
-                                                    <th class="border-0"><i class="bi bi-person me-1"></i>Usuario</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Registros dinámicos -->
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Reportes Pendientes</div>
+                                    <div class="stat-value text-warning" id="reportesPendientes">0</div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card card border-0 shadow-sm">
+                            <div class="card-body p-4 d-flex align-items-center">
+                                <div class="icon-container bg-success bg-opacity-10">
+                                    <i class="bi bi-check-circle text-success fs-4"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Reportes Resueltos</div>
+                                    <div class="stat-value text-success" id="reportesResueltos">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos y Estadísticas -->
+                <div class="row">
+                    <!-- Reportes por Estado -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="dashboard-box card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="reportesPorEstadoChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reportes por Sede -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="dashboard-box card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title"><i class="bi bi-building text-primary"></i> Reportes por Sede</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="reportesPorSedeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reportes por Mes -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="dashboard-box card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Reportes por Mes</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="reportesPorMesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usuarios por Rol -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="dashboard-box card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Usuarios por Rol</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="usuariosPorRolChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipos por Estado -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="dashboard-box card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title"><i class="bi bi-pc-display text-primary"></i> Equipos por Estado</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="equiposPorEstadoChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Equipos por Salón -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="dashboard-box card border-0 shadow-sm">
+                            <div class="card-header bg-white">
+                                <h5 class="card-title"><i class="bi bi-geo-alt-fill text-primary"></i> Equipos por Salón</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="equiposPorSalonChart"></canvas>
                             </div>
                         </div>
                     </div>
@@ -216,8 +280,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="../js/sidebar.js"></script>
+    <script type="module" src="../js/sidebar-loader.js"></script>
+    <script type="module" src="../js/main.js"></script>
 </body>
 </html>

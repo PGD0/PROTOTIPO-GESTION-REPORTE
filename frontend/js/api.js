@@ -169,6 +169,32 @@ async function getDashboard() {
   return res.json();
 }
 
+async function verificarPassword(usuarioId, password) {
+  try {
+    const res = await fetch(`${API_URL}/usuarios/verificar-password`, {
+      method: 'POST',
+      headers: {
+        ...authHeaders(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        usuario_id: usuarioId,
+        password: password
+      })
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.detail || 'Error al verificar la contraseña');
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error('Error en verificarPassword:', error);
+    throw error;
+  }
+}
+
 export default {
   login,
   register,
@@ -185,5 +211,6 @@ export default {
   setToken,
   clearToken,
   authHeaders,
-  getDashboard
+  getDashboard,
+  verificarPassword
 };

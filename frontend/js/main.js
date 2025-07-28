@@ -13,9 +13,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function ocultarGraficaSiVacia(idCanvas, mostrar = true) {
-  const card = document.getElementById(idCanvas)?.closest('.col-12');
-  if (card) {
-    card.style.display = mostrar ? 'block' : 'none';
+  const canvas = document.getElementById(idCanvas);
+  if (canvas) {
+    const card = canvas.closest('.col-lg-6, .col-lg-8, .col-lg-4');
+    if (card) {
+      card.style.display = mostrar ? 'block' : 'none';
+    }
   }
 }
 
@@ -23,6 +26,7 @@ function ocultarGraficaSiVacia(idCanvas, mostrar = true) {
 let todosLosReportes = [];
 let todosLosEquipos = [];
 let todosLosUsuarios = [];
+let todasLasSedes = [];
 
 function renderReportes(filtros = {}) {
     // Usar API real
@@ -36,12 +40,17 @@ function renderReportes(filtros = {}) {
         Promise.all([
             api.getReportes(),
             api.getEquipos(),
-            api.getUsuarios()
+            api.getUsuarios(),
+            api.getSedes()
         ])
-        .then(([reportes, equipos, usuarios]) => {
+        .then(([reportes, equipos, usuarios, sedes]) => {
             todosLosReportes = reportes || [];
             todosLosEquipos = equipos || [];
             todosLosUsuarios = usuarios || [];
+            todasLasSedes = sedes || [];
+            
+            // Actualizar el filtro de sedes con datos dinámicos
+            actualizarFiltroSedes();
             
             renderReportesFiltrados(filtros);
         })
@@ -86,6 +95,11 @@ function renderReportesFiltrados(filtros = {}) {
     if (filtros.sede) {
         reportesFiltrados = reportesFiltrados.filter(r => {
             const equipo = todosLosEquipos.find(e => e.ID_equipo === r.ID_equipo) || {};
+            // Verificar si el nombre de la sede coincide con el filtro
+            if (equipo.sede) {
+                return equipo.sede.toLowerCase().includes(filtros.sede.toLowerCase());
+            }
+            // Si no se encuentra la sede, intentar filtrar por el nombre del salón
             const ubicacion = equipo.salon || r.salon || '';
             return ubicacion.toLowerCase().includes(filtros.sede.toLowerCase());
         });
@@ -179,7 +193,20 @@ function renderReportesFiltrados(filtros = {}) {
                         </div>
                         <div class="pin-detail-item">
                             <i class="bi bi-geo-alt"></i>
-                            <span>${equipo.salon || r.salon || 'Ubicación no especificada'}</span>
+                            <span>
+                                ${(() => {
+                                    // Mostrar sede y salón si están disponibles
+                                    if (equipo.sede && equipo.salon) {
+                                        return `${equipo.sede} - ${equipo.salon}`;
+                                    } else if (equipo.sede) {
+                                        return equipo.sede;
+                                    } else if (equipo.salon) {
+                                        return equipo.salon;
+                                    } else {
+                                        return 'Ubicación no especificada';
+                                    }
+                                })()}
+                            </span>
                         </div>
                     </div>
                     <div class="pin-description">
@@ -190,6 +217,33 @@ function renderReportesFiltrados(filtros = {}) {
         `;
         container.appendChild(card);
     });
+}
+
+// Función para actualizar el filtro de sedes con datos dinámicos
+function actualizarFiltroSedes() {
+    const filtroSede = document.getElementById('filtro-sede');
+    if (!filtroSede) return;
+    
+    // Guardar el valor seleccionado actualmente (si hay)
+    const valorSeleccionado = filtroSede.value;
+    
+    // Limpiar opciones actuales, manteniendo solo la opción por defecto
+    filtroSede.innerHTML = '<option value="">Todas las sedes</option>';
+    
+    // Agregar las sedes desde la API
+    if (todasLasSedes && todasLasSedes.length > 0) {
+        todasLasSedes.forEach(sede => {
+            const option = document.createElement('option');
+            option.value = sede.nombre_sede.toLowerCase();
+            option.textContent = sede.nombre_sede;
+            filtroSede.appendChild(option);
+        });
+    }
+    
+    // Restaurar el valor seleccionado si existía
+    if (valorSeleccionado) {
+        filtroSede.value = valorSeleccionado;
+    }
 }
 
 function setupVistaReportes() {
@@ -245,23 +299,65 @@ function verDetalleReporte(idReporte) {
 }
 
 function pintarGraficasUsuario(data) {
+  // Configuración común para todos los gráficos
+  Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
+  Chart.defaults.font.size = 13;
+  Chart.defaults.color = '#495057';
+  
+  // Paleta de colores consistente
+  const colorPalette = {
+    primary: '#0d6efd',
+    secondary: '#6c757d',
+    success: '#198754',
+    danger: '#dc3545',
+    warning: '#ffc107',
+    info: '#0dcaf0',
+    purple: '#6f42c1',
+    pink: '#d63384',
+    orange: '#fd7e14',
+    teal: '#20c997'
+  };
+  
   // GRAFICA 1 - Resueltos vs Pendientes
-  ocultarGraficaSiVacia('grafica1', true);
-  new Chart(document.getElementById('grafica1'), {
+  new Chart(document.getElementById('reportesPorEstadoChart'), {
     type: 'doughnut',
     data: {
       labels: ['Pendientes', 'Resueltos'],
       datasets: [{
         data: [data.pendientes, data.resueltos],
-        backgroundColor: ['#ffc107', '#198754']
+        backgroundColor: [colorPalette.warning, colorPalette.success],
+        borderWidth: 0,
+        hoverOffset: 10
       }]
     },
     options: {
+      cutout: '65%',
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom' },
-        title: {
-          display: true,
-          text: 'Reportes Pendientes vs Resueltos'
+        legend: { 
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              weight: 500
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#000',
+          bodyColor: '#000',
+          bodyFont: {
+            weight: 'bold'
+          },
+          borderWidth: 1,
+          borderColor: '#e9ecef',
+          cornerRadius: 8,
+          padding: 12,
+          boxPadding: 6,
+          usePointStyle: true
         }
       }
     }
@@ -269,72 +365,179 @@ function pintarGraficasUsuario(data) {
 
   // GRAFICA 2 - Reportes por mes (propios)
   if (data.reportes_mensuales && Object.keys(data.reportes_mensuales).length > 0) {
-    ocultarGraficaSiVacia('grafica2', true);
-    new Chart(document.getElementById('grafica2'), {
+    ocultarGraficaSiVacia('reportesPorMesChart', true);
+    new Chart(document.getElementById('reportesPorMesChart'), {
       type: 'bar',
       data: {
         labels: Object.keys(data.reportes_mensuales),
         datasets: [{
           label: 'Tus Reportes por Mes',
           data: Object.values(data.reportes_mensuales),
-          backgroundColor: '#0dcaf0'
+          backgroundColor: colorPalette.info,
+          borderRadius: 6,
+          maxBarThickness: 40,
+          borderWidth: 0
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              drawBorder: false,
+              color: 'rgba(0, 0, 0, 0.05)'
+            },
+            ticks: {
+              precision: 0
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        },
         plugins: {
           legend: { display: false },
           title: {
             display: true,
             text: 'Tus Reportes por Mes'
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#000',
+            bodyColor: '#000',
+            bodyFont: {
+              weight: 'bold'
+            },
+            borderWidth: 1,
+            borderColor: '#e9ecef',
+            cornerRadius: 8,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true
           }
         }
       }
     });
   } else {
-    ocultarGraficaSiVacia('grafica2', false);
+    ocultarGraficaSiVacia('reportesPorMesChart', false);
   }
 
-  // GRAFICA 3 - Total equipos reportados (gráfico de barras simple)
-  ocultarGraficaSiVacia('grafica3', true);
-  new Chart(document.getElementById('grafica3'), {
-    type: 'bar',
-    data: {
-      labels: ['Equipos reportados'],
-      datasets: [{
-        label: 'Total',
-        data: [data.equipos_reportados],
-        backgroundColor: '#fd7e14'
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: 'Total de Equipos Reportados'
+  // GRAFICA 3 - Estado de últimos reportes
+  if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
+    // Crear un nuevo elemento para el gráfico de últimos reportes si no existe
+    let ultimosReportesContainer = document.querySelector('.col-lg-6.mb-4:last-child');
+    if (ultimosReportesContainer) {
+      const newChartDiv = document.createElement('div');
+      newChartDiv.className = 'col-lg-6 mb-4';
+      newChartDiv.innerHTML = `
+        <div class="dashboard-box card border-0 shadow-sm">
+          <div class="card-header bg-white">
+            <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Estado de Últimos Reportes</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="ultimosReportesChart"></canvas>
+          </div>
+        </div>
+      `;
+      ultimosReportesContainer.parentNode.appendChild(newChartDiv);
+    }
+    
+    ocultarGraficaSiVacia('ultimosReportesChart', true);
+    new Chart(document.getElementById('ultimosReportesChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Pendientes', 'Resueltos'],
+        datasets: [{
+          data: [data.ultimos_reportes?.filter(r => r.estado !== 'Resuelto').length || 0, 
+                data.ultimos_reportes?.filter(r => r.estado === 'Resuelto').length || 0],
+          backgroundColor: [colorPalette.warning, colorPalette.success],
+          borderWidth: 0,
+          hoverOffset: 10
+        }]
+      },
+      options: {
+        cutout: '70%',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { 
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: {
+                weight: 500
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#000',
+            bodyColor: '#000',
+            bodyFont: {
+              weight: 'bold'
+            },
+            borderWidth: 1,
+            borderColor: '#e9ecef',
+            cornerRadius: 8,
+            padding: 12,
+            boxPadding: 6,
+            usePointStyle: true
+          }
         }
       }
-    }
-  });
+    });
+  } else {
+    ocultarGraficaSiVacia('ultimosReportesChart', false);
+  }
 
   // GRAFICA 4 - Últimos reportes por estado
   if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
-    ocultarGraficaSiVacia('grafica4', true);
+    // Crear un nuevo elemento para el gráfico de reportes por estado del usuario si no existe
+    let reportesPorEstadoUsuarioContainer = document.querySelector('.col-lg-8.mb-4');
+    if (reportesPorEstadoUsuarioContainer) {
+      const newChartDiv = document.createElement('div');
+      newChartDiv.className = 'col-lg-8 mb-4';
+      newChartDiv.innerHTML = `
+        <div class="dashboard-box card border-0 shadow-sm">
+          <div class="card-header bg-white">
+            <h5 class="card-title"><i class="bi bi-graph-up text-primary"></i> Últimos Reportes por Estado</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="reportesPorEstadoUsuarioChart"></canvas>
+          </div>
+        </div>
+      `;
+      reportesPorEstadoUsuarioContainer.parentNode.appendChild(newChartDiv);
+    }
+    
+    ocultarGraficaSiVacia('reportesPorEstadoUsuarioChart', true);
     const fechas = data.ultimos_reportes.map(r => new Date(r.fecha).toLocaleDateString('es-ES'));
     const estados = data.ultimos_reportes.map(r => r.estado === 'Resuelto' ? 1 : 0);
-    new Chart(document.getElementById('grafica4'), {
+    new Chart(document.getElementById('reportesPorEstadoUsuarioChart'), {
       type: 'line',
       data: {
         labels: fechas,
         datasets: [{
-          label: 'Estado de últimos reportes',
+          label: 'Estado de reportes',
           data: estados,
-          backgroundColor: 'rgba(13,110,253,0.2)',
-          borderColor: '#0d6efd',
-          fill: true
+          backgroundColor: 'rgba(13,110,253,0.1)',
+          borderColor: colorPalette.primary,
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: colorPalette.primary,
+          pointRadius: 4
         }]
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,
@@ -354,12 +557,17 @@ function pintarGraficasUsuario(data) {
             stepSize: 1,
             min: 0,
             max: 1
+          },
+          x: {
+            grid: {
+              display: false
+            }
           }
         }
       }
     });
   } else {
-    ocultarGraficaSiVacia('grafica4', false);
+    ocultarGraficaSiVacia('reportesPorMesChart', false);
   }
 
   ocultarGraficaSiVacia('grafica5', false);
@@ -367,95 +575,235 @@ function pintarGraficasUsuario(data) {
 }
 
 function pintarGraficasAdmin(data) {
+  // Actualizar contadores en las tarjetas
+  document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
+  document.getElementById('reportesPendientes').textContent = data.pendientes;
+  document.getElementById('reportesResueltos').textContent = data.resueltos;
+  
+  // Configuración común para todos los gráficos
+  Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
+  Chart.defaults.font.size = 13;
+  Chart.defaults.color = '#495057';
+  
+  // Paleta de colores consistente
+  const colorPalette = {
+    primary: '#0d6efd',
+    secondary: '#6c757d',
+    success: '#198754',
+    danger: '#dc3545',
+    warning: '#ffc107',
+    info: '#0dcaf0',
+    purple: '#6f42c1',
+    pink: '#d63384',
+    orange: '#fd7e14',
+    teal: '#20c997'
+  };
+  
   // GRAFICA 1: Pendientes vs Resueltos
-  new Chart(document.getElementById('grafica1'), {
+  new Chart(document.getElementById('reportesPorEstadoChart'), {
     type: 'doughnut',
     data: {
       labels: ['Pendientes', 'Resueltos'],
       datasets: [{
         data: [data.pendientes, data.resueltos],
-        backgroundColor: ['#ffc107', '#198754']
+        backgroundColor: [colorPalette.warning, colorPalette.success],
+        borderWidth: 0,
+        hoverOffset: 10
       }]
     },
     options: {
+      cutout: '65%',
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom' },
-        title: {
-          display: true,
-          text: 'Reportes Pendientes vs Resueltos (Global)'
+        legend: { 
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              weight: 500
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#000',
+          bodyColor: '#000',
+          bodyFont: {
+            weight: 'bold'
+          },
+          borderWidth: 1,
+          borderColor: '#e9ecef',
+          cornerRadius: 8,
+          padding: 12,
+          boxPadding: 6,
+          usePointStyle: true
         }
       }
     }
-
   });
 
   // GRAFICA 2: Equipos funcionales vs no funcionales
-  new Chart(document.getElementById('grafica2'), {
+  new Chart(document.getElementById('equiposPorEstadoChart'), {
     type: 'pie',
     data: {
       labels: ['Funcionales', 'No Funcionales'],
       datasets: [{
         data: [data.equipos_funcionales, data.equipos_no_funcionales],
-        backgroundColor: ['#0d6efd', '#dc3545']
+        backgroundColor: [colorPalette.primary, colorPalette.danger],
+        borderWidth: 0,
+        hoverOffset: 10
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom' },
-        title: {
-          display: true,
-          text: 'Estado de Equipos Tecnológicos'
+        legend: { 
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              weight: 500
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#000',
+          bodyColor: '#000',
+          bodyFont: {
+            weight: 'bold'
+          },
+          borderWidth: 1,
+          borderColor: '#e9ecef',
+          cornerRadius: 8,
+          padding: 12,
+          boxPadding: 6,
+          usePointStyle: true
         }
       }
     }
-
   });
 
   // GRAFICA 3: Reportes por sede
   const sedes = data.reportes_por_sede.map(d => d.sede);
   const cantidadesSedes = data.reportes_por_sede.map(d => d.cantidad);
-  new Chart(document.getElementById('grafica3'), {
+  new Chart(document.getElementById('reportesPorSedeChart'), {
     type: 'bar',
     data: {
       labels: sedes,
       datasets: [{
         label: 'Reportes por Sede',
         data: cantidadesSedes,
-        backgroundColor: '#6610f2'
+        backgroundColor: colorPalette.purple,
+        borderRadius: 4,
+        maxBarThickness: 40,
+        borderWidth: 0
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      },
       plugins: {
         legend: { display: false },
-        title: {
-          display: true,
-          text: 'Cantidad de Reportes por Sede'
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#000',
+          bodyColor: '#000',
+          borderWidth: 1,
+          cornerRadius: 4
         }
       }
     }
   });
 
   // GRAFICA 4: Reportes por mes
-  const meses = data.reportes_por_mes.map(d => `Mes ${d.mes}`);
+  const meses = data.reportes_por_mes.map(d => {
+    // Convertir número de mes a nombre
+    const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    return nombresMeses[d.mes - 1] || `Mes ${d.mes}`;
+  });
   const cantidadesMes = data.reportes_por_mes.map(d => d.cantidad);
-  new Chart(document.getElementById('grafica4'), {
+  new Chart(document.getElementById('reportesPorMesChart'), {
     type: 'line',
     data: {
       labels: meses,
       datasets: [{
         label: 'Reportes por Mes',
         data: cantidadesMes,
-        borderColor: '#0d6efd',
-        backgroundColor: 'rgba(13,110,253,0.2)',
-        fill: true
+        borderColor: colorPalette.primary,
+        backgroundColor: 'rgba(13,110,253,0.1)',
+        fill: true,
+        tension: 0.3,
+        borderWidth: 3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: colorPalette.primary,
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            drawBorder: false,
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          ticks: {
+            precision: 0
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      },
       plugins: {
-        legend: { display: true },
-        title: {
+        legend: { 
           display: true,
-          text: 'Tendencia de Reportes por Mes'
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              weight: 500
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#000',
+          bodyColor: '#000',
+          bodyFont: {
+            weight: 'bold'
+          },
+          borderWidth: 1,
+          borderColor: '#e9ecef',
+          cornerRadius: 8,
+          padding: 12,
+          boxPadding: 6,
+          usePointStyle: true
         }
       }
     }
@@ -464,23 +812,38 @@ function pintarGraficasAdmin(data) {
   // GRAFICA 5: Equipos por salón
   const salones = data.equipos_por_salon.map(d => d.salon);
   const cantidadesSalon = data.equipos_por_salon.map(d => d.cantidad);
-  new Chart(document.getElementById('grafica5'), {
+  new Chart(document.getElementById('equiposPorSalonChart'), {
     type: 'bar',
     data: {
       labels: salones,
       datasets: [{
         label: 'Equipos por Salón',
         data: cantidadesSalon,
-        backgroundColor: '#fd7e14'
+        backgroundColor: colorPalette.orange,
+        borderRadius: 4,
+        maxBarThickness: 40,
+        borderWidth: 0
       }]
     },
     options: {
-      plugins: {
-        legend: { display: false },
-        title: {
-          display: true,
-          text: 'Distribución de Equipos por Salón'
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y',  // Barras horizontales para mejor visualización
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        },
+        y: {
+          grid: {
+            display: false
+          }
         }
+      },
+      plugins: {
+        legend: { display: false }
       }
     }
   });
@@ -488,21 +851,33 @@ function pintarGraficasAdmin(data) {
   // GRAFICA 6: Usuarios por rol
   const roles = data.usuarios_por_rol.map(d => d.rol);
   const cantidadesRol = data.usuarios_por_rol.map(d => d.cantidad);
-  new Chart(document.getElementById('grafica6'), {
+  new Chart(document.getElementById('usuariosPorRolChart'), {
     type: 'pie',
     data: {
       labels: roles,
       datasets: [{
+        label: 'Usuarios por Rol',
         data: cantidadesRol,
-        backgroundColor: ['#198754', '#0dcaf0', '#6f42c1']
+        backgroundColor: [
+          colorPalette.success,
+          colorPalette.info,
+          colorPalette.purple
+        ],
+        borderWidth: 0,
+        hoverOffset: 10
       }]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom' },
-        title: {
-          display: true,
-          text: 'Distribución de Usuarios por Rol'
+        legend: { 
+          position: 'right'
+        },
+        tooltip: {
+          backgroundColor: '#fff',
+          titleColor: '#000',
+          bodyColor: '#000'
         }
       }
     }
@@ -512,20 +887,176 @@ function pintarGraficasAdmin(data) {
 
 
 // --- PROTECCIÓN DE DASHBOARD ---
-if (window.location.pathname.endsWith('dashboard.html')) {
+if (window.location.pathname.includes('dashboard.html')) {
   document.addEventListener('DOMContentLoaded', async function() {
     try {
+      // Mostrar mensaje de carga
+      document.querySelector('.content-area').innerHTML = `
+        <div class="alert alert-info m-4">
+          <h5><i class="bi bi-info-circle-fill me-2"></i>Cargando dashboard</h5>
+          <p class="mb-0">Por favor, espere mientras se cargan los datos...</p>
+        </div>
+      `;
+      
+      // Obtener datos reales del dashboard (siempre usar datos reales, nunca datos de prueba)
       const data = await api.getDashboard();
-      console.log('Datos del dashboard:', data);
-      const rol = data.rol === 1 ? "admin" : "usuario";
+      console.log('Datos del dashboard (API):', data);
+      
+      // Restaurar contenido original
+      document.querySelector('.content-area').innerHTML = `
+        <!-- Resumen de Reportes -->
+        <div class="row mb-4">
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Bienvenido al Panel de Control</h5>
+                        <p class="text-muted mb-0">Aquí encontrarás un resumen de la actividad y estadísticas del sistema de gestión de reportes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen de Reportes -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="stat-card card border-0 shadow-sm">
+                    <div class="card-body p-4 d-flex align-items-center">
+                        <div class="icon-container bg-primary bg-opacity-10">
+                            <i class="bi bi-file-earmark-text text-primary fs-4"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-title">Total Reportes</div>
+                            <div class="stat-value text-primary" id="totalReportes">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="stat-card card border-0 shadow-sm">
+                    <div class="card-body p-4 d-flex align-items-center">
+                        <div class="icon-container bg-warning bg-opacity-10">
+                            <i class="bi bi-hourglass-split text-warning fs-4"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-title">Reportes Pendientes</div>
+                            <div class="stat-value text-warning" id="reportesPendientes">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card card border-0 shadow-sm">
+                    <div class="card-body p-4 d-flex align-items-center">
+                        <div class="icon-container bg-success bg-opacity-10">
+                            <i class="bi bi-check-circle text-success fs-4"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-title">Reportes Resueltos</div>
+                            <div class="stat-value text-success" id="reportesResueltos">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Gráficos y Estadísticas -->
+        <div class="row">
+            <!-- Reportes por Estado -->
+            <div class="col-lg-6 mb-4">
+                <div class="dashboard-box card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="reportesPorEstadoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reportes por Sede -->
+            <div class="col-lg-6 mb-4">
+                <div class="dashboard-box card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title"><i class="bi bi-building text-primary"></i> Reportes por Sede</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="reportesPorSedeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reportes por Mes -->
+            <div class="col-lg-8 mb-4">
+                <div class="dashboard-box card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Reportes por Mes</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="reportesPorMesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usuarios por Rol -->
+            <div class="col-lg-4 mb-4">
+                <div class="dashboard-box card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title"><i class="bi bi-people-fill text-primary"></i> Usuarios por Rol</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="usuariosPorRolChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipos por Estado -->
+            <div class="col-lg-6 mb-4">
+                <div class="dashboard-box card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title"><i class="bi bi-pc-display text-primary"></i> Equipos por Estado</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="equiposPorEstadoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipos por Salón -->
+            <div class="col-lg-6 mb-4">
+                <div class="dashboard-box card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title"><i class="bi bi-geo-alt-fill text-primary"></i> Equipos por Salón</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="equiposPorSalonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+      `;
+      
+      // Actualizar contadores en las tarjetas (para ambos roles)
+      document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
+      document.getElementById('reportesPendientes').textContent = data.pendientes;
+      document.getElementById('reportesResueltos').textContent = data.resueltos;
+
+      const rol = data.rol === 1 ? "admin" : "usuario";
       if (rol === 'admin') {
         pintarGraficasAdmin(data);
       } else {
         pintarGraficasUsuario(data);
       }
     } catch (error) {
-      console.error('Error al cargar dashboard:', err);
+    console.error('Error al cargar dashboard:', error);
+    document.querySelector('.content-area').innerHTML = `
+      <div class="alert alert-danger m-4">
+        <h5><i class="bi bi-exclamation-triangle-fill me-2"></i>Error al cargar el dashboard</h5>
+        <p class="mb-0">No se pudieron cargar los datos. Error: ${error.message || 'Desconocido'}</p>
+        <hr>
+        <p class="mb-0">Verifica tu conexión a internet y que el servidor esté funcionando correctamente.</p>
+        <button class="btn btn-outline-danger mt-3" onclick="window.location.reload()">Intentar nuevamente</button>
+      </div>
+    `;
     }
   });
 }
@@ -569,8 +1100,9 @@ if (window.location.pathname.endsWith('hacer-reporte.html')) {
         return;
       }
       try {
-        // Aquí deberías obtener el usuario actual (ID_usuario) de localStorage o backend
-        const ID_usuario = 1; // Ajustar según implementación real
+        // Obtener el usuario actual desde localStorage
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        const ID_usuario = currentUser?.ID_usuarios || 1; // Usar ID del usuario actual o 1 como fallback
         await api.crearReporte({
           ID_equipo: parseInt(equipo.value),
           descripcion: desc.value.trim(),
@@ -657,6 +1189,27 @@ if (window.location.pathname.endsWith('perfil.html')) {
   document.addEventListener('DOMContentLoaded', () => {
     cargarDatosUsuario();
     document.getElementById('guardarPerfilBtn').addEventListener('click', actualizarPerfil);
+    
+    // Agregar event listener para el cambio de foto
+    const cambiarFotoOverlay = document.querySelector('.cambiar-foto-overlay');
+    const fotoPerfilInput = document.getElementById('fotoPerfilInput');
+    
+    if (cambiarFotoOverlay && fotoPerfilInput) {
+      cambiarFotoOverlay.addEventListener('click', () => {
+        fotoPerfilInput.click();
+      });
+      
+      // Mostrar vista previa de la imagen seleccionada
+      fotoPerfilInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            document.querySelector('.perfil-foto-editar').src = e.target.result;
+          };
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+    }
   });
 }
 

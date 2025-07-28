@@ -508,7 +508,8 @@
 }
 
 /* Estilos para la foto en el modal */
-.modal-perfil-foto {
+.modal-perfil-foto,
+.perfil-foto-editar {
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -520,12 +521,14 @@
 }
 
 /* Overlay simple para la foto en el modal */
-.modal-foto-hover {
+.modal-foto-hover,
+.perfil-foto-editar-container {
     position: relative;
     display: inline-block;
 }
 
-.modal-foto-overlay-simple {
+.modal-foto-overlay-simple,
+.cambiar-foto-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -538,26 +541,42 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     cursor: pointer;
 }
 
-.modal-foto-hover:hover .modal-foto-overlay-simple {
+.modal-foto-hover:hover .modal-foto-overlay-simple,
+.perfil-foto-editar-container:hover .cambiar-foto-overlay {
     opacity: 1;
 }
 
-.modal-foto-btn-simple {
+.modal-foto-btn-simple,
+.cambiar-foto-overlay i,
+.cambiar-foto-overlay span {
     color: #fff;
     font-weight: 600;
     font-size: 0.9rem;
     text-align: center;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.cambiar-foto-overlay i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.cambiar-foto-overlay span {
+    font-size: 0.8rem;
+}
+
+.modal-foto-btn-simple {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    background: transparent;
-    border: none;
 }
 
 .modal-foto-btn-simple span {

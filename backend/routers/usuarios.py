@@ -139,3 +139,22 @@ async def eliminar_usuario(id: int, db: Session = Depends(get_db)):
     
     db.delete(usuario)
     db.commit()
+
+@router.post("/verificar-password")
+async def verificar_password(datos: dict, db: Session = Depends(get_db)):
+    from services.hash import verify_password
+    
+    usuario_id = datos.get("usuario_id")
+    password = datos.get("password")
+    
+    if not usuario_id or not password:
+        raise HTTPException(status_code=400, detail="Se requiere ID de usuario y contraseña")
+    
+    usuario = db.query(Usuario).filter(Usuario.ID_usuarios == usuario_id).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    if not verify_password(password, usuario.contraseña):
+        raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+    
+    return {"message": "Contraseña verificada correctamente"}

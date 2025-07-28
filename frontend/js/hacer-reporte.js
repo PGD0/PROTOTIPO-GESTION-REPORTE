@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ID_equipo: equipo.ID_equipo, // Usar el ID del equipo encontrado
                 descripcion: datos.descripcion,
                 estado_equipo: datos.tipoProblema,
-                ID_usuario: localStorage.getItem('user_id') || 1,
+                ID_usuario: JSON.parse(localStorage.getItem('currentUser'))?.ID_usuarios || 1,
                 resuelto: false,
                 imagen: datos.imagen
             });
