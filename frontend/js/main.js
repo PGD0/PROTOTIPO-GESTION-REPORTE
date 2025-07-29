@@ -1401,7 +1401,12 @@ export async function cargarUltimosReportes(idUsuario, token) {
 
       const fecha = new Date(reporte.fecha_registro).toISOString().split('T')[0];
       const descripcion = reporte.descripcion || 'Sin descripción';
-      const ubicacion = reporte.ubicacion || 'Ubicación desconocida';
+      let ubicacion = 'Ubicación desconocida';
+      if (reporte.equipo) {
+        const sede = reporte.equipo.sede || 'Sin sede';
+        const salon = reporte.equipo.salon || 'Sin salón';
+        ubicacion = `Sede ${sede}, Salón ${salon}`;
+      }
 
       col.innerHTML = `
         <div class="card reporte-card">

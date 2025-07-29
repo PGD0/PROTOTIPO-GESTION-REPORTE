@@ -98,7 +98,7 @@ async def obtener_ultimos_reportes_usuario(id: int, db: Session = Depends(get_db
         db.query(Reporte)
         .filter(Reporte.ID_usuario == id)
         .order_by(Reporte.fecha_registro.desc())
-        .limit(6)
+        .limit(10)
         .all()
     )
     return reportes
