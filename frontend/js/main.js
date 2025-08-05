@@ -1384,10 +1384,11 @@ export async function cargarUltimosReportes(idUsuario, token) {
     const row = document.createElement('div');
     row.className = 'row g-3';
 
-    reportes.forEach((reporte, index) => {
+        reportes.forEach((reporte, index) => {
       const col = document.createElement('div');
-      col.className = 'col-md-4';
-
+      col.className = 'col-md-8 col-lg-6 mb-4';
+      
+      
       // Determinar estado y badge
       let badge = 'bg-warning text-dark';
       let estadoTexto = 'En proceso';

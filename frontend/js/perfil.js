@@ -36,7 +36,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       <h5>Reportes recientes</h5>
       <div id="ultimosReportesUsuario" class="mt-3"></div>
     `;
-    document.querySelector(".main-content-wrapper .contenedor .row").appendChild(contenedor);
+    // Insertar después de la descripción del perfil, dentro de la misma columna
+    const descripcionContainer = document.querySelector(".descripcion-perfil");
+    if (descripcionContainer) {
+      descripcionContainer.parentNode.insertBefore(contenedor, descripcionContainer.nextSibling);
+    } else {
+      // Fallback: insertar en la primera columna si no se encuentra la descripción
+      const primeraColumna = document.querySelector(".col-md-8");
+      if (primeraColumna) {
+        primeraColumna.appendChild(contenedor);
+      }
+    }
   }
 
   // Cargar reportes recientes
