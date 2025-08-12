@@ -5,24 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Sedes - IUB</title>
     
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="../css/styles.css">
     
-    <!-- Script de autenticación -->
     <script type="module" src="../js/auth.js"></script>
 </head>
 <body>
-    <!-- El sidebar se inyectará dinámicamente mediante JavaScript -->
 
-    <!-- Main Content -->
     <div class="main-content-wrapper" id="mainContent">
-        <!-- Top Navbar -->
         <nav class="top-navbar">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
@@ -39,7 +32,6 @@
             </div>
         </nav>
 
-        <!-- Content Area -->
         <div class="content-area">
             <div class="container-fluid">
                 <div class="card shadow-sm">
@@ -54,7 +46,6 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <!-- Sedes Tab -->
                         <ul class="nav nav-tabs mb-4" id="gestionTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="sedes-tab" data-bs-toggle="tab" data-bs-target="#sedes" type="button" role="tab" aria-controls="sedes" aria-selected="true">
@@ -74,7 +65,6 @@
                         </ul>
                         
                         <div class="tab-content" id="gestionTabsContent">
-                            <!-- Sedes Tab Content -->
                             <div class="tab-pane fade show active" id="sedes" role="tabpanel" aria-labelledby="sedes-tab">
                                 <div class="mb-3 text-end">
                                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sedeModal">
@@ -91,12 +81,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Filas generadas dinámicamente por JS -->
                                     </tbody>
                                 </table>
                             </div>
                             
-                            <!-- Bloques Tab Content -->
                             <div class="tab-pane fade" id="bloques" role="tabpanel" aria-labelledby="bloques-tab">
                                 <div class="mb-3 text-end">
                                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bloqueModal">
@@ -114,12 +102,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Filas generadas dinámicamente por JS -->
                                     </tbody>
                                 </table>
                             </div>
                             
-                            <!-- Salones Tab Content -->
                             <div class="tab-pane fade" id="salones" role="tabpanel" aria-labelledby="salones-tab">
                                 <div class="mb-3 text-end">
                                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#salonModal">
@@ -138,7 +124,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <!-- Filas generadas dinámicamente por JS -->
                                     </tbody>
                                 </table>
                             </div>
@@ -149,7 +134,6 @@
         </div>
     </div>
 
-    <!-- Modal para Crear/Editar Sede -->
     <div class="modal fade" id="sedeModal" tabindex="-1" aria-labelledby="sedeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="formSede">
@@ -174,7 +158,6 @@
         </div>
     </div>
 
-    <!-- Modal para Crear/Editar Bloque -->
     <div class="modal fade" id="bloqueModal" tabindex="-1" aria-labelledby="bloqueModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="formBloque">
@@ -204,7 +187,6 @@
         </div>
     </div>
 
-    <!-- Modal para Crear/Editar Salón -->
     <div class="modal fade" id="salonModal" tabindex="-1" aria-labelledby="salonModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="formSalon">
@@ -239,7 +221,6 @@
         </div>
     </div>
 
-    <!-- Modal para Confirmar Eliminación -->
     <div class="modal fade" id="eliminarModal" tabindex="-1" aria-labelledby="eliminarModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="formEliminar">

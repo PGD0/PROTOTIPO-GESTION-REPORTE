@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from schemas.ReporteBase import ReporteSalida, ReporteActualizar
 from sqlalchemy.orm import Session
 from database.database import get_db
-from models.models import Reporte
+from models.models import Reporte, Usuario, Equipo
 from services.cloudinary import subir_imagen
+from services.email_service import enviar_notificacion_equipo_arreglado
 import shutil
 import os
 import uuid
@@ -102,3 +103,76 @@ async def obtener_ultimos_reportes_usuario(id: int, db: Session = Depends(get_db
         .all()
     )
     return reportes
+
+@router.post("/{id}/notificar-usuario")
+async def notificar_usuario_equipo_arreglado(id: int, db: Session = Depends(get_db)):
+    """
+    Notifica al usuario que su equipo ha sido reparado
+    """
+    # Obtener el reporte
+    reporte = db.query(Reporte).filter(Reporte.ID_reporte == id).first()
+    if not reporte:
+        raise HTTPException(status_code=404, detail="Reporte no encontrado")
+    
+    # Verificar que el reporte esté resuelto
+    if not reporte.resuelto:
+        raise HTTPException(status_code=400, detail="El reporte debe estar resuelto para notificar al usuario")
+    
+    # Obtener información del usuario
+    usuario = db.query(Usuario).filter(Usuario.ID_usuarios == reporte.ID_usuario).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    
+    # Obtener información del equipo
+    equipo = db.query(Equipo).filter(Equipo.ID_equipo == reporte.ID_equipo).first()
+    if not equipo:
+        raise HTTPException(status_code=404, detail="Equipo no encontrado")
+    
+    # Construir ubicación
+    ubicacion = f"Sede {equipo.sede}, Salón {equipo.salon}" if equipo.sede and equipo.salon else "Ubicación no especificada"
+    
+    # Enviar notificación por correo
+    try:
+        resultado = await enviar_notificacion_equipo_arreglado(
+            email_usuario=usuario.email,
+            nombre_usuario=f"{usuario.nombre} {usuario.apellido or ''}".strip(),
+            codigo_equipo=equipo.codigo_barras or "Sin código",
+            ubicacion=ubicacion,
+            descripcion_problema=reporte.descripcion
+        )
+        
+        if resultado["success"]:
+            return {
+                "success": True,
+                "message": "Notificación enviada correctamente al usuario",
+                "email": usuario.email,
+                "usuario": f"{usuario.nombre} {usuario.apellido or ''}".strip()
+            }
+        else:
+            raise HTTPException(status_code=500, detail=f"Error al enviar notificación: {resultado['message']}")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al enviar notificación: {str(e)}")
+
+@router.put("/{id}/marcar-resuelto")
+async def marcar_reporte_resuelto(id: int, db: Session = Depends(get_db)):
+    """
+    Marca un reporte como resuelto
+    """
+    reporte = db.query(Reporte).filter(Reporte.ID_reporte == id).first()
+    if not reporte:
+        raise HTTPException(status_code=404, detail="Reporte no encontrado")
+    
+    # Marcar como resuelto
+    reporte.resuelto = True
+    reporte.estado_equipo = "Solucionado"
+    reporte.fecha_solucion = datetime.now()
+    
+    db.commit()
+    db.refresh(reporte)
+    
+    return {
+        "success": True,
+        "message": "Reporte marcado como resuelto",
+        "reporte": reporte
+    }

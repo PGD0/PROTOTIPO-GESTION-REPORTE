@@ -122,6 +122,14 @@ async function getReportes() {
   return await res.json();
 }
 
+async function getReporte(id) {
+  const res = await fetch(`${API_URL}/reportes/${id}`, { headers: authHeaders() });
+  if (!res.ok) throw new Error('No se pudo obtener el reporte');
+  const data = await res.json();
+  // Normaliza respuesta: backend puede devolver { reporte: {...} }
+  return data && data.reporte ? data.reporte : data;
+}
+
 async function crearReporte({ ID_equipo, descripcion, estado_equipo, ID_usuario, resuelto, imagen }) {
   const form = new FormData();
   form.append('ID_equipo', ID_equipo);
@@ -195,6 +203,63 @@ async function verificarPassword(usuarioId, password) {
   }
 }
 
+async function notificarUsuario(idReporte) {
+  try {
+    const res = await fetch(`${API_URL}/reportes/${idReporte}/notificar-usuario`, {
+      method: 'POST',
+      headers: authHeaders()
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.detail || 'Error al notificar al usuario');
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error('Error en notificarUsuario:', error);
+    throw error;
+  }
+}
+
+async function marcarReporteResuelto(idReporte) {
+  try {
+    const res = await fetch(`${API_URL}/reportes/${idReporte}/marcar-resuelto`, {
+      method: 'PUT',
+      headers: authHeaders()
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.detail || 'Error al marcar reporte como resuelto');
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error('Error en marcarReporteResuelto:', error);
+    throw error;
+  }
+}
+
+async function deleteReporte(idReporte) {
+  try {
+    const res = await fetch(`${API_URL}/reportes/${idReporte}`, {
+      method: 'DELETE',
+      headers: authHeaders()
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.detail || 'Error al eliminar el reporte');
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error('Error en deleteReporte:', error);
+    throw error;
+  }
+}
+
 export default {
   login,
   register,
@@ -205,6 +270,7 @@ export default {
   getSalones,
   getEquipos,
   getReportes,
+  getReporte,
   crearReporte,
   updateReporte,
   getToken,
@@ -212,5 +278,8 @@ export default {
   clearToken,
   authHeaders,
   getDashboard,
-  verificarPassword
+  verificarPassword,
+  notificarUsuario,
+  marcarReporteResuelto,
+  deleteReporte
 };

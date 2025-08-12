@@ -1,5 +1,10 @@
 import api from './api.js';
 
+// Variables globales para equipos y usuarios
+let equipos = [];
+let usuarios = [];
+const estadosPosibles = ['Pendiente', 'En Proceso', 'Resuelto'];
+
 document.addEventListener('DOMContentLoaded', async function() {
   const token = api.getToken();
   if (!token) {
@@ -7,11 +12,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     return;
   }
   const container = document.getElementById('reportesAdminContainer');
-  const equipos = await api.getEquipos();
-  const usuarios = await api.getUsuarios();
-  const estadosPosibles = ['Pendiente', 'En Proceso', 'Resuelto'];
+  
+  // Cargar datos iniciales
+  equipos = await api.getEquipos();
+  usuarios = await api.getUsuarios();
+  
+  // Función para recargar datos
+  async function recargarDatos() {
+    equipos = await api.getEquipos();
+    usuarios = await api.getUsuarios();
+  }
 
-  async function render() {
+  // Función render global
+  window.render = async function() {
     const reportes = await api.getReportes();
     container.innerHTML = `<div class="table-responsive">
       <table class="table table-bordered table-hover align-middle">
@@ -29,24 +42,25 @@ document.addEventListener('DOMContentLoaded', async function() {
         </thead>
         <tbody>
           ${reportes.map(r => {
-            const equipo = equipos.find(e => e.ID_equipo === r.ID_equipo) || {};
-            const usuario = usuarios.find(u => u.ID_usuarios === r.ID_usuario) || {};
+            const equipo = equipos.find(e => Number(e.ID_equipo) === Number(r.ID_equipo)) || {};
+            const usuario = usuarios.find(u => Number(u.ID_usuarios) === Number(r.ID_usuario)) || {};
             return `
               <tr>
                 <td>${r.ID_reporte}</td>
                 <td>${equipo.codigo_barras || 'Equipo no especificado'}</td>
                 <td>${usuario.nombre ? usuario.nombre + ' ' + usuario.apellido : 'Usuario no especificado'}</td>
-                <td>${r.descripcion}</td>
+                <td>${r.descripcion.length > 50 ? r.descripcion.substring(0, 50) + '...' : r.descripcion}</td>
                 <td>${r.fecha_registro ? new Date(r.fecha_registro).toLocaleDateString('es-ES') : ''}</td>
                 <td>
-                  <select class="form-select form-select-sm estado-select" data-id="${r.ID_reporte}">
-                    ${estadosPosibles.map(est => `<option value="${est}" ${r.estado_equipo===est?'selected':''}>${est}</option>`).join('')}
-                  </select>
+                  <span class="badge ${(r.estado_equipo === 'Resuelto' || r.estado_equipo === 'Solucionado') ? 'bg-success' : r.estado_equipo === 'En Proceso' ? 'bg-info' : 'bg-warning text-dark'}">
+                    ${r.estado_equipo || 'Pendiente'}
+                  </span>
                 </td>
                 <td><span class="badge ${r.resuelto ? 'bg-success' : 'bg-warning text-dark'}">${r.resuelto ? 'Sí' : 'No'}</span></td>
                 <td>
-                  ${r.resuelto ? '' : `<button class="btn btn-success btn-sm marcar-resuelto" data-id="${r.ID_reporte}" title="Marcar como resuelto"><i class="bi bi-check2"></i></button>`}
-                  <button class="btn btn-danger btn-sm eliminar-reporte" data-id="${r.ID_reporte}" title="Eliminar"><i class="bi bi-trash"></i></button>
+                  <button class="btn btn-primary btn-sm ver-detalle" data-id="${r.ID_reporte}" title="Ver detalles">
+                    <i class="bi bi-eye"></i>
+                  </button>
                 </td>
               </tr>
             `;
@@ -55,38 +69,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       </table>
     </div>`;
 
-    // Cambiar estado
-    container.querySelectorAll('.estado-select').forEach(sel => {
-      sel.addEventListener('change', async function() {
-        const id = parseInt(this.dataset.id);
-        const nuevoEstado = this.value;
-        const esResuelto = nuevoEstado === 'Resuelto';
-        await api.updateReporte(id, {
-          estado_equipo: nuevoEstado,
-          resuelto: esResuelto ? 1 : 0,
-          fecha_solucion: esResuelto ? new Date().toISOString() : null
-        });
-        render();
-      });
-    });
-    // Marcar como resuelto
-    container.querySelectorAll('.marcar-resuelto').forEach(btn => {
+    // Ver detalles del reporte
+    container.querySelectorAll('.ver-detalle').forEach(btn => {
       btn.addEventListener('click', async function() {
         const id = parseInt(this.dataset.id);
-        await api.updateReporte(id, { resuelto: 1, estado_equipo: 'Resuelto', fecha_solucion: new Date().toISOString() });
-        render();
-      });
-    });
-    // Eliminar reporte
-    container.querySelectorAll('.eliminar-reporte').forEach(btn => {
-      btn.addEventListener('click', async function() {
-        const id = parseInt(this.dataset.id);
-        if (confirm('¿Seguro que deseas eliminar este reporte?')) {
-          await api.deleteReporte(id);
-          render();
-        }
+        // Redirigir a la página de información del reporte
+        window.location.href = `informacion-reporte.html?id=${id}`;
       });
     });
   }
-  await render();
-}); 
+  await window.render();
+});
+

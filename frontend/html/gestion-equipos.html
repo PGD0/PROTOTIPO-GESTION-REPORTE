@@ -5,29 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Reportes - IUB</title>
     
-    <!-- Bootstrap Icons -->
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
-    <!-- Bootstrap CSS -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
-    <!-- Custom Styles -->
+
     <link rel="stylesheet" href="../css/styles.css">
     
-    <!-- Script de autenticación -->
+
     <script type="module" src="../js/auth.js"></script>
     <style>
-        /* ... estilos existentes ... */
-        /* Estilos de modo oscuro eliminados */
+
     </style>
 </head>
 <body>
-    <!-- El sidebar se inyectará dinámicamente mediante JavaScript -->
 
 
-    <!-- Main Content -->
     <div class="main-content-wrapper" id="mainContent">
-        <!-- Top Navbar -->
         <nav class="top-navbar">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
@@ -44,7 +40,7 @@
             </div>
         </nav>
 
-        <!-- Content Area -->
+
         <div class="content-area">
             <div class="container-fluid">
                 <div class="card shadow-sm">
@@ -80,7 +76,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Filas generadas dinámicamente por JS -->
                                 </tbody>
                             </table>
                         </div>
@@ -89,7 +84,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal para Crear/Editar Equipo -->
     <div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form class="modal-content" id="formEquipo">
@@ -146,7 +140,6 @@
         </div>
     </div>
 
-    <!-- Modal para escanear código QR -->
     <div class="modal fade" id="escanearModal" tabindex="-1" aria-labelledby="escanearModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -158,7 +151,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <!-- Cámara -->
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
@@ -175,7 +167,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Imagen -->
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
@@ -194,7 +185,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Resultado -->
                     <div class="row mt-3">
                         <div class="col-12">
                             <div class="alert alert-info" id="resultadoEscaneo" style="display: none;">

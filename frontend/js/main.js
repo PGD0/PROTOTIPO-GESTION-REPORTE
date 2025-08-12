@@ -278,25 +278,62 @@ function setupVistaReportes() {
 }
 
 // Función para ver detalles del reporte
-function verDetalleReporte(idReporte) {
-    // Por ahora solo muestra un alert, pero se puede expandir para mostrar un modal
-    const reporte = todosLosReportes.find(r => r.ID_reporte === idReporte);
-    if (reporte) {
-        alert(`Detalles del reporte #${idReporte}:\n\nDescripción: ${reporte.descripcion}\nEstado: ${reporte.estado_equipo}\nFecha: ${reporte.fecha_registro ? new Date(reporte.fecha_registro).toLocaleDateString('es-ES') : 'No especificada'}`);
-    } else {
-        api.getReportes()
-            .then(reportes => {
-                const reporte = reportes.find(r => r.ID_reporte === idReporte);
-                if (reporte) {
-                    alert(`Detalles del reporte #${idReporte}:\n\nDescripción: ${reporte.descripcion}\nEstado: ${reporte.estado_equipo}\nFecha: ${reporte.fecha_registro ? new Date(reporte.fecha_registro).toLocaleDateString('es-ES') : 'No especificada'}`);
-                }
-            })
-            .catch(error => {
-                console.error('Error al obtener detalles del reporte:', error);
-                alert('Error al obtener detalles del reporte');
-            });
-    }
+async function verDetalleReporte(idReporte) {
+    // Redirigir a la página de información del reporte
+    window.location.href = `informacion-reporte.html?id=${idReporte}`;
 }
+
+// Funciones globales para los botones del modal (solo para administradores)
+window.marcarComoResuelto = async function(idReporte) {
+    if (confirm('¿Deseas marcar este reporte como resuelto?')) {
+        try {
+            await api.updateReporte(idReporte, { 
+                resuelto: 1, 
+                estado_equipo: 'Resuelto', 
+                fecha_solucion: new Date().toISOString() 
+            });
+            bootstrap.Modal.getInstance(document.getElementById('detalleReporteModal')).hide();
+            // Recargar la vista actual si es necesario
+            if (window.location.pathname.endsWith('gestion-reportes.html')) {
+                window.location.reload();
+            }
+            alert('✅ Reporte marcado como resuelto correctamente');
+        } catch (error) {
+            alert(`❌ Error: ${error.message}`);
+        }
+    }
+};
+
+window.notificarUsuario = async function(idReporte) {
+    if (confirm('¿Deseas notificar al usuario que su equipo ha sido reparado?')) {
+        try {
+            const resultado = await api.notificarUsuario(idReporte);
+            if (resultado.success) {
+                alert(`✅ Notificación enviada correctamente a: ${resultado.usuario} (${resultado.email})`);
+            } else {
+                alert(`❌ Error al enviar notificación: ${resultado.message}`);
+            }
+        } catch (error) {
+            alert(`❌ Error: ${error.message}`);
+        }
+    }
+};
+
+window.eliminarReporte = async function(idReporte) {
+    if (confirm('¿Seguro que deseas eliminar este reporte?')) {
+        try {
+            await api.deleteReporte(idReporte);
+            bootstrap.Modal.getInstance(document.getElementById('detalleReporteModal')).hide();
+            // Recargar la vista actual si es necesario
+            if (window.location.pathname.endsWith('gestion-reportes.html')) {
+                window.location.reload();
+            }
+            alert('✅ Reporte eliminado correctamente');
+        } catch (error) {
+            alert(`❌ Error: ${error.message}`);
+        }
+    }
+};
 
 function pintarGraficasUsuario(data) {
   // Configuración común para todos los gráficos
