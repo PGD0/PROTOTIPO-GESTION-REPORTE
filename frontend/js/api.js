@@ -130,6 +130,17 @@ async function getReporte(id) {
   return data && data.reporte ? data.reporte : data;
 }
 
+async function getReportesPorUsuario(id) {
+    const res = await fetch(`${API_URL}/reportes/usuario/${id}/todos`, { 
+        headers: authHeaders() 
+    });
+    if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.detail || 'Error al obtener reportes del usuario');
+    }
+    return await res.json();
+}
+
 async function crearReporte({
   ID_equipo,
   sede,
@@ -316,5 +327,6 @@ export default {
   notificarUsuario,
   marcarReporteResuelto,
   deleteReporte,
-  getEquipoPorCodigo
+  getEquipoPorCodigo,
+  getReportesPorUsuario
 };

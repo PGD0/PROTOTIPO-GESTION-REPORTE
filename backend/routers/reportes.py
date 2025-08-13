@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from schemas.ReporteBase import ReporteSalida, ReporteActualizar
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from database.database import get_db
 from models.models import Reporte, Usuario, Equipo
 from services.cloudinary import subir_imagen
@@ -115,6 +115,15 @@ async def obtener_ultimos_reportes_usuario(id: int, db: Session = Depends(get_db
         .filter(Reporte.ID_usuario == id)
         .order_by(Reporte.fecha_registro.desc())
         .limit(10)
+        .all()
+    )
+    return reportes
+
+@router.get("/usuario/{id}/todos")
+async def obtener_ultimos_reportes_usuario(id: int, db: Session = Depends(get_db)):
+    reportes = (
+        db.query(Reporte)
+        .filter(Reporte.ID_usuario == id)
         .all()
     )
     return reportes

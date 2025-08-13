@@ -105,6 +105,13 @@ function renderSidebarNav() {
             active: currentPath.endsWith('homepage.html')
         },
         {
+            href: 'mis-reporte.html',
+            icon: 'bi-list-check',
+            text: 'Mis Reportes',
+            id: 'misReportesLink',
+            active: currentPath.endsWith('mis-reporte.html')
+        },
+        {
             href: 'reportes.html',
             icon: 'bi-file-earmark-text',
             text: 'Reportes',
