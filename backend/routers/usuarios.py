@@ -4,7 +4,7 @@ from schemas.UsuarioBase import UsuarioCreado,UsuarioSalida, UsuarioActualizar
 from sqlalchemy.orm import Session
 from database.database import get_db
 from models.models import Rol, Usuario
-from services.hash import hash_password
+from services.hash import hash_password, verify_password
 from services.cloudinary import subir_imagen 
 from pydantic import EmailStr
 import shutil
@@ -142,7 +142,6 @@ async def eliminar_usuario(id: int, db: Session = Depends(get_db)):
 
 @router.post("/verificar-password")
 async def verificar_password(datos: dict, db: Session = Depends(get_db)):
-    from services.hash import verify_password
     
     usuario_id = datos.get("usuario_id")
     password = datos.get("password")

@@ -283,6 +283,17 @@ async function deleteReporte(idReporte) {
   }
 }
 
+async function getEquipoPorCodigo(codigoBarras) {
+    const res = await fetch(`${API_URL}/equipos/por-codigo/${codigoBarras}`, { 
+        headers: authHeaders() 
+    });
+    if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.detail || 'Equipo no encontrado');
+    }
+    return await res.json();
+}
+
 export default {
   login,
   register,
@@ -304,5 +315,6 @@ export default {
   verificarPassword,
   notificarUsuario,
   marcarReporteResuelto,
-  deleteReporte
+  deleteReporte,
+  getEquipoPorCodigo
 };

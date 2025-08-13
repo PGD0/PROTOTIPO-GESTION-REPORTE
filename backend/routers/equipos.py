@@ -47,6 +47,35 @@ async def obtener_equipo(id: int, db: Session = Depends(get_db)):
         "bloque_id": equipo.salon_rel.bloque_rel.ID_bloque if equipo.salon_rel and equipo.salon_rel.bloque_rel else None,
     }
 
+@router.get("/por-codigo/{codigo_barras}")
+async def obtener_equipo_por_codigo(codigo_barras: str, db: Session = Depends(get_db)):
+    equipo = db.query(Equipo).options(
+        joinedload(Equipo.sede_rel),
+        joinedload(Equipo.salon_rel).joinedload(Salon.bloque_rel)
+    ).filter(Equipo.codigo_barras == codigo_barras).first()
+    
+    if not equipo:
+        raise HTTPException(status_code=404, detail="Equipo no encontrado")
+    
+    return {
+        "ID_equipo": equipo.ID_equipo,
+        "codigo_barras": equipo.codigo_barras,
+        "marca": equipo.marca,
+        "funcional": equipo.funcional,
+        "fecha_registro": equipo.fecha_registro,
+        "sede": {
+            "ID_sede": equipo.sede_rel.ID_sede,
+            "nombre_sede": equipo.sede_rel.nombre_sede
+        },
+        "salon": {
+            "ID_salon": equipo.salon_rel.ID_salon,
+            "codigo_salon": equipo.salon_rel.codigo_salon,
+            "bloque": {
+                "ID_bloque": equipo.salon_rel.bloque_rel.ID_bloque if equipo.salon_rel.bloque_rel else None,
+                "nombre_bloque": equipo.salon_rel.bloque_rel.nombre_bloque if equipo.salon_rel.bloque_rel else None
+            } if equipo.salon_rel.bloque_rel else None
+        } if equipo.salon_rel else None
+    }
 
 @router.post("/", response_model=EquipoSalida)
 async def crear_equipo(equipo: EquipoCreado, db: Session = Depends(get_db)):

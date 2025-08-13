@@ -8,6 +8,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const bloqueSelect = document.getElementById('bloqueSelect');
     const salonContainer = document.getElementById('salonContainer');
     const salonSelect = document.getElementById('salonSelect');
+    const codigoEquipoInput = document.getElementById('codigoEquipo');
+
+    codigoEquipoInput.addEventListener('input', async function() {
+        const codigo = this.value.trim();
+        if (codigo.length < 5) return; // Longitud mínima para buscar
+        
+        try {
+            const equipo = await api.getEquipoPorCodigo(codigo);
+            
+            // Si encontramos el equipo, autocompletamos
+            if (equipo) {
+                // Llenar sede
+                if (equipo.sede) {
+                    sedeSelect.value = equipo.sede.ID_sede;
+                    // Disparar evento para cargar bloques
+                    const event = new Event('change');
+                    sedeSelect.dispatchEvent(event);
+                    
+                    // Esperar a que carguen los bloques
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    // Llenar bloque si existe
+                    if (equipo.salon && equipo.salon.bloque) {
+                        bloqueSelect.value = equipo.salon.bloque.ID_bloque;
+                        // Disparar evento para cargar salones
+                        const bloqueEvent = new Event('change');
+                        bloqueSelect.dispatchEvent(bloqueEvent);
+                    }
+                    
+                    // Esperar a que carguen los salones
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
+                    // Llenar salón
+                    if (equipo.salon) {
+                        salonSelect.value = equipo.salon.ID_salon;
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('Equipo no encontrado o error:', error.message);
+            // No hacemos nada, el usuario puede seguir escribiendo
+        }
+    });
 
     // Función para cargar sedes desde la API
     async function cargarSedes() {

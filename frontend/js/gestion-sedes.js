@@ -494,7 +494,7 @@ async function eliminarElemento(e) {
         const currentUser = JSON.parse(currentUserStr);
         
         // Verificar la contraseña usando la nueva función de la API
-        const verificacionExitosa = await api.verificarPassword(currentUser.id, password);
+        const verificacionExitosa = await api.verificarPassword(currentUser.ID_usuarios, password);
         
         if (!verificacionExitosa) {
             throw new Error("Contraseña incorrecta");
