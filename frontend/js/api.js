@@ -130,19 +130,42 @@ async function getReporte(id) {
   return data && data.reporte ? data.reporte : data;
 }
 
-async function crearReporte({ ID_equipo, descripcion, estado_equipo, ID_usuario, resuelto, imagen }) {
+async function crearReporte({
+  ID_equipo,
+  sede,
+  bloque,
+  salon,
+  titulo,
+  tipo_problema,
+  prioridad,
+  descripcion,
+  contacto,
+  ID_usuario,
+  resuelto,
+  imagen
+}) {
   const form = new FormData();
   form.append('ID_equipo', ID_equipo);
+  form.append('sede', sede);
+  if (bloque) form.append('bloque', bloque);
+  form.append('salon', salon);
+  form.append('titulo', titulo);
+  form.append('tipo_problema', tipo_problema);
+  form.append('prioridad', prioridad);
   form.append('descripcion', descripcion);
-  form.append('estado_equipo', estado_equipo);
+  if (contacto) form.append('contacto', contacto);
   form.append('ID_usuario', ID_usuario);
   form.append('resuelto', resuelto ? 'true' : 'false');
-  form.append('imagen', imagen); // Debe ser un File
+  if (imagen) form.append('imagen', imagen);
+
   const res = await fetch(`${API_URL}/reportes/`, {
     method: 'POST',
-    headers: authHeaders(),
+    headers: {
+      ...authHeaders(),
+    },
     body: form
   });
+
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.detail || 'Error al crear el reporte');

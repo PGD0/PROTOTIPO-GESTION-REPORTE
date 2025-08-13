@@ -1190,66 +1190,66 @@ if (window.location.pathname.includes('dashboard.html')) {
   });
 }
 
-// --- AÑADIR REPORTE ---
-if (window.location.pathname.endsWith('hacer-reporte.html')) {
-  document.addEventListener('DOMContentLoaded', async function() {
-    const token = api.getToken();
-    if (!token) {
-      window.location.href = 'login.html';
-      return;
-    }
-    const form = document.querySelector('form');
-    if (!form) return;
-    const desc = document.getElementById('descripcion');
-    const equipo = document.getElementById('equipo');
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'alert alert-danger mt-3 d-none';
-    form.appendChild(errorDiv);
-    const successDiv = document.createElement('div');
-    successDiv.className = 'alert alert-success mt-3 d-none';
-    form.appendChild(successDiv);
-    // Cargar equipos en select
-    if (equipo && equipo.tagName === 'SELECT') {
-      try {
-        const equipos = await api.getEquipos();
-        equipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
-          equipos.map(eq => `<option value="${eq.ID_equipo}">${eq.codigo_barras} (${eq.marca})</option>`).join('');
-      } catch (err) {
-        errorDiv.textContent = 'Error cargando equipos';
-        errorDiv.classList.remove('d-none');
-      }
-    }
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      errorDiv.classList.add('d-none');
-      successDiv.classList.add('d-none');
-      if (!desc.value.trim() || !equipo.value) {
-        errorDiv.textContent = 'Debes completar todos los campos.';
-        errorDiv.classList.remove('d-none');
-        return;
-      }
-      try {
-        // Obtener el usuario actual desde localStorage
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        const ID_usuario = currentUser?.ID_usuarios || 1; // Usar ID del usuario actual o 1 como fallback
-        await api.crearReporte({
-          ID_equipo: parseInt(equipo.value),
-          descripcion: desc.value.trim(),
-          estado_equipo: 'Pendiente',
-          ID_usuario,
-          resuelto: false,
-          imagen: new File([], 'placeholder.png') // Ajustar para subir imagen real
-        });
-        successDiv.textContent = 'Reporte añadido correctamente.';
-        successDiv.classList.remove('d-none');
-        form.reset();
-      } catch (err) {
-        errorDiv.textContent = err.message;
-        errorDiv.classList.remove('d-none');
-      }
-    });
-  });
-}
+// // --- AÑADIR REPORTE ---
+// if (window.location.pathname.endsWith('hacer-reporte.html')) {
+//   document.addEventListener('DOMContentLoaded', async function() {
+//     const token = api.getToken();
+//     if (!token) {
+//       window.location.href = 'login.html';
+//       return;
+//     }
+//     const form = document.querySelector('form');
+//     if (!form) return;
+//     const desc = document.getElementById('descripcion');
+//     const equipo = document.getElementById('equipo');
+//     const errorDiv = document.createElement('div');
+//     errorDiv.className = 'alert alert-danger mt-3 d-none';
+//     form.appendChild(errorDiv);
+//     const successDiv = document.createElement('div');
+//     successDiv.className = 'alert alert-success mt-3 d-none';
+//     form.appendChild(successDiv);
+//     // Cargar equipos en select
+//     if (equipo && equipo.tagName === 'SELECT') {
+//       try {
+//         const equipos = await api.getEquipos();
+//         equipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
+//           equipos.map(eq => `<option value="${eq.ID_equipo}">${eq.codigo_barras} (${eq.marca})</option>`).join('');
+//       } catch (err) {
+//         errorDiv.textContent = 'Error cargando equipos';
+//         errorDiv.classList.remove('d-none');
+//       }
+//     }
+//     form.addEventListener('submit', async function(e) {
+//       e.preventDefault();
+//       errorDiv.classList.add('d-none');
+//       successDiv.classList.add('d-none');
+//       if (!desc.value.trim() || !equipo.value) {
+//         errorDiv.textContent = 'Debes completar todos los campos.';
+//         errorDiv.classList.remove('d-none');
+//         return;
+//       }
+//       try {
+//         // Obtener el usuario actual desde localStorage
+//         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+//         const ID_usuario = currentUser?.ID_usuarios || 1; // Usar ID del usuario actual o 1 como fallback
+//         await api.crearReporte({
+//           ID_equipo: parseInt(equipo.value),
+//           descripcion: desc.value.trim(),
+//           estado_equipo: 'Pendiente',
+//           ID_usuario,
+//           resuelto: false,
+//           imagen: new File([], 'placeholder.png') // Ajustar para subir imagen real
+//         });
+//         successDiv.textContent = 'Reporte añadido correctamente.';
+//         successDiv.classList.remove('d-none');
+//         form.reset();
+//       } catch (err) {
+//         errorDiv.textContent = err.message;
+//         errorDiv.classList.remove('d-none');
+//       }
+//     });
+//   });
+// }
 
 // --- PERFIL DE USUARIO ---
 if (window.location.pathname.endsWith('perfil.html')) {

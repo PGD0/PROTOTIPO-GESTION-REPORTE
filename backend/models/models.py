@@ -78,13 +78,25 @@ class Reporte(Base):
 
     ID_reporte = Column(Integer, primary_key=True, index=True)
     ID_equipo = Column(Integer, ForeignKey("equipos.ID_equipo"))
-    descripcion = Column(String(250))
-    img_equipo = Column(String(250))
+
+    sede = Column(Integer, ForeignKey("sedes.ID_sede"))       
+    bloque = Column(Integer, ForeignKey("bloques.ID_bloque"), nullable=True) 
+    salon = Column(Integer, ForeignKey("salones.ID_salon"))   
+    
+    titulo = Column(String(100))                              
+    tipo_problema = Column(String(50))                       
+    prioridad = Column(String(20))                            
+    
+    descripcion = Column(String(250))                        
+    img_equipo = Column(String(250))                          
+    contacto = Column(String(100), nullable=True)             
+    
     fecha_registro = Column(DateTime, default=func.now())
-    fecha_solucion = Column(DateTime)
+    fecha_solucion = Column(DateTime, nullable=True)
     estado_equipo = Column(String(50))
     resuelto = Column(Boolean, default=False)
+    
     ID_usuario = Column(Integer, ForeignKey("usuarios.ID_usuarios"))
 
     equipo = relationship("Equipo", back_populates="reportes")
-    usuario = relationship("Usuario", back_populates="reportes") 
+    usuario = relationship("Usuario", back_populates="reportes")

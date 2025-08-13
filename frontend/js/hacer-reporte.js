@@ -184,10 +184,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para obtener datos del formulario
     function obtenerDatosFormulario() {
+        const sedeSelect = document.getElementById('sedeSelect');
+        const bloqueSelect = document.getElementById('bloqueSelect');
+        const salonSelect = document.getElementById('salonSelect');
+
         return {
-            sede: sedeSelect.value,
-            bloque: bloqueSelect.value,
-            salon: salonSelect.value,
+            sede: sedeSelect?.value || '',
+            bloque: bloqueSelect?.value || null,
+            salon: salonSelect?.value || '',
             codigoEquipo: document.getElementById('codigoEquipo').value,
             tipoProblema: document.getElementById('tipoProblema').value,
             titulo: document.getElementById('tituloReporte').value,
@@ -203,37 +207,44 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         
         const datos = obtenerDatosFormulario();
-        // Validación básica de campos requeridos
-        if (!datos.sede || !datos.salon || !datos.codigoEquipo || !datos.tipoProblema || !datos.titulo || !datos.descripcion || !datos.imagen) {
-            mostrarMensaje('Por favor, completa todos los campos obligatorios y adjunta una imagen.', 'danger');
+
+        // Validación básica
+        if (!datos.sede || !datos.salon || !datos.codigoEquipo || !datos.tipoProblema || !datos.titulo || !datos.descripcion) {
+            mostrarMensaje('Por favor, completa todos los campos obligatorios.', 'danger');
             return;
         }
-        // Deshabilitar botón de envío
+
         const submitBtn = this.querySelector('[type="submit"]');
         submitBtn.disabled = true;
         mostrarMensaje('Enviando reporte...', 'info');
+
         try {
-            // Primero verificar si el equipo existe
+            // Verificar equipo
             const equipos = await api.getEquipos();
             const equipo = equipos.find(eq => eq.codigo_barras === datos.codigoEquipo);
             
             if (!equipo) {
                 throw new Error('No se encontró ningún equipo con ese código. Verifica el código ingresado.');
             }
-            
-            // Usar la función de API para crear el reporte con el ID del equipo
+
+            // Usar api.crearReporte en lugar de fetch directo
             await api.crearReporte({
-                ID_equipo: equipo.ID_equipo, // Usar el ID del equipo encontrado
+                ID_equipo: equipo.ID_equipo,
+                sede: datos.sede,
+                bloque: datos.bloque,
+                salon: datos.salon,
+                titulo: datos.titulo,
+                tipo_problema: datos.tipoProblema,
+                prioridad: datos.prioridad,
                 descripcion: datos.descripcion,
-                estado_equipo: datos.tipoProblema,
+                contacto: datos.contacto,
                 ID_usuario: JSON.parse(localStorage.getItem('currentUser'))?.ID_usuarios || 1,
                 resuelto: false,
                 imagen: datos.imagen
             });
-            
+
             mostrarMensaje('Reporte enviado exitosamente', 'success');
             this.reset();
-            // Opcional: actualizar lista de reportes si existe función global
             if (typeof renderReportes === 'function') renderReportes();
         } catch (err) {
             mostrarMensaje(err.message, 'danger');

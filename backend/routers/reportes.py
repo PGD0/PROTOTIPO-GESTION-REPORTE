@@ -30,34 +30,49 @@ async def obtener_reporte(id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=ReporteSalida)
 async def crear_reporte(
     ID_equipo: int = Form(...),
+    sede: int = Form(...),
+    bloque: Optional[int] = Form(None),
+    salon: int = Form(...),
+    titulo: str = Form(...),
+    tipo_problema: str = Form(...),
+    prioridad: str = Form(...),
     descripcion: str = Form(...),
-    estado_equipo: str = Form(...),
+    contacto: Optional[str] = Form(None),
     ID_usuario: int = Form(...),
     resuelto: bool = Form(False),
     fecha_solucion: Optional[datetime] = Form(None),
-    imagen: UploadFile = File(...),
+    imagen: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
-    existe = db.query(Reporte).filter(Reporte.ID_equipo == ID_equipo, Reporte.resuelto == False).first()
+    existe = db.query(Reporte).filter(
+        Reporte.ID_equipo == ID_equipo,
+        Reporte.resuelto == False
+    ).first()
     if existe:
         raise HTTPException(status_code=400, detail="El equipo ya tiene un reporte activo")
     
-    os.makedirs("temp", exist_ok=True)
-    temp_filename = f"temp/{uuid.uuid4().hex}_{imagen.filename}"
-
-    with open(temp_filename, "wb") as buffer:
-        shutil.copyfileobj(imagen.file, buffer)
-
-    with open(temp_filename, "rb") as file_data:
-        url_imagen = subir_imagen(file_data)
-
-    os.remove(temp_filename)
+    url_imagen = None
+    if imagen:
+        os.makedirs("temp", exist_ok=True)
+        temp_filename = f"temp/{uuid.uuid4().hex}_{imagen.filename}"
+        with open(temp_filename, "wb") as buffer:
+            shutil.copyfileobj(imagen.file, buffer)
+        with open(temp_filename, "rb") as file_data:
+            url_imagen = subir_imagen(file_data)
+        os.remove(temp_filename)
 
     nuevo_reporte = Reporte(
         ID_equipo=ID_equipo,
+        sede=sede,
+        bloque=bloque,
+        salon=salon,
+        titulo=titulo,
+        tipo_problema=tipo_problema,
+        prioridad=prioridad,
         descripcion=descripcion,
         img_equipo=url_imagen,
-        estado_equipo=estado_equipo,
+        contacto=contacto,
+        estado_equipo="Pendiente",
         fecha_solucion=fecha_solucion,
         resuelto=resuelto,
         ID_usuario=ID_usuario,

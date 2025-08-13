@@ -22,7 +22,11 @@ async def obtener_salon(id: int, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=SalonSalida)
 async def crear_salon(salon: SalonCreado, db: Session = Depends(get_db)):
-    salon_existente = db.query(Salon).filter(Salon.codigo_salon == salon.codigo_salon).first()
+    salon_existente = db.query(Salon).filter(
+        Salon.codigo_salon == salon.codigo_salon,
+        Salon.sede == salon.sede,
+        Salon.bloque == salon.bloque
+    ).first()
     if salon_existente:
         raise HTTPException(status_code=400, detail="El salon ya existe")
 
@@ -57,7 +61,7 @@ async def eliminar_salon(id: int, db: Session = Depends(get_db)):
 
 @router.get("/por_sede/{sede_id}")
 async def salones_por_sede(sede_id: int, db: Session = Depends(get_db)):
-    from models.models import Bloque  # si no está ya importado
+    from models.models import Bloque
 
     if sede_id == 2:
         salones = db.query(Salon).filter(Salon.bloque_id != None, Salon.sede == sede_id).all()
