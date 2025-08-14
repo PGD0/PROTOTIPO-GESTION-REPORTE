@@ -210,12 +210,21 @@ async function editarSede(id) {
             headers: api.authHeaders()
         });
         if (!response.ok) throw new Error("No se pudo obtener la sede");
-        const sede = await response.json();
+        const data = await response.json();
+        
+        // Extraer la sede del objeto de respuesta
+        // La API devuelve {message: "...", sede: {...}}
+        const sede = data.sede;
+        
+        if (!sede) {
+            throw new Error("La estructura de datos de la sede no es válida");
+        }
         
         // Abrir modal y llenar campos
         const sedeModal = new bootstrap.Modal(document.getElementById('sedeModal'));
         sedeId.value = sede.ID_sede;
         nombreSede.value = sede.nombre_sede;
+        
         sedeModal.show();
     } catch (error) {
         console.error("Error al editar sede:", error);
