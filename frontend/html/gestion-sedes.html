@@ -252,5 +252,32 @@
     <script type="module" src="../js/sidebar-loader.js"></script>
     <script type="module" src="../js/main.js"></script>
     <script type="module" src="../js/gestion-sedes.js"></script>
+    <div class="modal fade" id="confirmarModificacionModal" tabindex="-1" aria-labelledby="confirmarModificacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" id="formConfirmarModificacion">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmarModificacionModalLabel">Confirmar Modificación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="confirmarModificacionTipo">
+                    <input type="hidden" id="confirmarModificacionId">
+                    <input type="hidden" id="confirmarModificacionData">
+                    
+                    <p id="confirmarModificacionMensaje">¿Estás seguro de que deseas modificar este elemento?</p>
+                    
+                    <div class="mb-3">
+                        <label for="passwordModificacion" class="form-label">Ingresa tu contraseña para confirmar</label>
+                        <input type="password" class="form-control" id="passwordModificacion" required>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Confirmar Modificación</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

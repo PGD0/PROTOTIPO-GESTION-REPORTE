@@ -305,6 +305,70 @@ async function getEquipoPorCodigo(codigoBarras) {
     return await res.json();
 }
 
+async function updateUsuario(id, data) {
+  try {
+    // Si data contiene solo propiedades simples, usamos JSON
+    if (!data.imagen) {
+      const res = await fetch(`${API_URL}/usuarios/${id}`, {
+        method: 'PUT',
+        headers: {
+          ...authHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Error al actualizar el usuario');
+      }
+      
+      return await res.json();
+    } else {
+      // Si hay imagen, usamos FormData
+      const formData = new FormData();
+      Object.keys(data).forEach(key => {
+        formData.append(key, data[key]);
+      });
+      
+      const res = await fetch(`${API_URL}/usuarios/${id}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: formData
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || 'Error al actualizar el usuario');
+      }
+      
+      return await res.json();
+    }
+  } catch (error) {
+    console.error('Error en updateUsuario:', error);
+    throw error;
+  }
+}
+
+async function deleteUsuario(id) {
+  try {
+    const res = await fetch(`${API_URL}/usuarios/${id}`, {
+      method: 'DELETE',
+      headers: authHeaders()
+    });
+    
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Error al eliminar el usuario');
+    }
+    
+    return true; // Devolvemos true si la eliminación fue exitosa
+  } catch (error) {
+    console.error('Error en deleteUsuario:', error);
+    throw error;
+  }
+}
+
 export default {
   login,
   register,
@@ -328,5 +392,7 @@ export default {
   marcarReporteResuelto,
   deleteReporte,
   getEquipoPorCodigo,
-  getReportesPorUsuario
+  getReportesPorUsuario,
+  updateUsuario,
+  deleteUsuario
 };

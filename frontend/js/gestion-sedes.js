@@ -369,11 +369,21 @@ async function guardarSede(e) {
         return;
     }
     
-    const url = sedeId.value
-        ? `http://127.0.0.1:8000/sedes/${sedeId.value}`   // PUT para editar
-        : `http://127.0.0.1:8000/sedes/`;                 // POST para crear
+    // Si es edición, mostrar modal de confirmación
+    if (sedeId.value) {
+        const confirmarModal = new bootstrap.Modal(document.getElementById('confirmarModificacionModal'));
+        document.getElementById('confirmarModificacionTipo').value = 'sede';
+        document.getElementById('confirmarModificacionId').value = sedeId.value;
+        document.getElementById('confirmarModificacionData').value = JSON.stringify(data);
+        document.getElementById('confirmarModificacionMensaje').textContent = 
+            `¿Estás seguro de que deseas modificar la sede "${data.nombre_sede}"?`;
+        confirmarModal.show();
+        return;
+    }
     
-    const method = sedeId.value ? 'PUT' : 'POST';
+    // Si es creación, continuar normalmente
+    const url = `http://127.0.0.1:8000/sedes/`;
+    const method = 'POST';
     
     try {
         const response = await fetch(url, {
@@ -390,8 +400,7 @@ async function guardarSede(e) {
             throw new Error(error.detail || 'Error al guardar la sede');
         }
         
-        const mensaje = sedeId.value ? "Sede actualizada correctamente." : "Sede creada correctamente.";
-        alert(mensaje);
+        alert("Sede creada correctamente.");
         
         const modal = bootstrap.Modal.getInstance(document.getElementById('sedeModal'));
         modal.hide();
@@ -420,11 +429,26 @@ async function guardarBloque(e) {
         return;
     }
     
-    const url = bloqueId.value
-        ? `http://127.0.0.1:8000/bloques/${bloqueId.value}`   // PUT para editar
-        : `http://127.0.0.1:8000/bloques/`;                   // POST para crear
+    // Si es edición, mostrar modal de confirmación
+    if (bloqueId.value) {
+        const confirmarModal = new bootstrap.Modal(document.getElementById('confirmarModificacionModal'));
+        document.getElementById('confirmarModificacionTipo').value = 'bloque';
+        document.getElementById('confirmarModificacionId').value = bloqueId.value;
+        document.getElementById('confirmarModificacionData').value = JSON.stringify(data);
+        
+        // Obtener el nombre de la sede para el mensaje
+        const sede = todasLasSedes.find(s => s.ID_sede === data.sede_id);
+        const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
+        
+        document.getElementById('confirmarModificacionMensaje').textContent = 
+            `¿Estás seguro de que deseas modificar el bloque "${data.nombre_bloque}" de la sede "${nombreSede}"?`;
+        confirmarModal.show();
+        return;
+    }
     
-    const method = bloqueId.value ? 'PUT' : 'POST';
+    // Si es creación, continuar normalmente
+    const url = `http://127.0.0.1:8000/bloques/`;
+    const method = 'POST';
     
     try {
         const response = await fetch(url, {
@@ -441,8 +465,7 @@ async function guardarBloque(e) {
             throw new Error(error.detail || 'Error al guardar el bloque');
         }
         
-        const mensaje = bloqueId.value ? "Bloque actualizado correctamente." : "Bloque creado correctamente.";
-        alert(mensaje);
+        alert("Bloque creado correctamente.");
         
         const modal = bootstrap.Modal.getInstance(document.getElementById('bloqueModal'));
         modal.hide();
@@ -481,11 +504,34 @@ async function guardarSalon(e) {
         return;
     }
     
-    const url = salonId.value
-        ? `http://127.0.0.1:8000/salones/${salonId.value}`   // PUT para editar
-        : `http://127.0.0.1:8000/salones/`;                  // POST para crear
+    // Si es edición, mostrar modal de confirmación
+    if (salonId.value) {
+        const confirmarModal = new bootstrap.Modal(document.getElementById('confirmarModificacionModal'));
+        document.getElementById('confirmarModificacionTipo').value = 'salon';
+        document.getElementById('confirmarModificacionId').value = salonId.value;
+        document.getElementById('confirmarModificacionData').value = JSON.stringify(data);
+        
+        // Obtener nombres de sede y bloque para el mensaje
+        const sede = todasLasSedes.find(s => s.ID_sede === data.sede);
+        const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
+        
+        let infoBloque = '';
+        if (data.bloque) {
+            const bloque = todosLosBloques.find(b => b.ID_bloque === data.bloque);
+            if (bloque) {
+                infoBloque = ` del bloque "${bloque.nombre_bloque}"`;
+            }
+        }
+        
+        document.getElementById('confirmarModificacionMensaje').textContent = 
+            `¿Estás seguro de que deseas modificar el salón "${data.codigo_salon}" de la sede "${nombreSede}"${infoBloque}?`;
+        confirmarModal.show();
+        return;
+    }
     
-    const method = salonId.value ? 'PUT' : 'POST';
+    // Si es creación, continuar normalmente
+    const url = `http://127.0.0.1:8000/salones/`;
+    const method = 'POST';
     
     try {
         const response = await fetch(url, {
@@ -506,8 +552,7 @@ async function guardarSalon(e) {
         const responseData = await response.json();
         console.log('Respuesta del servidor:', responseData);
         
-        const mensaje = salonId.value ? "Salón actualizado correctamente." : "Salón creado correctamente.";
-        alert(mensaje);
+        alert("Salón creado correctamente.");
         
         const modal = bootstrap.Modal.getInstance(document.getElementById('salonModal'));
         modal.hide();
@@ -627,6 +672,119 @@ function mostrarError(tabla, mensaje) {
     `;
 }
 
+// Función para procesar la confirmación de modificación
+async function procesarModificacionConfirmada(e) {
+    e.preventDefault();
+    
+    const tipo = document.getElementById('confirmarModificacionTipo').value;
+    const id = document.getElementById('confirmarModificacionId').value;
+    const dataStr = document.getElementById('confirmarModificacionData').value;
+    const password = document.getElementById('passwordModificacion').value;
+    
+    if (!password) {
+        alert("Por favor ingresa tu contraseña para confirmar.");
+        return;
+    }
+    
+    // Verificar la contraseña del administrador
+    try {
+        // Obtener el usuario actual del localStorage
+        const currentUserStr = localStorage.getItem('currentUser');
+        if (!currentUserStr) throw new Error("No se encontró información del usuario");
+        
+        const currentUser = JSON.parse(currentUserStr);
+        
+        // Verificar la contraseña usando la función de la API
+        const verificacionExitosa = await api.verificarPassword(currentUser.ID_usuarios, password);
+        
+        if (!verificacionExitosa) {
+            throw new Error("Contraseña incorrecta");
+        }
+        
+        // Si la contraseña es correcta, proceder con la modificación
+        const data = JSON.parse(dataStr);
+        let url = '';
+        
+        switch (tipo) {
+            case 'sede':
+                url = `http://127.0.0.1:8000/sedes/${id}`;
+                break;
+            case 'bloque':
+                url = `http://127.0.0.1:8000/bloques/${id}`;
+                break;
+            case 'salon':
+                url = `http://127.0.0.1:8000/salones/${id}`;
+                break;
+            default:
+                throw new Error("Tipo de elemento no válido");
+        }
+        
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...api.authHeaders()
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || `Error al modificar ${tipo}`);
+        }
+        
+        alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} modificado correctamente.`);
+        
+        // Cerrar el modal de confirmación
+        const confirmarModal = bootstrap.Modal.getInstance(document.getElementById('confirmarModificacionModal'));
+        confirmarModal.hide();
+        
+        // Cerrar el modal de edición según el tipo
+        let editModal;
+        switch (tipo) {
+            case 'sede':
+                editModal = bootstrap.Modal.getInstance(document.getElementById('sedeModal'));
+                formSede.reset();
+                sedeId.value = '';
+                break;
+            case 'bloque':
+                editModal = bootstrap.Modal.getInstance(document.getElementById('bloqueModal'));
+                formBloque.reset();
+                bloqueId.value = '';
+                break;
+            case 'salon':
+                editModal = bootstrap.Modal.getInstance(document.getElementById('salonModal'));
+                formSalon.reset();
+                salonId.value = '';
+                bloqueSalonContainer.style.display = 'none';
+                break;
+        }
+        
+        if (editModal) {
+            editModal.hide();
+        }
+        
+        // Recargar datos según el tipo
+        switch (tipo) {
+            case 'sede':
+                await cargarSedes();
+                await cargarBloques();
+                await cargarSalones();
+                break;
+            case 'bloque':
+                await cargarBloques();
+                await cargarSalones();
+                break;
+            case 'salon':
+                await cargarSalones();
+                break;
+        }
+    } catch (error) {
+        console.error(`Error al modificar ${tipo}:`, error);
+        alert(error.message || `Hubo un problema al modificar el ${tipo}.`);
+    }
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Cargar datos iniciales
@@ -639,6 +797,9 @@ document.addEventListener('DOMContentLoaded', () => {
     formBloque.addEventListener('submit', guardarBloque);
     formSalon.addEventListener('submit', guardarSalon);
     formEliminar.addEventListener('submit', eliminarElemento);
+    
+    // Event listener para el formulario de confirmación de modificación
+    document.getElementById('formConfirmarModificacion').addEventListener('submit', procesarModificacionConfirmada);
     
     // Event listener para resetear formularios al abrir modales
     document.querySelector('[data-bs-target="#sedeModal"]').addEventListener('click', () => {
