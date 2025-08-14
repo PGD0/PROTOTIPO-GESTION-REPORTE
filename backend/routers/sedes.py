@@ -9,8 +9,6 @@ router = APIRouter(prefix="/sedes", tags=["Sedes"])
 @router.get("/")
 async def get_sedes(db: Session = Depends(get_db)):
     sedes = db.query(Sede).all()
-    if not sedes:
-        raise HTTPException(status_code=404, detail="No se encontraron sedes")
     return sedes
 
 @router.get("/{id}")

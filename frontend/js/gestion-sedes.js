@@ -86,23 +86,19 @@ function renderizarTablaSedes(sedes) {
         $('#tablaSedes').DataTable().destroy();
     }
     
-    // Obtener el contenedor padre de la tabla
-    const tablaContainer = document.querySelector('#tablaSedes').parentNode;
+    // Obtener la tabla específica, no el contenedor padre
+    const tablaSedes = document.querySelector('#tablaSedes');
     
-    // Crear estructura para DataTables
-    tablaContainer.innerHTML = `
-        <div class="table-responsive">
-            <table id="tablaSedes" class="table table-striped table-hover" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    // Crear estructura para DataTables solo para la tabla
+    tablaSedes.innerHTML = `
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     `;
     
     // Referencia actualizada a la tabla
@@ -165,24 +161,20 @@ function renderizarTablaBloques(bloques) {
         $('#tablaBloques').DataTable().destroy();
     }
     
-    // Obtener el contenedor padre de la tabla
-    const tablaContainer = document.querySelector('#tablaBloques').parentNode;
+    // Obtener la tabla específica, no el contenedor padre
+    const tablaBloques = document.querySelector('#tablaBloques');
     
-    // Crear estructura para DataTables
-    tablaContainer.innerHTML = `
-        <div class="table-responsive">
-            <table id="tablaBloques" class="table table-striped table-hover" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Sede</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    // Crear estructura para DataTables solo para la tabla
+    tablaBloques.innerHTML = `
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Sede</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     `;
     
     // Referencia actualizada a la tabla
@@ -249,25 +241,21 @@ function renderizarTablaSalones(salones) {
         $('#tablaSalones').DataTable().destroy();
     }
     
-    // Obtener el contenedor padre de la tabla
-    const tablaContainer = document.querySelector('#tablaSalones').parentNode;
+    // Obtener la tabla específica, no el contenedor padre
+    const tablaSalones = document.querySelector('#tablaSalones');
     
-    // Crear estructura para DataTables
-    tablaContainer.innerHTML = `
-        <div class="table-responsive">
-            <table id="tablaSalones" class="table table-striped table-hover" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Código</th>
-                        <th>Sede</th>
-                        <th>Bloque</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+    // Crear estructura para DataTables solo para la tabla
+    tablaSalones.innerHTML = `
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Código</th>
+                <th>Sede</th>
+                <th>Bloque</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     `;
     
     // Referencia actualizada a la tabla

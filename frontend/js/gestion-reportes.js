@@ -1,10 +1,34 @@
 import api from './api.js';
-import { getPrioridadBadge } from './main.js';
 
 // Variables globales para equipos y usuarios
 let equipos = [];
 let usuarios = [];
 const estadosPosibles = ['Pendiente', 'En Proceso', 'Resuelto'];
+
+// Función local para generar el badge de prioridad
+function getPrioridadBadge(prioridad) {
+    console.log('Generando badge para prioridad:', prioridad);
+    let prioridadClass = '';
+    const prioridadLower = prioridad.toString().trim().toLowerCase();
+    switch(prioridadLower) {
+        case 'urgente':
+            prioridadClass = 'bg-danger';
+            break;
+        case 'alta':
+            prioridadClass = 'bg-orange';
+            break;
+        case 'media':
+            prioridadClass = 'bg-warning text-dark';
+            break;
+        case 'baja':
+            prioridadClass = 'bg-success';
+            break;
+        default:
+            prioridadClass = 'bg-secondary';
+            console.log('Prioridad no reconocida:', prioridad);
+    }
+    return `<span class="badge ${prioridadClass} ms-2">Prioridad ${prioridad}</span>`;
+}
 
 document.addEventListener('DOMContentLoaded', async function() {
   const token = api.getToken();
@@ -24,6 +48,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     usuarios = await api.getUsuarios();
   }
 
+  // Función para agregar event listeners a los botones
+  function agregarEventListeners() {
+    console.log('Agregando event listeners...');
+    const botones = container.querySelectorAll('.ver-detalle');
+    console.log('Botones encontrados:', botones.length);
+    
+    botones.forEach(btn => {
+      btn.addEventListener('click', async function() {
+        const id = parseInt(this.dataset.id);
+        console.log('Botón clickeado, ID del reporte:', id);
+        // Redirigir a la página de información del reporte
+        window.location.href = `informacion-reporte.html?id=${id}`;
+      });
+    });
+  }
+
   // Función render global
   window.render = async function() {
     const reportes = await api.getReportes();
@@ -34,6 +74,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     container.innerHTML = `<div class="table-responsive">
+      <style>
+        #tablaReportes th:last-child,
+        #tablaReportes td:last-child {
+          min-width: 80px !important;
+          width: 80px !important;
+          max-width: 80px !important;
+        }
+        #tablaReportes .btn-sm {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.875rem;
+        }
+      </style>
       <table id="tablaReportes" class="table table-bordered table-hover table-striped align-middle w-100">
         <thead class="table-light">
           <tr>
@@ -68,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                   ${r.prioridad ? getPrioridadBadge(r.prioridad) : '<span class="badge bg-secondary">No especificada</span>'}
                 </td>
                 <td><span class="badge ${r.resuelto ? 'bg-success' : 'bg-warning text-dark'}">${r.resuelto ? 'Sí' : 'No'}</span></td>
-                <td>
+                <td class="text-center">
                   <button class="btn btn-primary btn-sm ver-detalle" data-id="${r.ID_reporte}" title="Ver detalles">
                     <i class="bi bi-eye"></i>
                   </button>
@@ -80,9 +132,26 @@ document.addEventListener('DOMContentLoaded', async function() {
       </table>
     </div>`;
 
+    console.log('Tabla generada, reportes:', reportes.length);
+    console.log('HTML generado:', container.innerHTML.substring(0, 500) + '...');
+    
+    // Verificar si los botones están en el HTML
+    const botonesEnHTML = container.querySelectorAll('.ver-detalle');
+    console.log('Botones encontrados en HTML:', botonesEnHTML.length);
+    if (botonesEnHTML.length > 0) {
+        console.log('Primer botón HTML:', botonesEnHTML[0].outerHTML);
+    }
+    
+    // Verificar si la columna de Acciones está presente
+    const columnasAcciones = container.querySelectorAll('th:last-child, td:last-child');
+    console.log('Columnas de Acciones encontradas:', columnasAcciones.length);
+    if (columnasAcciones.length > 0) {
+        console.log('Primera columna de Acciones:', columnasAcciones[0].outerHTML);
+    }
+
     // Inicializar DataTables
     const dataTable = $('#tablaReportes').DataTable({
-      responsive: true,
+      responsive: false, // Desactivar responsive para evitar problemas con la columna
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
       },
@@ -104,17 +173,32 @@ document.addEventListener('DOMContentLoaded', async function() {
             columns: [0, 1, 2, 3, 4, 5, 6, 7]
           }
         }
-      ]
+      ],
+      columnDefs: [
+        {
+          targets: 8, // Columna de Acciones
+          orderable: false, // No ordenable
+          searchable: false, // No buscable
+          width: '80px', // Ancho fijo
+          className: 'text-center' // Centrar contenido
+        }
+      ],
+      drawCallback: function() {
+        // Agregar event listeners después de que DataTables dibuje la tabla
+        console.log('DataTables drawCallback ejecutado');
+        agregarEventListeners();
+      },
+      initComplete: function() {
+        console.log('DataTables initComplete ejecutado');
+        agregarEventListeners();
+      }
     });
     
-    // Ver detalles del reporte
-    container.querySelectorAll('.ver-detalle').forEach(btn => {
-      btn.addEventListener('click', async function() {
-        const id = parseInt(this.dataset.id);
-        // Redirigir a la página de información del reporte
-        window.location.href = `informacion-reporte.html?id=${id}`;
-      });
-    });
+    // Agregar event listeners iniciales
+    setTimeout(() => {
+      console.log('Agregando event listeners con delay...');
+      agregarEventListeners();
+    }, 100);
   }
   await window.render();
 });

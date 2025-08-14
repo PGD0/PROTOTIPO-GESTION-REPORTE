@@ -10,8 +10,6 @@ router = APIRouter(prefix="/bloques", tags=["Bloques"])
 @router.get("/", response_model=List[BloqueSalida])
 async def get_bloques(db: Session = Depends(get_db)):
     bloques = db.query(Bloque).all()
-    if not bloques:
-        raise HTTPException(status_code=404, detail="No se encontraron bloques")
     return bloques
 
 @router.get("/{id}", response_model=BloqueSalida)

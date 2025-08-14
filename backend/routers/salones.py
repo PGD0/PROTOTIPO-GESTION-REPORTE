@@ -9,8 +9,6 @@ router = APIRouter(prefix="/salones", tags=["Salones"])
 @router.get("/")
 async def get_salones(db: Session = Depends(get_db)):
     salones = db.query(Salon).all()
-    if not salones:
-        raise HTTPException(status_code=404, detail="No se encontraron salones")
     return salones
 
 @router.get("/{id}")
@@ -73,6 +71,4 @@ async def salones_por_sede(sede_id: int, db: Session = Depends(get_db)):
 @router.get("/por_bloque/{bloque_id}")
 async def get_salones_por_bloque(bloque_id: int, db: Session = Depends(get_db)):
     salones = db.query(Salon).filter(Salon.bloque == bloque_id).all()
-    if not salones:
-        raise HTTPException(status_code=404, detail="No se encontraron salones para este bloque")
     return salones
