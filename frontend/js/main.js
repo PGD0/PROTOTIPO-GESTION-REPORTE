@@ -1342,6 +1342,11 @@ if (window.location.pathname.endsWith('perfil.html')) {
   });
 }
 
+// Función para validar que un campo solo contenga letras y espacios
+function validarSoloLetras(valor) {
+  return /^[A-Za-zÁáÉéÍíÓóÚúÑñÜü\s]+$/.test(valor);
+}
+
 async function actualizarPerfil() {
   const token = localStorage.getItem('token');
   if (!token) return;
@@ -1357,6 +1362,23 @@ async function actualizarPerfil() {
 
   if (!nombre || !email) {
     alert('El nombre y el correo son obligatorios.');
+    return;
+  }
+  
+  // Validar que el nombre solo contenga letras y espacios
+  if (!validarSoloLetras(nombre)) {
+    const nombrePerfilInput = document.getElementById('nombrePerfil');
+    nombrePerfilInput.classList.add('is-invalid');
+    
+    // Verificar si ya existe un mensaje de error
+    if (!nombrePerfilInput.nextElementSibling || !nombrePerfilInput.nextElementSibling.classList.contains('invalid-feedback')) {
+      const feedback = document.createElement('div');
+      feedback.className = 'invalid-feedback';
+      feedback.innerHTML = '<strong>Nombre inválido:</strong> El nombre solo debe contener letras y espacios. No se permiten números ni caracteres especiales.';
+      nombrePerfilInput.parentNode.insertBefore(feedback, nombrePerfilInput.nextSibling);
+    }
+    
+    alert('No se puede actualizar el perfil: El nombre solo debe contener letras y espacios. No se permiten números ni caracteres especiales.');
     return;
   }
   
