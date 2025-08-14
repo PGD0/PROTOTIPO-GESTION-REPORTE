@@ -1,4 +1,5 @@
 import api from './api.js';
+import { getPrioridadBadge } from './main.js';
 
 // Variables globales
 let reporteActual = null;
@@ -126,6 +127,16 @@ async function cargarDatos(reporteId) {
         const resuelto = reporte.resuelto;
         const resueltoClass = resuelto ? 'bg-success' : 'bg-warning text-dark';
         resueltoBadge.innerHTML = `<span class="badge ${resueltoClass} status-badge">${resuelto ? 'Sí' : 'No'}</span>`;
+        
+        // Mostrar prioridad
+        const prioridadBadge = document.getElementById('reportePrioridad');
+        if (prioridadBadge) {
+            if (reporte.prioridad) {
+                prioridadBadge.innerHTML = getPrioridadBadge(reporte.prioridad);
+            } else {
+                prioridadBadge.innerHTML = '<span class="badge bg-secondary status-badge">No especificada</span>';
+            }
+        }
         
         document.getElementById('reporteFechaRegistro').textContent = 
             reporte.fecha_registro ? new Date(reporte.fecha_registro).toLocaleDateString('es-ES') : 'N/A';

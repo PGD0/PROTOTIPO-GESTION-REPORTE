@@ -1,6 +1,31 @@
 // main.js - Unificado (sidebar y vista de reportes)
 import api from './api.js';
 
+// Función para generar el badge de prioridad
+export function getPrioridadBadge(prioridad) {
+    console.log('Generando badge para prioridad:', prioridad);
+    let prioridadClass = '';
+    const prioridadLower = prioridad.toString().trim().toLowerCase();
+    switch(prioridadLower) {
+        case 'urgente':
+            prioridadClass = 'bg-danger';
+            break;
+        case 'alta':
+            prioridadClass = 'bg-orange';
+            break;
+        case 'media':
+            prioridadClass = 'bg-warning text-dark';
+            break;
+        case 'baja':
+            prioridadClass = 'bg-success';
+            break;
+        default:
+            prioridadClass = 'bg-secondary';
+            console.log('Prioridad no reconocida:', prioridad);
+    }
+    return `<span class="badge ${prioridadClass} ms-2">Prioridad ${prioridad}</span>`;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     setupVistaReportes();
     // Renderizar reportes siempre al cargar la página de reportes
@@ -48,6 +73,9 @@ function renderReportes(filtros = {}) {
             todosLosEquipos = equipos || [];
             todosLosUsuarios = usuarios || [];
             todasLasSedes = sedes || [];
+            
+            console.log('Reportes cargados:', todosLosReportes);
+            console.log('Reportes con prioridad:', todosLosReportes.filter(r => r.prioridad));
             
             // Actualizar el filtro de sedes con datos dinámicos
             actualizarFiltroSedes();
@@ -127,6 +155,20 @@ function renderReportesFiltrados(filtros = {}) {
         });
     }
     
+    // Filtro por prioridad
+    if (filtros.prioridad) {
+        reportesFiltrados = reportesFiltrados.filter(r => {
+            if (!r.prioridad) return false;
+            
+            // Normalizar ambos valores para comparación
+            const prioridadReporte = r.prioridad.toString().trim().toLowerCase();
+            const prioridadFiltro = filtros.prioridad.toString().trim().toLowerCase();
+            
+            // Comparación exacta después de normalizar
+            return prioridadReporte === prioridadFiltro;
+        });
+    }
+    
     // Mostrar mensaje si no hay reportes
     if (reportesFiltrados.length === 0) {
         container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">No hay reportes que coincidan con los filtros seleccionados.</div></div>';
@@ -180,6 +222,7 @@ function renderReportesFiltrados(filtros = {}) {
                                 <i class="bi bi-calendar3"></i>
                                 ${r.fecha_registro ? new Date(r.fecha_registro).toLocaleDateString('es-ES') : ''}
                             </span>
+                            ${r.prioridad ? getPrioridadBadge(r.prioridad) : ''}
                         </div>
                     </div>
                     <div class="pin-details">
@@ -207,6 +250,10 @@ function renderReportesFiltrados(filtros = {}) {
                                     }
                                 })()}
                             </span>
+                        </div>
+                        <div class="pin-detail-item">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <span>Prioridad: ${r.prioridad || 'No especificada'}</span>
                         </div>
                     </div>
                     <div class="pin-description">
@@ -258,12 +305,16 @@ function setupVistaReportes() {
     
     // Función para aplicar filtros
     function aplicarFiltros() {
+        const filtroPrioridad = document.getElementById('filtro-prioridad');
+        
         const filtros = {
             estado: filtroEstado ? filtroEstado.value : '',
             sede: filtroSede ? filtroSede.value : '',
             fechaDesde: filtroFechaDesde ? filtroFechaDesde.value : '',
-            fechaHasta: filtroFechaHasta ? filtroFechaHasta.value : ''
+            fechaHasta: filtroFechaHasta ? filtroFechaHasta.value : '',
+            prioridad: filtroPrioridad ? filtroPrioridad.value : ''
         };
+        
         renderReportes(filtros);
     }
     
@@ -272,6 +323,10 @@ function setupVistaReportes() {
     if (filtroSede) filtroSede.addEventListener('change', aplicarFiltros);
     if (filtroFechaDesde) filtroFechaDesde.addEventListener('change', aplicarFiltros);
     if (filtroFechaHasta) filtroFechaHasta.addEventListener('change', aplicarFiltros);
+    
+    // Añadir evento para el filtro de prioridad
+    const filtroPrioridad = document.getElementById('filtro-prioridad');
+    if (filtroPrioridad) filtroPrioridad.addEventListener('change', aplicarFiltros);
     
     // Render inicial de tarjetas
     renderReportes();

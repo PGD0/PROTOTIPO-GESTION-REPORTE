@@ -1,4 +1,5 @@
 import api from './api.js';
+import { getPrioridadBadge } from './main.js';
 
 // Variables globales para equipos y usuarios
 let equipos = [];
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             <th>Descripción</th>
             <th>Fecha</th>
             <th>Estado</th>
+            <th>Prioridad</th>
             <th>Resuelto</th>
             <th>Acciones</th>
           </tr>
@@ -55,6 +57,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                   <span class="badge ${(r.estado_equipo === 'Resuelto' || r.estado_equipo === 'Solucionado') ? 'bg-success' : r.estado_equipo === 'En Proceso' ? 'bg-info' : 'bg-warning text-dark'}">
                     ${r.estado_equipo || 'Pendiente'}
                   </span>
+                </td>
+                <td>
+                  ${r.prioridad ? getPrioridadBadge(r.prioridad) : '<span class="badge bg-secondary">No especificada</span>'}
                 </td>
                 <td><span class="badge ${r.resuelto ? 'bg-success' : 'bg-warning text-dark'}">${r.resuelto ? 'Sí' : 'No'}</span></td>
                 <td>
