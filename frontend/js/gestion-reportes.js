@@ -27,8 +27,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Función render global
   window.render = async function() {
     const reportes = await api.getReportes();
+    
+    // Destruir la tabla DataTable existente si ya existe
+    if ($.fn.DataTable.isDataTable('#tablaReportes')) {
+      $('#tablaReportes').DataTable().destroy();
+    }
+    
     container.innerHTML = `<div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle">
+      <table id="tablaReportes" class="table table-bordered table-hover table-striped align-middle w-100">
         <thead class="table-light">
           <tr>
             <th>ID</th>
@@ -74,6 +80,33 @@ document.addEventListener('DOMContentLoaded', async function() {
       </table>
     </div>`;
 
+    // Inicializar DataTables
+    const dataTable = $('#tablaReportes').DataTable({
+      responsive: true,
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      },
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'excel',
+          text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+          className: 'btn btn-outline-success btn-sm',
+          exportOptions: {
+            columns: [0, 1, 2, 3, 4, 5, 6, 7]
+          }
+        },
+        {
+          extend: 'pdf',
+          text: '<i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF',
+          className: 'btn btn-outline-danger btn-sm',
+          exportOptions: {
+            columns: [0, 1, 2, 3, 4, 5, 6, 7]
+          }
+        }
+      ]
+    });
+    
     // Ver detalles del reporte
     container.querySelectorAll('.ver-detalle').forEach(btn => {
       btn.addEventListener('click', async function() {

@@ -27,27 +27,94 @@ document.addEventListener('DOMContentLoaded', async function() {
   async function render() {
     const usuarios = await api.getUsuarios();
     const roles = await api.getRoles();
-    container.innerHTML = `<table class="table table-bordered table-hover">
-      <thead><tr><th>ID</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Rol</th><th>Acciones</th></tr></thead>
-      <tbody>
-        ${usuarios.map(u => `
-          <tr>
-            <td>${u.ID_usuarios}</td>
-            <td>${u.nombre}</td>
-            <td>${u.apellido}</td>
-            <td>${u.email}</td>
-            <td>
-              <select class="form-select form-select-sm rol-select" data-id="${u.ID_usuarios}" data-nombre="${u.nombre} ${u.apellido}">
-                ${roles.map(r => `<option value="${r.ID_rol}" ${u.rol===r.ID_rol?'selected':''}>${r.tipo_rol}</option>`).join('')}
-              </select>
-            </td>
-            <td>
-              <button class="btn btn-danger btn-sm eliminar-usuario" data-id="${u.ID_usuarios}" data-nombre="${u.nombre} ${u.apellido}"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>`;
+    
+    // Destruir la tabla DataTable existente si ya existe
+    if ($.fn.DataTable.isDataTable('#tablaUsuarios')) {
+      $('#tablaUsuarios').DataTable().destroy();
+    }
+    
+    // Crear el contenedor y la estructura de la tabla
+    container.innerHTML = `
+      <div class="table-responsive">
+        <table id="tablaUsuarios" class="table table-bordered table-hover table-striped w-100">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${usuarios.map(u => `
+              <tr>
+                <td>${u.ID_usuarios}</td>
+                <td>${u.nombre}</td>
+                <td>${u.apellido}</td>
+                <td>${u.email}</td>
+                <td>
+                  <select class="form-select form-select-sm rol-select" data-id="${u.ID_usuarios}" data-nombre="${u.nombre} ${u.apellido}">
+                    ${roles.map(r => `<option value="${r.ID_rol}" ${u.rol===r.ID_rol?'selected':''}>${r.tipo_rol}</option>`).join('')}
+                  </select>
+                </td>
+                <td>
+                  <button class="btn btn-danger btn-sm eliminar-usuario" data-id="${u.ID_usuarios}" data-nombre="${u.nombre} ${u.apellido}"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    
+    // Inicializar DataTables
+    const dataTable = $('#tablaUsuarios').DataTable({
+      responsive: true,
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      },
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'excel',
+          text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+          className: 'btn btn-outline-success btn-sm',
+          exportOptions: {
+            columns: [0, 1, 2, 3, 4]
+          }
+        },
+        {
+          extend: 'pdf',
+          text: '<i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF',
+          className: 'btn btn-outline-danger btn-sm',
+          exportOptions: {
+            columns: [0, 1, 2, 3, 4]
+          },
+          customize: function(doc) {
+            // Obtener los datos de la tabla
+            const table = doc.content[1].table;
+            
+            // Recorrer las filas y modificar la columna de rol (índice 4)
+            for (let i = 0; i < table.body.length; i++) {
+              if (i > 0) { // Saltar la fila de encabezado
+                // Obtener el ID del usuario de la fila actual
+                const userId = parseInt(table.body[i][0].text);
+                // Buscar el elemento select correspondiente a este usuario
+                const selectElement = document.querySelector(`.rol-select[data-id="${userId}"]`);
+                if (selectElement) {
+                  // Obtener el texto del rol seleccionado
+                  const selectedRolText = selectElement.options[selectElement.selectedIndex].text;
+                  // Reemplazar el contenido de la celda con solo el rol seleccionado
+                  table.body[i][4] = { text: selectedRolText };
+                }
+              }
+            }
+          }
+        }
+      ]
+    });
     
     // Eventos para cambiar rol
     container.querySelectorAll('.rol-select').forEach(sel => {

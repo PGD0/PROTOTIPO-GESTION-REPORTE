@@ -8,13 +8,18 @@ async function cargarEquipos() {
         const res = await fetch('http://127.0.0.1:8000/equipos/');
         const equipos = await res.json();
 
+        // Destruir la tabla DataTable existente si ya existe
+        if ($.fn.DataTable.isDataTable('#tablaEquipos')) {
+            $('#tablaEquipos').DataTable().destroy();
+        }
+
         const tbody = document.querySelector('#tablaEquipos tbody');
         tbody.innerHTML = ''; // Limpiar contenido previo
 
         if (equipos.length === 0) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td colspan="7" class="text-center text-muted">
+                <td colspan="8" class="text-center text-muted">
                     <i class="bi bi-info-circle me-2"></i>No hay equipos registrados aún.
                 </td>
             `;
@@ -23,32 +28,59 @@ async function cargarEquipos() {
         }
 
         equipos.forEach(equipo => {
-        const tr = document.createElement('tr');
+            const tr = document.createElement('tr');
 
-        tr.innerHTML = `
-            <td>${equipo.ID_equipo}</td>
-            <td>${equipo.codigo_barras}</td>
-            <td>${equipo.marca}</td>
-            <td>${equipo.sede}</td>
-            <td>${equipo.salon}</td>
-            <td>${equipo.bloque || '-'}</td>
-            <td>
-                <span class="badge ${equipo.funcional ? 'bg-success' : 'bg-danger'}">
-                    ${equipo.funcional ? 'Sí' : 'No'}
-                </span>
-            </td>
-            <td>
-                <button class="btn btn-sm btn-warning me-1" onclick="editarEquipo(${equipo.ID_equipo})">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-danger" onclick="eliminarEquipo(${equipo.ID_equipo})">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
+            tr.innerHTML = `
+                <td>${equipo.ID_equipo}</td>
+                <td>${equipo.codigo_barras}</td>
+                <td>${equipo.marca}</td>
+                <td>${equipo.sede}</td>
+                <td>${equipo.salon}</td>
+                <td>${equipo.bloque || '-'}</td>
+                <td>
+                    <span class="badge ${equipo.funcional ? 'bg-success' : 'bg-danger'}">
+                        ${equipo.funcional ? 'Sí' : 'No'}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-warning me-1" onclick="editarEquipo(${equipo.ID_equipo})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="eliminarEquipo(${equipo.ID_equipo})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
 
-        tbody.appendChild(tr);
-    });
+            tbody.appendChild(tr);
+        });
+        
+        // Inicializar DataTables
+        $('#tablaEquipos').DataTable({
+            responsive: true,
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            },
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+                    className: 'btn btn-outline-success btn-sm',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6]
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF',
+                    className: 'btn btn-outline-danger btn-sm',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5, 6]
+                    }
+                }
+            ]
+        });
     } catch (error) {
         console.error("Error al cargar equipos:", error);
         const tbody = document.querySelector('#tablaEquipos tbody');

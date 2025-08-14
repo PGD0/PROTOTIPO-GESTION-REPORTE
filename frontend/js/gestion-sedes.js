@@ -81,13 +81,39 @@ async function cargarSalones() {
 
 // Funciones para renderizar tablas
 function renderizarTablaSedes(sedes) {
-    tablaSedes.innerHTML = '';
+    // Destruir DataTable existente si ya está inicializada
+    if ($.fn.DataTable.isDataTable('#tablaSedes')) {
+        $('#tablaSedes').DataTable().destroy();
+    }
+    
+    // Obtener el contenedor padre de la tabla
+    const tablaContainer = document.querySelector('#tablaSedes').parentNode;
+    
+    // Crear estructura para DataTables
+    tablaContainer.innerHTML = `
+        <div class="table-responsive">
+            <table id="tablaSedes" class="table table-striped table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    `;
+    
+    // Referencia actualizada a la tabla
+    const tablaSedesBody = document.querySelector('#tablaSedes tbody');
     
     if (sedes.length === 0) {
-        mostrarMensajeVacio(tablaSedes, "No hay sedes registradas aún");
+        mostrarMensajeVacio(tablaSedesBody, "No hay sedes registradas aún");
         return;
     }
     
+    // Llenar la tabla con datos
     sedes.forEach(sede => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -102,18 +128,72 @@ function renderizarTablaSedes(sedes) {
                 </button>
             </td>
         `;
-        tablaSedes.appendChild(tr);
+        tablaSedesBody.appendChild(tr);
+    });
+    
+    // Inicializar DataTables
+    $('#tablaSedes').DataTable({
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        },
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+                className: 'btn btn-outline-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1]
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF',
+                className: 'btn btn-outline-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1]
+                }
+            }
+        ]
     });
 }
 
 function renderizarTablaBloques(bloques) {
-    tablaBloques.innerHTML = '';
+    // Destruir DataTable existente si ya está inicializada
+    if ($.fn.DataTable.isDataTable('#tablaBloques')) {
+        $('#tablaBloques').DataTable().destroy();
+    }
+    
+    // Obtener el contenedor padre de la tabla
+    const tablaContainer = document.querySelector('#tablaBloques').parentNode;
+    
+    // Crear estructura para DataTables
+    tablaContainer.innerHTML = `
+        <div class="table-responsive">
+            <table id="tablaBloques" class="table table-striped table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Sede</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    `;
+    
+    // Referencia actualizada a la tabla
+    const tablaBloquesBody = document.querySelector('#tablaBloques tbody');
     
     if (bloques.length === 0) {
-        mostrarMensajeVacio(tablaBloques, "No hay bloques registrados aún");
+        mostrarMensajeVacio(tablaBloquesBody, "No hay bloques registrados aún");
         return;
     }
     
+    // Llenar la tabla con datos
     bloques.forEach(bloque => {
         const sede = todasLasSedes.find(s => s.ID_sede === bloque.sede_id);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
@@ -132,24 +212,74 @@ function renderizarTablaBloques(bloques) {
                 </button>
             </td>
         `;
-        tablaBloques.appendChild(tr);
+        tablaBloquesBody.appendChild(tr);
+    });
+    
+    // Inicializar DataTables
+    $('#tablaBloques').DataTable({
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        },
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+                className: 'btn btn-outline-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2]
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF',
+                className: 'btn btn-outline-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2]
+                }
+            }
+        ]
     });
 }
 
 function renderizarTablaSalones(salones) {
-    tablaSalones.innerHTML = '';
+    // Destruir DataTable existente si ya está inicializada
+    if ($.fn.DataTable.isDataTable('#tablaSalones')) {
+        $('#tablaSalones').DataTable().destroy();
+    }
+    
+    // Obtener el contenedor padre de la tabla
+    const tablaContainer = document.querySelector('#tablaSalones').parentNode;
+    
+    // Crear estructura para DataTables
+    tablaContainer.innerHTML = `
+        <div class="table-responsive">
+            <table id="tablaSalones" class="table table-striped table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Sede</th>
+                        <th>Bloque</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    `;
+    
+    // Referencia actualizada a la tabla
+    const tablaSalonesBody = document.querySelector('#tablaSalones tbody');
     
     if (salones.length === 0) {
-        mostrarMensajeVacio(tablaSalones, "No hay salones registrados aún");
+        mostrarMensajeVacio(tablaSalonesBody, "No hay salones registrados aún");
         return;
     }
     
+    // Llenar la tabla con datos
     salones.forEach(salon => {
-        // Depuración para ver la estructura de los datos
-        console.log('Datos del salón:', salon);
-        console.log('Todas las sedes:', todasLasSedes);
-        console.log('Todos los bloques:', todosLosBloques);
-        
         // Buscar la sede por ID
         const sede = todasLasSedes.find(s => s.ID_sede === salon.sede);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
@@ -180,7 +310,34 @@ function renderizarTablaSalones(salones) {
                 </button>
             </td>
         `;
-        tablaSalones.appendChild(tr);
+        tablaSalonesBody.appendChild(tr);
+    });
+    
+    // Inicializar DataTables
+    $('#tablaSalones').DataTable({
+        responsive: true,
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        },
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="bi bi-file-earmark-excel me-2"></i>Excel',
+                className: 'btn btn-outline-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3]
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF',
+                className: 'btn btn-outline-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3]
+                }
+            }
+        ]
     });
 }
 

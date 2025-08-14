@@ -9,7 +9,13 @@
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+    
     <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/datatables-custom.css">
     
     <script type="module" src="../js/auth.js"></script>
     <style>
@@ -37,7 +43,7 @@
 
         <div class="content-area">
             <div class="container-fluid">
-                <div class="card shadow-sm">
+                <div class="card">
                     <div class="card-header bg-white border-0">
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="mb-0 fw-bold pt-4 pl-5">
@@ -49,12 +55,8 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-12">
-                                </div>
-                            </div>
-                        </div>
-                        <div id="reportesAdminContainer">
+                        <div id="reportesAdminContainer" class="pt-2">
+                            <!-- Contenido de la tabla se cargará aquí -->
                         </div>
                     </div>
                 </div>
@@ -63,6 +65,20 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
     <script type="module" src="../js/sidebar-loader.js"></script>
     <script type="module" src="../js/main.js"></script>
     <script type="module" src="../js/gestion-reportes.js"></script>
