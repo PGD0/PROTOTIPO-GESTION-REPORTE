@@ -329,6 +329,54 @@
     color: var(--bs-white) !important;
 }
 
+.nav-link.active i,
+.nav-link.active span {
+    color: var(--bs-white) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Estilos específicos para las pestañas de navegación */
+.nav-tabs .nav-link.active {
+    color: var(--bs-white) !important;
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.nav-tabs .nav-link.active i,
+.nav-tabs .nav-link.active span,
+.nav-tabs .nav-link.active button {
+    color: var(--bs-white) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: inline-block !important;
+}
+
+/* Fix específico para la página de gestión de sedes */
+#gestionTabs .nav-link.active {
+    color: var(--bs-white) !important;
+}
+
+#gestionTabs .nav-link.active i {
+    color: var(--bs-white) !important;
+    display: inline-block !important;
+}
+
+/* Solución específica para el texto en los botones de las pestañas */
+#gestionTabs button.nav-link {
+    display: flex;
+    align-items: center;
+}
+
+#gestionTabs button.nav-link.active {
+    color: var(--bs-white) !important;
+}
+
+#gestionTabs button.nav-link.active i,
+#gestionTabs button.nav-link.active::after {
+    color: var(--bs-white) !important;
+}
+
 /* ===== BOTONES ===== */
 .btn {
     font-weight: 500;

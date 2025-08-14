@@ -61,7 +61,16 @@ async function cargarBloques() {
 
 async function cargarSalones() {
     try {
+        // Asegurarse de que las sedes y bloques estén cargados primero
+        if (todasLasSedes.length === 0) {
+            await cargarSedes();
+        }
+        if (todosLosBloques.length === 0) {
+            await cargarBloques();
+        }
+        
         const salones = await api.getSalones();
+        console.log('Salones cargados desde API:', salones);
         todosLosSalones = salones;
         renderizarTablaSalones(salones);
     } catch (error) {
@@ -136,6 +145,12 @@ function renderizarTablaSalones(salones) {
     }
     
     salones.forEach(salon => {
+        // Depuración para ver la estructura de los datos
+        console.log('Datos del salón:', salon);
+        console.log('Todas las sedes:', todasLasSedes);
+        console.log('Todos los bloques:', todosLosBloques);
+        
+        // Buscar la sede por ID
         const sede = todasLasSedes.find(s => s.ID_sede === salon.sede);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
         
@@ -143,7 +158,11 @@ function renderizarTablaSalones(salones) {
         let nombreBloque = '-';
         if (salon.bloque) {
             const bloque = todosLosBloques.find(b => b.ID_bloque === salon.bloque);
-            if (bloque) nombreBloque = bloque.nombre_bloque;
+            if (bloque) {
+                nombreBloque = bloque.nombre_bloque;
+            } else {
+                console.log('No se encontró el bloque con ID:', salon.bloque);
+            }
         }
         
         const tr = document.createElement('tr');
@@ -254,10 +273,14 @@ async function editarBloque(id) {
 // http://127.0.0.1:8000/salones/${id}
 async function editarSalon(id) {
     try {
-        const response = await fetch(`http://localhost:8000/salones/${id}`);
+        // Usar los headers de autenticación
+        const response = await fetch(`http://localhost:8000/salones/${id}`, {
+            headers: api.authHeaders()
+        });
         if (!response.ok) throw new Error("No se pudo obtener la información del salón");
 
         const data = await response.json();
+        console.log('Datos del salón recibidos:', data);
         const s = data.salon;
 
         document.getElementById("salonId").value = s.ID_salon;
@@ -266,14 +289,25 @@ async function editarSalon(id) {
 
         const sedeId = s.sede;
         const bloqueId = s.bloque;
+        
+        console.log('Sede ID:', sedeId, 'Bloque ID:', bloqueId);
 
-        const bloqueResponse = await fetch(`http://localhost:8000/bloques/por_sede/${sedeId}`);
+        // Asegurarse de que las sedes estén cargadas
+        if (todasLasSedes.length === 0) {
+            await cargarSedes();
+        }
+
+        // Cargar bloques por sede
+        const bloqueResponse = await fetch(`http://localhost:8000/bloques/por_sede/${sedeId}`, {
+            headers: api.authHeaders()
+        });
         const bloques = await bloqueResponse.json();
+        console.log('Bloques por sede:', bloques);
 
         const bloqueSelect = document.getElementById("bloqueSalon");
-        bloqueSelect.innerHTML = "";
+        bloqueSelect.innerHTML = "<option value=''>Seleccione un bloque</option>";
 
-        if (bloques.length > 0) {
+        if (bloques && bloques.length > 0) {
             document.getElementById("bloqueSalonContainer").style.display = "block";
 
             bloques.forEach(b => {
@@ -427,17 +461,22 @@ async function guardarBloque(e) {
 async function guardarSalon(e) {
     e.preventDefault();
     
+    const sedeValue = sedeSalon.value.trim();
+    const bloqueValue = bloqueSalon.value.trim();
+    
     const data = {
         codigo_salon: codigoSalon.value.trim(),
-        sede: parseInt(sedeSalon.value)
+        sede: sedeValue ? parseInt(sedeValue) : null
     };
     
     // Agregar bloque si está visible y seleccionado
-    if (bloqueSalonContainer.style.display !== 'none' && bloqueSalon.value) {
-        data.bloque = parseInt(bloqueSalon.value);
+    if (bloqueSalonContainer.style.display !== 'none' && bloqueValue) {
+        data.bloque = parseInt(bloqueValue);
     }
     
-    if (!data.codigo_salon || isNaN(data.sede)) {
+    console.log('Datos a enviar al guardar salón:', data);
+    
+    if (!data.codigo_salon || !data.sede) {
         alert("Por favor completa todos los campos obligatorios.");
         return;
     }
@@ -459,9 +498,13 @@ async function guardarSalon(e) {
         });
         
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Error al guardar el salón');
+            const errorData = await response.json();
+            console.error('Error del servidor:', errorData);
+            throw new Error(errorData.detail || 'Error al guardar el salón');
         }
+        
+        const responseData = await response.json();
+        console.log('Respuesta del servidor:', responseData);
         
         const mensaje = salonId.value ? "Salón actualizado correctamente." : "Salón creado correctamente.";
         alert(mensaje);
@@ -474,10 +517,12 @@ async function guardarSalon(e) {
         bloqueSalonContainer.style.display = 'none';
         
         // Recargar datos
+        await cargarSedes();
+        await cargarBloques();
         await cargarSalones();
     } catch (error) {
         console.error("Error al guardar salón:", error);
-        alert("Hubo un problema al guardar el salón.");
+        alert("Hubo un problema al guardar el salón: " + error.message);
     }
 }
 
