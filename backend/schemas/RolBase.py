@@ -1,7 +1,5 @@
 from pydantic import BaseModel
 
-# ID_rol = Column(Integer, primary_key=True, index=True)
-# tipo_rol = Column(String(50))
 
 class RolBase(BaseModel):
     tipo_rol: str

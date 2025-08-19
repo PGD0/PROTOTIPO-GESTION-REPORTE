@@ -8,13 +8,12 @@ async function cargarEquipos() {
         const res = await fetch('http://127.0.0.1:8000/equipos/');
         const equipos = await res.json();
 
-        // Destruir la tabla DataTable existente si ya existe
         if ($.fn.DataTable.isDataTable('#tablaEquipos')) {
             $('#tablaEquipos').DataTable().destroy();
         }
 
         const tbody = document.querySelector('#tablaEquipos tbody');
-        tbody.innerHTML = ''; // Limpiar contenido previo
+        tbody.innerHTML = ''; 
 
         if (equipos.length === 0) {
             const tr = document.createElement('tr');
@@ -55,7 +54,6 @@ async function cargarEquipos() {
             tbody.appendChild(tr);
         });
         
-        // Inicializar DataTables
         $('#tablaEquipos').DataTable({
             responsive: true,
             language: {
@@ -100,16 +98,13 @@ async function editarEquipo(id) {
         if (!res.ok) throw new Error("No se pudo obtener el equipo");
         const equipo = await res.json();
 
-        // Abrir modal
         const equipoModal = new bootstrap.Modal(document.getElementById('equipoModal'));
         equipoModal.show();
 
-        // Llenar campos
         document.getElementById('equipoId').value = equipo.ID_equipo;
         document.getElementById('codigoBarras').value = equipo.codigo_barras;
         document.getElementById('marca').value = equipo.marca;
 
-        // Espera a que las sedes carguen antes de setear
         await cargarSedes();
         document.getElementById('sede').value = equipo.sede_id;
 
@@ -150,7 +145,7 @@ async function eliminarEquipo(id) {
         }
 
         alert("Equipo eliminado correctamente.");
-        cargarEquipos(); // Recargar la tabla después de eliminar
+        cargarEquipos(); 
     } catch (error) {
         console.error("Error al eliminar equipo:", error);
         alert("Hubo un problema al eliminar el equipo.");
@@ -273,8 +268,8 @@ formEquipo.addEventListener('submit', async (e) => {
     }
 
     const url = equipoId
-        ? `http://127.0.0.1:8000/equipos/${equipoId}`   // PUT para editar
-        : `http://127.0.0.1:8000/equipos/`;             // POST para crear
+        ? `http://127.0.0.1:8000/equipos/${equipoId}` 
+        : `http://127.0.0.1:8000/equipos/`;
 
     const method = equipoId ? 'PUT' : 'POST';
 
@@ -303,7 +298,7 @@ formEquipo.addEventListener('submit', async (e) => {
         bloqueSelect.innerHTML = '<option value="">Selecciona un bloque</option>';
         bloqueContainer.style.display = 'none';
 
-        cargarEquipos(); // refrescar la tabla
+        cargarEquipos();
     } catch (error) {
         console.error("Error al guardar equipo:", error);
         alert("Hubo un problema al guardar el equipo.");

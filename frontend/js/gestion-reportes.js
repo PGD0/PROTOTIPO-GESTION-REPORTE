@@ -1,11 +1,9 @@
 import api from './api.js';
 
-// Variables globales para equipos y usuarios
 let equipos = [];
 let usuarios = [];
 const estadosPosibles = ['Pendiente', 'En Proceso', 'Resuelto'];
 
-// Función local para generar el badge de prioridad
 function getPrioridadBadge(prioridad) {
     console.log('Generando badge para prioridad:', prioridad);
     let prioridadClass = '';
@@ -38,17 +36,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
   const container = document.getElementById('reportesAdminContainer');
   
-  // Cargar datos iniciales
   equipos = await api.getEquipos();
   usuarios = await api.getUsuarios();
   
-  // Función para recargar datos
   async function recargarDatos() {
     equipos = await api.getEquipos();
     usuarios = await api.getUsuarios();
   }
 
-  // Función para agregar event listeners a los botones
   function agregarEventListeners() {
     console.log('Agregando event listeners...');
     const botones = container.querySelectorAll('.ver-detalle');
@@ -58,17 +53,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       btn.addEventListener('click', async function() {
         const id = parseInt(this.dataset.id);
         console.log('Botón clickeado, ID del reporte:', id);
-        // Redirigir a la página de información del reporte
         window.location.href = `informacion-reporte.html?id=${id}`;
       });
     });
   }
 
-  // Función render global
   window.render = async function() {
     const reportes = await api.getReportes();
     
-    // Destruir la tabla DataTable existente si ya existe
     if ($.fn.DataTable.isDataTable('#tablaReportes')) {
       $('#tablaReportes').DataTable().destroy();
     }
@@ -135,23 +127,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('Tabla generada, reportes:', reportes.length);
     console.log('HTML generado:', container.innerHTML.substring(0, 500) + '...');
     
-    // Verificar si los botones están en el HTML
     const botonesEnHTML = container.querySelectorAll('.ver-detalle');
     console.log('Botones encontrados en HTML:', botonesEnHTML.length);
     if (botonesEnHTML.length > 0) {
         console.log('Primer botón HTML:', botonesEnHTML[0].outerHTML);
     }
     
-    // Verificar si la columna de Acciones está presente
     const columnasAcciones = container.querySelectorAll('th:last-child, td:last-child');
     console.log('Columnas de Acciones encontradas:', columnasAcciones.length);
     if (columnasAcciones.length > 0) {
         console.log('Primera columna de Acciones:', columnasAcciones[0].outerHTML);
     }
 
-    // Inicializar DataTables
     const dataTable = $('#tablaReportes').DataTable({
-      responsive: false, // Desactivar responsive para evitar problemas con la columna
+      responsive: false, 
       language: {
         url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
       },
@@ -176,15 +165,14 @@ document.addEventListener('DOMContentLoaded', async function() {
       ],
       columnDefs: [
         {
-          targets: 8, // Columna de Acciones
-          orderable: false, // No ordenable
-          searchable: false, // No buscable
-          width: '80px', // Ancho fijo
-          className: 'text-center' // Centrar contenido
+          targets: 8,
+          orderable: false, 
+          searchable: false, 
+          width: '80px', 
+          className: 'text-center'
         }
       ],
       drawCallback: function() {
-        // Agregar event listeners después de que DataTables dibuje la tabla
         console.log('DataTables drawCallback ejecutado');
         agregarEventListeners();
       },
@@ -194,7 +182,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       }
     });
     
-    // Agregar event listeners iniciales
     setTimeout(() => {
       console.log('Agregando event listeners con delay...');
       agregarEventListeners();

@@ -1,6 +1,4 @@
-/* Estilos personalizados para DataTables */
 
-/* Eliminar sombras y bordes innecesarios */
 .dataTables_wrapper .dt-buttons,
 .dt-buttons {
     margin-bottom: 1rem !important;
@@ -13,7 +11,6 @@
     float: left !important;
 }
 
-/* Mejorar estilos de botones */
 .dataTables_wrapper .dt-buttons .btn,
 .dt-button,
 button.dt-button {
@@ -33,7 +30,6 @@ button.dt-button {
     max-width: 200px !important;
 }
 
-/* Asegurar que los iconos se vean correctamente */
 .dataTables_wrapper .dt-buttons .btn i,
 .dt-button i,
 .dt-button span i {
@@ -43,14 +39,12 @@ button.dt-button {
     vertical-align: middle !important;
 }
 
-/* Corregir márgenes y espaciado para todas las tablas */
 .dataTables_wrapper {
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
     padding: 0 !important;
 }
 
-/* Asegurar que los botones de DataTables estén correctamente alineados */
 .dt-buttons.btn-group,
 .dt-buttons {
     display: inline-flex !important;
@@ -59,7 +53,6 @@ button.dt-button {
     margin-bottom: 1rem !important;
 }
 
-/* Forzar visualización de todos los botones de DataTables */
 .dt-button,
 .buttons-excel,
 .buttons-pdf,
@@ -74,7 +67,6 @@ button.buttons-pdf {
     margin-right: 5px !important;
 }
 
-/* Corregir específicamente para gestion-reportes */
 #tablaReportes_wrapper .dt-buttons,
 #tablaUsuarios_wrapper .dt-buttons,
 #tablaEquipos_wrapper .dt-buttons {
@@ -86,7 +78,6 @@ button.buttons-pdf {
     z-index: 2 !important;
 }
 
-/* Asegurar que los botones de PDF se muestren */
 #tablaReportes_wrapper .buttons-pdf,
 #tablaUsuarios_wrapper .buttons-pdf,
 #tablaEquipos_wrapper .buttons-pdf {
@@ -96,7 +87,6 @@ button.buttons-pdf {
     margin-left: 5px !important;
 }
 
-/* Corregir el problema del botón Excel que ocupa todo el ancho */
 #tablaUsuarios_wrapper .buttons-excel,
 #tablaEquipos_wrapper .buttons-excel,
 #tablaReportes_wrapper .buttons-excel,
@@ -108,7 +98,6 @@ button.buttons-pdf {
     position: static !important;
 }
 
-/* Corregir el problema del botón PDF que no se muestra */
 #tablaUsuarios_wrapper .buttons-pdf,
 #tablaEquipos_wrapper .buttons-pdf,
 #tablaReportes_wrapper .buttons-pdf,
@@ -120,7 +109,6 @@ button.buttons-pdf {
     position: static !important;
 }
 
-/* Asegurar que los contenedores de botones no ocupen todo el ancho */
 .dt-buttons,
 .dt-buttons.btn-group,
 .dataTables_wrapper .dt-buttons {
@@ -132,14 +120,12 @@ button.buttons-pdf {
     z-index: 10 !important;
 }
 
-/* Corregir el problema de los márgenes en gestion-reportes */
 #tablaReportes_wrapper {
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
     padding: 0 !important;
 }
 
-/* Asegurar que los botones se muestren en línea */
 .dt-buttons button,
 .dt-button,
 button.dt-button,
@@ -151,7 +137,6 @@ button.dt-button,
     opacity: 1 !important;
 }
 
-/* Forzar visualización de botones en todas las tablas */
 div.dt-buttons {
     position: relative !important;
     display: inline-flex !important;
@@ -159,7 +144,6 @@ div.dt-buttons {
     float: left !important;
 }
 
-/* Corregir específicamente el botón PDF */
 .dt-button.buttons-pdf,
 button.dt-button.buttons-pdf,
 .buttons-pdf {
@@ -169,7 +153,6 @@ button.dt-button.buttons-pdf,
     margin-left: 5px !important;
 }
 
-/* Estilos específicos para botones de Excel y PDF */
 .dataTables_wrapper .dt-buttons .buttons-excel,
 .dataTables_wrapper .dt-buttons .btn-outline-success,
 .dt-button.buttons-excel,
@@ -214,13 +197,11 @@ button.dt-button.buttons-pdf:hover,
     color: #fff !important;
 }
 
-/* Estilos para la tabla */
 .dataTables_wrapper .dataTable {
     border-collapse: collapse;
     width: 100%;
 }
 
-/* Estilos para el encabezado de la tabla */
 .dataTables_wrapper .dataTable thead th {
     background-color: #f8f9fa;
     border-bottom: 2px solid #dee2e6;
@@ -228,49 +209,41 @@ button.dt-button.buttons-pdf:hover,
     padding: 0.75rem;
 }
 
-/* Estilos para las celdas de la tabla */
 .dataTables_wrapper .dataTable tbody td {
     padding: 0.75rem;
     vertical-align: middle;
 }
 
-/* Estilos para las filas alternas */
 .dataTables_wrapper .dataTable tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Estilos para el hover en las filas */
 .dataTables_wrapper .dataTable tbody tr:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Estilos para la paginación */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     border-radius: 4px;
     margin: 0 0.25rem;
 }
 
-/* Estilos para el botón de página actual */
 .dataTables_wrapper .dataTables_paginate .paginate_button.current {
     background-color: #0d6efd;
     border-color: #0d6efd;
     color: white !important;
 }
 
-/* Estilos para el hover en los botones de paginación */
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
     background-color: #f8f9fa;
     border-color: #dee2e6;
     color: #0d6efd !important;
 }
 
-/* Estilos para la información de registros */
 .dataTables_wrapper .dataTables_info {
     padding-top: 0.75rem;
     font-size: 0.875rem;
 }
 
-/* Estilos para el filtro de búsqueda */
 .dataTables_wrapper .dataTables_filter input {
     border: 1px solid #dee2e6;
     border-radius: 4px;
@@ -278,7 +251,6 @@ button.dt-button.buttons-pdf:hover,
     margin-left: 0.5rem;
 }
 
-/* Estilos para el filtro de búsqueda al enfocar */
 .dataTables_wrapper .dataTables_filter input:focus {
     border-color: #86b7fe;
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);

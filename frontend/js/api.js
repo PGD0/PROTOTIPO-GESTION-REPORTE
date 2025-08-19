@@ -90,7 +90,6 @@ async function getBloques() {
   try {
     const res = await fetch(`${API_URL}/bloques/`, { headers: authHeaders() });
     if (!res.ok) {
-      // Si el código de estado es 404, es porque no hay bloques
       if (res.status === 404) {
         const errorData = await res.json();
         throw new Error(errorData.detail || 'No se encontraron bloques');
@@ -100,7 +99,7 @@ async function getBloques() {
     return await res.json();
   } catch (error) {
     console.error('Error en getBloques:', error);
-    throw error; // Re-lanzar el error para manejarlo en cargarBloques()
+    throw error;
   }
 }
 
@@ -126,7 +125,6 @@ async function getReporte(id) {
   const res = await fetch(`${API_URL}/reportes/${id}`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudo obtener el reporte');
   const data = await res.json();
-  // Normaliza respuesta: backend puede devolver { reporte: {...} }
   return data && data.reporte ? data.reporte : data;
 }
 
@@ -307,7 +305,6 @@ async function getEquipoPorCodigo(codigoBarras) {
 
 async function updateUsuario(id, data) {
   try {
-    // Si data contiene solo propiedades simples, usamos JSON
     if (!data.imagen) {
       const res = await fetch(`${API_URL}/usuarios/${id}`, {
         method: 'PUT',
@@ -325,7 +322,6 @@ async function updateUsuario(id, data) {
       
       return await res.json();
     } else {
-      // Si hay imagen, usamos FormData
       const formData = new FormData();
       Object.keys(data).forEach(key => {
         formData.append(key, data[key]);
@@ -362,7 +358,7 @@ async function deleteUsuario(id) {
       throw new Error(errorData.detail || 'Error al eliminar el usuario');
     }
     
-    return true; // Devolvemos true si la eliminación fue exitosa
+    return true;
   } catch (error) {
     console.error('Error en deleteUsuario:', error);
     throw error;

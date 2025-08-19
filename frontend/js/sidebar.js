@@ -1,4 +1,3 @@
-// sidebar.js - Sidebar completamente dinámico según el rol
 import api from './api.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -11,7 +10,6 @@ function renderSidebarNav() {
     if (!nav) return;
     nav.innerHTML = '';
 
-    // Enlaces públicos
     const linksPublicos = [
         {
             href: 'homepage.html',
@@ -46,19 +44,15 @@ function renderSidebarNav() {
         nav.appendChild(crearNavItem(link));
     });
 
-    // Separador
     nav.appendChild(document.createElement('hr')).className = 'my-3';
 
-    // Enlaces administrativos (solo para admin)
     const token = api.getToken();
     let esAdmin = false;
     if (token) {
         try {
-            // Obtener el usuario actual del localStorage (guardado por auth.js)
             const currentUserStr = localStorage.getItem('currentUser');
             if (currentUserStr) {
                 const currentUser = JSON.parse(currentUserStr);
-                // Verificar si el usuario es administrador (rol = 1)
                 esAdmin = currentUser && currentUser.rol === 1;
             }
         } catch (error) {
@@ -92,11 +86,9 @@ function renderSidebarNav() {
         linksAdmin.forEach(link => {
             nav.appendChild(crearNavItem(link));
         });
-        // Otro separador si quieres separar admin de salir
         nav.appendChild(document.createElement('hr')).className = 'my-3';
     }
 
-    // Enlace salir (siempre al final)
     nav.appendChild(crearNavItem({
         href: '../index.html',
         icon: 'bi-box-arrow-right',

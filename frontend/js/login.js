@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     
-    // Crear un div para mostrar mensajes de error
     const errorDiv = document.createElement('div');
     errorDiv.className = 'alert alert-danger mt-3 d-none';
     loginForm.appendChild(errorDiv);

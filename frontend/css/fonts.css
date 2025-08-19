@@ -1,6 +1,4 @@
-/* Bootstrap ya maneja las fuentes del sistema */
 
-/* Asegurar que las clases de Bootstrap funcionen correctamente */
 .fw-bold {
     font-weight: 600 !important;
 }

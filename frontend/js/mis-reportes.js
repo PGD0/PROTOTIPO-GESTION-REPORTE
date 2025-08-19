@@ -1,14 +1,12 @@
 import api from './api.js';
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Verificar autenticación
     const token = api.getToken();
     if (!token) {
         window.location.href = '../index.html';
         return;
     }
 
-    // Obtener el ID del usuario actual
     const currentUserStr = localStorage.getItem('currentUser');
     if (!currentUserStr) {
         console.error('No se encontró información del usuario');
@@ -19,10 +17,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         const currentUser = JSON.parse(currentUserStr);
         const userId = currentUser.ID_usuarios;
 
-        // Cargar reportes del usuario
         await cargarReportesUsuario(userId);
 
-        // Configurar event listeners para los filtros
         document.getElementById('filtro-estado').addEventListener('change', () => cargarReportesUsuario(userId));
         document.getElementById('filtro-sede').addEventListener('change', () => cargarReportesUsuario(userId));
         document.getElementById('filtro-fecha-desde').addEventListener('change', () => cargarReportesUsuario(userId));
@@ -35,7 +31,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 async function cargarReportesUsuario(userId) {
     try {
-        // Mostrar carga
         document.getElementById('reportesContainer').innerHTML = `
             <div class="col-12 text-center my-5">
                 <div class="spinner-border text-primary" role="status">
@@ -45,31 +40,25 @@ async function cargarReportesUsuario(userId) {
             </div>
         `;
 
-        // Obtener valores de los filtros
         const estado = document.getElementById('filtro-estado').value;
         const sede = document.getElementById('filtro-sede').value;
         const fechaDesde = document.getElementById('filtro-fecha-desde').value;
         const fechaHasta = document.getElementById('filtro-fecha-hasta').value;
 
-        // Obtener reportes del usuario y sedes por separado
         const [reportesUsuario, sedes] = await Promise.all([
             api.getReportesPorUsuario(userId),
             api.getSedes()
         ]);
 
-        // Obtener equipos para información adicional
         const equipos = await api.getEquipos();
 
-        // Aplicar filtros
         let reportesFiltrados = reportesUsuario.filter(reporte => {
-            // Filtrar por estado
             if (estado === 'pendiente') return !reporte.resuelto;
             if (estado === 'en-proceso') return !reporte.resuelto && reporte.estado_equipo === 'En Proceso';
             if (estado === 'resuelto') return reporte.resuelto;
             return true;
         });
 
-        // Filtrar por sede si existe
         if (sede) {
             reportesFiltrados = reportesFiltrados.filter(reporte => {
                 const sedeReporte = sedes.find(s => s.ID_sede === reporte.sede);
@@ -78,7 +67,6 @@ async function cargarReportesUsuario(userId) {
             });
         }
 
-        // Filtrar por fecha desde
         if (fechaDesde) {
             const fechaDesdeDate = new Date(fechaDesde);
             reportesFiltrados = reportesFiltrados.filter(reporte => {
@@ -86,16 +74,14 @@ async function cargarReportesUsuario(userId) {
             });
         }
 
-        // Filtrar por fecha hasta
         if (fechaHasta) {
             const fechaHastaDate = new Date(fechaHasta);
-            fechaHastaDate.setDate(fechaHastaDate.getDate() + 1); // Incluir todo el día
+            fechaHastaDate.setDate(fechaHastaDate.getDate() + 1); 
             reportesFiltrados = reportesFiltrados.filter(reporte => {
                 return new Date(reporte.fecha_registro) <= fechaHastaDate;
             });
         }
 
-        // Renderizar reportes filtrados
         renderReportes(reportesFiltrados, equipos, sedes);
 
     } catch (error) {
@@ -131,7 +117,6 @@ function renderReportes(reportes = [], equipos = [], sedes = []) {
         const equipo = equipos.find(e => e.ID_equipo === reporte.ID_equipo) || {};
         const sedeReporte = sedes.find(s => s.ID_sede === reporte.sede) || {};
         
-        // Determinar estado y estilos
         let estado, badgeClass, icon;
         if (reporte.resuelto) {
             estado = 'Resuelto';

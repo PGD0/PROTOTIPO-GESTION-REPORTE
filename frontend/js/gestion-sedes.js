@@ -1,19 +1,16 @@
 import api from './api.js';
 
-// Elementos DOM para Sedes
 const tablaSedes = document.querySelector('#tablaSedes tbody');
 const formSede = document.getElementById('formSede');
 const sedeId = document.getElementById('sedeId');
 const nombreSede = document.getElementById('nombreSede');
 
-// Elementos DOM para Bloques
 const tablaBloques = document.querySelector('#tablaBloques tbody');
 const formBloque = document.getElementById('formBloque');
 const bloqueId = document.getElementById('bloqueId');
 const nombreBloque = document.getElementById('nombreBloque');
 const sedeBloque = document.getElementById('sedeBloque');
 
-// Elementos DOM para Salones
 const tablaSalones = document.querySelector('#tablaSalones tbody');
 const formSalon = document.getElementById('formSalon');
 const salonId = document.getElementById('salonId');
@@ -22,19 +19,16 @@ const sedeSalon = document.getElementById('sedeSalon');
 const bloqueSalon = document.getElementById('bloqueSalon');
 const bloqueSalonContainer = document.getElementById('bloqueSalonContainer');
 
-// Elementos DOM para Eliminación
 const formEliminar = document.getElementById('formEliminar');
 const eliminarId = document.getElementById('eliminarId');
 const eliminarTipo = document.getElementById('eliminarTipo');
 const eliminarMensaje = document.getElementById('eliminarMensaje');
 const passwordConfirm = document.getElementById('passwordConfirm');
 
-// Variables globales
 let todasLasSedes = [];
 let todosLosBloques = [];
 let todosLosSalones = [];
 
-// Funciones para cargar datos
 async function cargarSedes() {
     try {
         const sedes = await api.getSedes();
@@ -61,7 +55,6 @@ async function cargarBloques() {
 
 async function cargarSalones() {
     try {
-        // Asegurarse de que las sedes y bloques estén cargados primero
         if (todasLasSedes.length === 0) {
             await cargarSedes();
         }
@@ -79,17 +72,13 @@ async function cargarSalones() {
     }
 }
 
-// Funciones para renderizar tablas
 function renderizarTablaSedes(sedes) {
-    // Destruir DataTable existente si ya está inicializada
     if ($.fn.DataTable.isDataTable('#tablaSedes')) {
         $('#tablaSedes').DataTable().destroy();
     }
     
-    // Obtener la tabla específica, no el contenedor padre
     const tablaSedes = document.querySelector('#tablaSedes');
     
-    // Crear estructura para DataTables solo para la tabla
     tablaSedes.innerHTML = `
         <thead>
             <tr>
@@ -101,7 +90,6 @@ function renderizarTablaSedes(sedes) {
         <tbody></tbody>
     `;
     
-    // Referencia actualizada a la tabla
     const tablaSedesBody = document.querySelector('#tablaSedes tbody');
     
     if (sedes.length === 0) {
@@ -109,7 +97,6 @@ function renderizarTablaSedes(sedes) {
         return;
     }
     
-    // Llenar la tabla con datos
     sedes.forEach(sede => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -127,7 +114,6 @@ function renderizarTablaSedes(sedes) {
         tablaSedesBody.appendChild(tr);
     });
     
-    // Inicializar DataTables
     $('#tablaSedes').DataTable({
         responsive: true,
         language: {
@@ -156,15 +142,12 @@ function renderizarTablaSedes(sedes) {
 }
 
 function renderizarTablaBloques(bloques) {
-    // Destruir DataTable existente si ya está inicializada
     if ($.fn.DataTable.isDataTable('#tablaBloques')) {
         $('#tablaBloques').DataTable().destroy();
     }
     
-    // Obtener la tabla específica, no el contenedor padre
     const tablaBloques = document.querySelector('#tablaBloques');
     
-    // Crear estructura para DataTables solo para la tabla
     tablaBloques.innerHTML = `
         <thead>
             <tr>
@@ -177,7 +160,6 @@ function renderizarTablaBloques(bloques) {
         <tbody></tbody>
     `;
     
-    // Referencia actualizada a la tabla
     const tablaBloquesBody = document.querySelector('#tablaBloques tbody');
     
     if (bloques.length === 0) {
@@ -185,7 +167,6 @@ function renderizarTablaBloques(bloques) {
         return;
     }
     
-    // Llenar la tabla con datos
     bloques.forEach(bloque => {
         const sede = todasLasSedes.find(s => s.ID_sede === bloque.sede_id);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
@@ -207,7 +188,6 @@ function renderizarTablaBloques(bloques) {
         tablaBloquesBody.appendChild(tr);
     });
     
-    // Inicializar DataTables
     $('#tablaBloques').DataTable({
         responsive: true,
         language: {
@@ -236,15 +216,12 @@ function renderizarTablaBloques(bloques) {
 }
 
 function renderizarTablaSalones(salones) {
-    // Destruir DataTable existente si ya está inicializada
     if ($.fn.DataTable.isDataTable('#tablaSalones')) {
         $('#tablaSalones').DataTable().destroy();
     }
     
-    // Obtener la tabla específica, no el contenedor padre
     const tablaSalones = document.querySelector('#tablaSalones');
     
-    // Crear estructura para DataTables solo para la tabla
     tablaSalones.innerHTML = `
         <thead>
             <tr>
@@ -258,7 +235,6 @@ function renderizarTablaSalones(salones) {
         <tbody></tbody>
     `;
     
-    // Referencia actualizada a la tabla
     const tablaSalonesBody = document.querySelector('#tablaSalones tbody');
     
     if (salones.length === 0) {
@@ -266,13 +242,10 @@ function renderizarTablaSalones(salones) {
         return;
     }
     
-    // Llenar la tabla con datos
     salones.forEach(salon => {
-        // Buscar la sede por ID
         const sede = todasLasSedes.find(s => s.ID_sede === salon.sede);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
         
-        // Buscar el bloque si existe
         let nombreBloque = '-';
         if (salon.bloque) {
             const bloque = todosLosBloques.find(b => b.ID_bloque === salon.bloque);
@@ -301,7 +274,6 @@ function renderizarTablaSalones(salones) {
         tablaSalonesBody.appendChild(tr);
     });
     
-    // Inicializar DataTables
     $('#tablaSalones').DataTable({
         responsive: true,
         language: {
@@ -329,20 +301,16 @@ function renderizarTablaSalones(salones) {
     });
 }
 
-// Funciones para actualizar selects
 function actualizarSelectSedes() {
-    // Actualizar select para bloques
     sedeBloque.innerHTML = '<option value="">Selecciona una sede</option>';
     sedeSalon.innerHTML = '<option value="">Selecciona una sede</option>';
     
     todasLasSedes.forEach(sede => {
-        // Para el select de bloques
         const optionBloque = document.createElement('option');
         optionBloque.value = sede.ID_sede;
         optionBloque.textContent = sede.nombre_sede;
         sedeBloque.appendChild(optionBloque);
         
-        // Para el select de salones
         const optionSalon = document.createElement('option');
         optionSalon.value = sede.ID_sede;
         optionSalon.textContent = sede.nombre_sede;
@@ -366,25 +334,20 @@ function actualizarSelectBloques(sedeId = null) {
     });
 }
 
-// Funciones para editar elementos
 async function editarSede(id) {
     try {
-        // Obtener la sede específica
         const response = await fetch(`http://127.0.0.1:8000/sedes/${id}`, {
             headers: api.authHeaders()
         });
         if (!response.ok) throw new Error("No se pudo obtener la sede");
         const data = await response.json();
         
-        // Extraer la sede del objeto de respuesta
-        // La API devuelve {message: "...", sede: {...}}
         const sede = data.sede;
         
         if (!sede) {
             throw new Error("La estructura de datos de la sede no es válida");
         }
         
-        // Abrir modal y llenar campos
         const sedeModal = new bootstrap.Modal(document.getElementById('sedeModal'));
         sedeId.value = sede.ID_sede;
         nombreSede.value = sede.nombre_sede;
@@ -404,7 +367,6 @@ async function editarBloque(id) {
         if (!response.ok) throw new Error("No se pudo obtener el bloque");
         const bloque = await response.json();
         
-        // Abrir modal y llenar campos
         const bloqueModal = new bootstrap.Modal(document.getElementById('bloqueModal'));
         bloqueId.value = bloque.ID_bloque;
         nombreBloque.value = bloque.nombre_bloque;
@@ -415,10 +377,8 @@ async function editarBloque(id) {
         alert("Hubo un problema al cargar los datos del bloque.");
     }
 }
-// http://127.0.0.1:8000/salones/${id}
 async function editarSalon(id) {
     try {
-        // Usar los headers de autenticación
         const response = await fetch(`http://localhost:8000/salones/${id}`, {
             headers: api.authHeaders()
         });
@@ -437,12 +397,10 @@ async function editarSalon(id) {
         
         console.log('Sede ID:', sedeId, 'Bloque ID:', bloqueId);
 
-        // Asegurarse de que las sedes estén cargadas
         if (todasLasSedes.length === 0) {
             await cargarSedes();
         }
 
-        // Cargar bloques por sede
         const bloqueResponse = await fetch(`http://localhost:8000/bloques/por_sede/${sedeId}`, {
             headers: api.authHeaders()
         });
@@ -477,7 +435,6 @@ async function editarSalon(id) {
     }
 }
 
-// Función para confirmar eliminación
 function confirmarEliminar(tipo, id, nombre) {
     const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarModal'));
     eliminarId.value = id;
@@ -501,7 +458,6 @@ function confirmarEliminar(tipo, id, nombre) {
     eliminarModal.show();
 }
 
-// Funciones para guardar elementos
 async function guardarSede(e) {
     e.preventDefault();
     
@@ -514,7 +470,6 @@ async function guardarSede(e) {
         return;
     }
     
-    // Si es edición, mostrar modal de confirmación
     if (sedeId.value) {
         const confirmarModal = new bootstrap.Modal(document.getElementById('confirmarModificacionModal'));
         document.getElementById('confirmarModificacionTipo').value = 'sede';
@@ -526,7 +481,6 @@ async function guardarSede(e) {
         return;
     }
     
-    // Si es creación, continuar normalmente
     const url = `http://127.0.0.1:8000/sedes/`;
     const method = 'POST';
     
@@ -553,7 +507,6 @@ async function guardarSede(e) {
         formSede.reset();
         sedeId.value = '';
         
-        // Recargar datos
         await cargarSedes();
     } catch (error) {
         console.error("Error al guardar sede:", error);
@@ -574,14 +527,12 @@ async function guardarBloque(e) {
         return;
     }
     
-    // Si es edición, mostrar modal de confirmación
     if (bloqueId.value) {
         const confirmarModal = new bootstrap.Modal(document.getElementById('confirmarModificacionModal'));
         document.getElementById('confirmarModificacionTipo').value = 'bloque';
         document.getElementById('confirmarModificacionId').value = bloqueId.value;
         document.getElementById('confirmarModificacionData').value = JSON.stringify(data);
         
-        // Obtener el nombre de la sede para el mensaje
         const sede = todasLasSedes.find(s => s.ID_sede === data.sede_id);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
         
@@ -591,7 +542,6 @@ async function guardarBloque(e) {
         return;
     }
     
-    // Si es creación, continuar normalmente
     const url = `http://127.0.0.1:8000/bloques/`;
     const method = 'POST';
     
@@ -618,7 +568,6 @@ async function guardarBloque(e) {
         formBloque.reset();
         bloqueId.value = '';
         
-        // Recargar datos
         await cargarBloques();
     } catch (error) {
         console.error("Error al guardar bloque:", error);
@@ -637,7 +586,6 @@ async function guardarSalon(e) {
         sede: sedeValue ? parseInt(sedeValue) : null
     };
     
-    // Agregar bloque si está visible y seleccionado
     if (bloqueSalonContainer.style.display !== 'none' && bloqueValue) {
         data.bloque = parseInt(bloqueValue);
     }
@@ -649,14 +597,12 @@ async function guardarSalon(e) {
         return;
     }
     
-    // Si es edición, mostrar modal de confirmación
     if (salonId.value) {
         const confirmarModal = new bootstrap.Modal(document.getElementById('confirmarModificacionModal'));
         document.getElementById('confirmarModificacionTipo').value = 'salon';
         document.getElementById('confirmarModificacionId').value = salonId.value;
         document.getElementById('confirmarModificacionData').value = JSON.stringify(data);
         
-        // Obtener nombres de sede y bloque para el mensaje
         const sede = todasLasSedes.find(s => s.ID_sede === data.sede);
         const nombreSede = sede ? sede.nombre_sede : 'Desconocida';
         
@@ -674,7 +620,6 @@ async function guardarSalon(e) {
         return;
     }
     
-    // Si es creación, continuar normalmente
     const url = `http://127.0.0.1:8000/salones/`;
     const method = 'POST';
     
@@ -706,7 +651,6 @@ async function guardarSalon(e) {
         salonId.value = '';
         bloqueSalonContainer.style.display = 'none';
         
-        // Recargar datos
         await cargarSedes();
         await cargarBloques();
         await cargarSalones();
@@ -716,7 +660,6 @@ async function guardarSalon(e) {
     }
 }
 
-// Función para eliminar elementos
 async function eliminarElemento(e) {
     e.preventDefault();
     
@@ -729,22 +672,18 @@ async function eliminarElemento(e) {
         return;
     }
     
-    // Verificar la contraseña del administrador
     try {
-        // Obtener el usuario actual del localStorage
         const currentUserStr = localStorage.getItem('currentUser');
         if (!currentUserStr) throw new Error("No se encontró información del usuario");
         
         const currentUser = JSON.parse(currentUserStr);
         
-        // Verificar la contraseña usando la nueva función de la API
         const verificacionExitosa = await api.verificarPassword(currentUser.ID_usuarios, password);
         
         if (!verificacionExitosa) {
             throw new Error("Contraseña incorrecta");
         }
         
-        // Si la contraseña es correcta, proceder con la eliminación
         let url = '';
         switch (tipo) {
             case 'sede':
@@ -775,7 +714,6 @@ async function eliminarElemento(e) {
         const modal = bootstrap.Modal.getInstance(document.getElementById('eliminarModal'));
         modal.hide();
         
-        // Recargar datos según el tipo
         switch (tipo) {
             case 'sede':
                 await cargarSedes();
@@ -796,7 +734,6 @@ async function eliminarElemento(e) {
     }
 }
 
-// Funciones de utilidad
 function mostrarMensajeVacio(tabla, mensaje) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -817,7 +754,6 @@ function mostrarError(tabla, mensaje) {
     `;
 }
 
-// Función para procesar la confirmación de modificación
 async function procesarModificacionConfirmada(e) {
     e.preventDefault();
     
@@ -831,22 +767,18 @@ async function procesarModificacionConfirmada(e) {
         return;
     }
     
-    // Verificar la contraseña del administrador
     try {
-        // Obtener el usuario actual del localStorage
         const currentUserStr = localStorage.getItem('currentUser');
         if (!currentUserStr) throw new Error("No se encontró información del usuario");
         
         const currentUser = JSON.parse(currentUserStr);
         
-        // Verificar la contraseña usando la función de la API
         const verificacionExitosa = await api.verificarPassword(currentUser.ID_usuarios, password);
         
         if (!verificacionExitosa) {
             throw new Error("Contraseña incorrecta");
         }
         
-        // Si la contraseña es correcta, proceder con la modificación
         const data = JSON.parse(dataStr);
         let url = '';
         
@@ -880,11 +812,9 @@ async function procesarModificacionConfirmada(e) {
         
         alert(`${tipo.charAt(0).toUpperCase() + tipo.slice(1)} modificado correctamente.`);
         
-        // Cerrar el modal de confirmación
         const confirmarModal = bootstrap.Modal.getInstance(document.getElementById('confirmarModificacionModal'));
         confirmarModal.hide();
         
-        // Cerrar el modal de edición según el tipo
         let editModal;
         switch (tipo) {
             case 'sede':
@@ -909,7 +839,6 @@ async function procesarModificacionConfirmada(e) {
             editModal.hide();
         }
         
-        // Recargar datos según el tipo
         switch (tipo) {
             case 'sede':
                 await cargarSedes();
@@ -930,23 +859,18 @@ async function procesarModificacionConfirmada(e) {
     }
 }
 
-// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Cargar datos iniciales
     cargarSedes();
     cargarBloques();
     cargarSalones();
     
-    // Event listeners para formularios
     formSede.addEventListener('submit', guardarSede);
     formBloque.addEventListener('submit', guardarBloque);
     formSalon.addEventListener('submit', guardarSalon);
     formEliminar.addEventListener('submit', eliminarElemento);
     
-    // Event listener para el formulario de confirmación de modificación
     document.getElementById('formConfirmarModificacion').addEventListener('submit', procesarModificacionConfirmada);
     
-    // Event listener para resetear formularios al abrir modales
     document.querySelector('[data-bs-target="#sedeModal"]').addEventListener('click', () => {
         formSede.reset();
         sedeId.value = '';
@@ -963,7 +887,6 @@ document.addEventListener('DOMContentLoaded', () => {
         bloqueSalonContainer.style.display = 'none';
     });
     
-    // Event listener para mostrar/ocultar bloques según la sede seleccionada
     sedeSalon.addEventListener('change', () => {
         const sedeId = parseInt(sedeSalon.value);
         if (!sedeId) {
@@ -983,7 +906,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Exponer funciones para uso global
 window.editarSede = editarSede;
 window.editarBloque = editarBloque;
 window.editarSalon = editarSalon;

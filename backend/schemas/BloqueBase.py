@@ -1,8 +1,5 @@
 from pydantic import BaseModel
 
-# ID_bloque = Column(Integer, primary_key=True, index=True)
-# nombre_bloque = Column(String(50))
-# sede_id = Column(Integer, ForeignKey("sedes.ID_sede"))
 
 class BloqueBase(BaseModel):
     nombre_bloque: str

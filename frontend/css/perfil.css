@@ -1,6 +1,4 @@
-/* ===== ESTILOS ESPECÍFICOS PARA LA PÁGINA DE PERFIL ===== */
 
-/* Contenedor principal del perfil */
 .contenedor{
     background-color: var(--bs-white);
     margin: 20px;
@@ -12,14 +10,12 @@
     margin: 0 auto;
 }
 
-/* Estilos para la foto de perfil */
 .perfil-foto-container {
     position: relative;
     display: inline-block;
     margin-bottom: 0;
 }
 
-/* Estilos para el nombre del perfil */
 .perfil-nombre h1 {
     font-size: 2.5rem;
     font-weight: 700;
@@ -32,13 +28,13 @@
 .perfil-nombre {
     padding-left: 0px;
     flex-grow: 1;
-    min-width: 0; /* Permite que el contenedor se encoja si es necesario */
+    min-width: 0; 
 }
 
 .boton-editar {
     padding-left: 0px;
-    flex-shrink: 0; /* Evita que el botón se encoja */
-    align-self: center; /* Alinea el botón verticalmente al centro */
+    flex-shrink: 0; 
+    align-self: center; 
 }
 
 .descripcion-perfil{
@@ -50,7 +46,6 @@
     margin-left: 50px;
 }
 
-/* Estilos para el título de la sección lateral */
 .titulo h5 {
     color: var(--bs-gray-800);
     font-weight: 600;
@@ -58,7 +53,6 @@
     padding-left: 20px;
 }
 
-/* Estilos para la sección lateral */
 .seccion-lateral {
     background-color: var(--bs-white);
     border-radius: var(--bs-border-radius);
@@ -79,7 +73,6 @@
     margin-bottom: 0;
 }
 
-/* Estilos para el icono de estado */
 .bi-circle-fill {
     font-size: 0.7rem !important;
     vertical-align: middle !important;
@@ -87,7 +80,6 @@
     top: -1px;
 }
 
-/* Estilos para las tarjetas de reportes */
 .reporte-card {
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius);
@@ -137,7 +129,6 @@
     transform: translateX(3px);
 }
 
-/* Estilos para las tarjetas mini de reportes */
 .reporte-card-mini {
     border: 1px solid var(--bs-border-color);
     border-radius: var(--bs-border-radius-sm);
@@ -174,7 +165,6 @@
     font-size: 0.7rem;
 }
 
-/* Estilos para la sección completa de reportes */
 .reportes-seccion-completa {
     background-color: var(--bs-white);
     border-radius: var(--bs-border-radius);
@@ -189,7 +179,6 @@
     margin-bottom: 15px;
 }
 
-/* Ajustes responsivos */
 @media (max-width: 768px) {
     .descripcion-perfil {
         margin-left: 20px;
@@ -200,7 +189,6 @@
     }
 }
 
-/* Estilos para la sección del header del perfil */
 .perfil-header-section {
     display: flex;
     align-items: flex-start;
@@ -209,13 +197,12 @@
     width: 100%;
 }
 
-/* Estilos para la foto de perfil */
 .perfil-foto-container {
     position: relative;
     display: inline-block;
     margin-bottom: 0;
     flex-shrink: 0;
-    align-self: flex-start; /* Alinea la foto en la parte superior */
+    align-self: flex-start; 
 }
 
 
@@ -274,7 +261,6 @@
     transform: scale(1.1);
 }
 
-/* Estilos para los campos del formulario */
 .perfil-form-group {
     margin-bottom: 1.5rem;
 }
@@ -298,7 +284,6 @@
     box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
 }
 
-/* Estilos para las preferencias de notificación */
 .perfil-notificaciones {
     background: #f8f9fa;
     border-radius: 8px;
@@ -314,7 +299,6 @@
     margin-bottom: 0;
 }
 
-/* Estilos para los botones de acción */
 .perfil-acciones {
     display: flex;
     justify-content: space-between;
@@ -361,7 +345,6 @@
     transform: translateY(-1px);
 }
 
-/* Estilos para el header del perfil */
 .perfil-header {
     background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
     color: white;
@@ -375,12 +358,10 @@
     font-weight: 600;
 }
 
-/* Estilos para el contenido del perfil */
 .perfil-content {
     padding: 2rem;
 }
 
-/* Estilos responsivos */
 @media (max-width: 768px) {
     .perfil-foto {
         width: 100px;
@@ -429,7 +410,6 @@
     }
 }
 
-/* Estilos para estados de carga */
 .perfil-loading {
     opacity: 0.6;
     pointer-events: none;
@@ -439,7 +419,6 @@
     background: #6c757d;
 }
 
-/* Estilos para mensajes de éxito/error */
 .perfil-mensaje {
     padding: 1rem;
     border-radius: 8px;
@@ -459,7 +438,6 @@
     border: 1px solid #f5c2c7;
 }
 
-/* Animaciones */
 @keyframes perfil-fade-in {
     from {
         opacity: 0;
@@ -476,7 +454,6 @@
     padding-left: 40px;
 }
 
-/* Estilos para campos requeridos */
 .perfil-form-control:required {
     border-left: 3px solid #0d6efd;
 }
@@ -485,7 +462,6 @@
     border-left-color: #dc3545;
 }
 
-/* Estilos para campos de contraseña */
 .perfil-password-group {
     position: relative;
 }
@@ -506,7 +482,6 @@
     color: #495057;
 }
 
-/* Estilos para la foto en el modal */
 .modal-perfil-foto,
 .perfil-foto-editar {
     width: 150px;
@@ -519,7 +494,6 @@
     margin: 0 auto;
 }
 
-/* Overlay simple para la foto en el modal */
 .modal-foto-hover,
 .perfil-foto-editar-container {
     position: relative;

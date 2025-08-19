@@ -8,32 +8,26 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
   const container = document.getElementById('usuariosContainer');
   
-  // Referencias a los modales
   const eliminarModal = new bootstrap.Modal(document.getElementById('confirmarEliminarUsuarioModal'));
   const cambioRolModal = new bootstrap.Modal(document.getElementById('confirmarCambioRolModal'));
   
-  // Referencias a elementos del DOM para eliminar usuario
   const usuarioIdEliminar = document.getElementById('usuarioIdEliminar');
   const mensajeEliminarUsuario = document.getElementById('mensajeEliminarUsuario');
   const btnConfirmarEliminarUsuario = document.getElementById('btnConfirmarEliminarUsuario');
   
-  // Referencias a elementos del DOM para cambiar rol
   const usuarioIdCambioRol = document.getElementById('usuarioIdCambioRol');
   const nuevoRolId = document.getElementById('nuevoRolId');
   const mensajeCambioRol = document.getElementById('mensajeCambioRol');
   const btnConfirmarCambioRol = document.getElementById('btnConfirmarCambioRol');
   
-  // Función para renderizar la tabla de usuarios
   async function render() {
     const usuarios = await api.getUsuarios();
     const roles = await api.getRoles();
     
-    // Destruir la tabla DataTable existente si ya existe
     if ($.fn.DataTable.isDataTable('#tablaUsuarios')) {
       $('#tablaUsuarios').DataTable().destroy();
     }
     
-    // Crear el contenedor y la estructura de la tabla
     container.innerHTML = `
       <div class="table-responsive">
         <table id="tablaUsuarios" class="table table-bordered table-hover table-striped w-100">
@@ -69,7 +63,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       </div>
     `;
     
-    // Inicializar DataTables
     const dataTable = $('#tablaUsuarios').DataTable({
       responsive: true,
       language: {
@@ -93,20 +86,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             columns: [0, 1, 2, 3, 4]
           },
           customize: function(doc) {
-            // Obtener los datos de la tabla
             const table = doc.content[1].table;
-            
-            // Recorrer las filas y modificar la columna de rol (índice 4)
             for (let i = 0; i < table.body.length; i++) {
-              if (i > 0) { // Saltar la fila de encabezado
-                // Obtener el ID del usuario de la fila actual
+              if (i > 0) { 
                 const userId = parseInt(table.body[i][0].text);
-                // Buscar el elemento select correspondiente a este usuario
                 const selectElement = document.querySelector(`.rol-select[data-id="${userId}"]`);
                 if (selectElement) {
-                  // Obtener el texto del rol seleccionado
                   const selectedRolText = selectElement.options[selectElement.selectedIndex].text;
-                  // Reemplazar el contenido de la celda con solo el rol seleccionado
                   table.body[i][4] = { text: selectedRolText };
                 }
               }
@@ -116,66 +102,54 @@ document.addEventListener('DOMContentLoaded', async function() {
       ]
     });
     
-    // Eventos para cambiar rol
     container.querySelectorAll('.rol-select').forEach(sel => {
       sel.addEventListener('change', function() {
         const id = parseInt(this.dataset.id);
         const nombre = this.dataset.nombre;
         const rolSeleccionado = this.options[this.selectedIndex].text;
         
-        // Configurar modal de confirmación
         usuarioIdCambioRol.value = id;
         nuevoRolId.value = this.value;
         mensajeCambioRol.textContent = `¿Estás seguro de que deseas cambiar el rol de ${nombre} a "${rolSeleccionado}"?`;
         
-        // Mostrar modal
         cambioRolModal.show();
       });
     });
     
-    // Eventos para eliminar usuario
     container.querySelectorAll('.eliminar-usuario').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = parseInt(this.dataset.id);
         const nombre = this.dataset.nombre;
         
-        // Configurar modal de confirmación
         usuarioIdEliminar.value = id;
         mensajeEliminarUsuario.textContent = `¿Estás seguro de que deseas eliminar al usuario ${nombre}?`;
         
-        // Mostrar modal
         eliminarModal.show();
       });
     });
   }
   
-  // Evento para confirmar eliminación de usuario
   document.getElementById('formConfirmarEliminarUsuario').addEventListener('submit', async function(e) {
     e.preventDefault();
     const id = parseInt(usuarioIdEliminar.value);
     const password = document.getElementById('passwordEliminarUsuario').value;
     
     try {
-      // Obtener el usuario actual del localStorage
       const currentUserStr = localStorage.getItem('currentUser');
       if (!currentUserStr) throw new Error("No se encontró información del usuario");
       
       const currentUser = JSON.parse(currentUserStr);
       
-      // Verificar si el usuario está intentando eliminar su propia cuenta
       if (parseInt(currentUser.ID_usuarios) === id) {
         alert('No puedes eliminar tu propia cuenta. Esta acción debe ser realizada por otro administrador.');
         return;
       }
-      
-      // Verificar la contraseña del usuario
       const verificado = await api.verificarPassword(currentUser.ID_usuarios, password);
       if (!verificado) {
         alert('Contraseña incorrecta. Por favor, intenta nuevamente.');
         return;
       }
       
-      // Si la contraseña es correcta, proceder con la eliminación
       await api.deleteUsuario(id);
       eliminarModal.hide();
       document.getElementById('passwordEliminarUsuario').value = '';
@@ -186,7 +160,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
   
-  // Evento para confirmar cambio de rol
   document.getElementById('formConfirmarCambioRol').addEventListener('submit', async function(e) {
     e.preventDefault();
     const id = parseInt(usuarioIdCambioRol.value);
@@ -194,26 +167,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     const password = document.getElementById('passwordCambioRol').value;
     
     try {
-      // Obtener el usuario actual del localStorage
       const currentUserStr = localStorage.getItem('currentUser');
       if (!currentUserStr) throw new Error("No se encontró información del usuario");
       
       const currentUser = JSON.parse(currentUserStr);
       
-      // Verificar si el usuario está intentando cambiar su propio rol
       if (parseInt(currentUser.ID_usuarios) === id) {
         alert('No puedes cambiar tu propio rol. Esta acción debe ser realizada por otro administrador.');
         return;
       }
       
-      // Verificar la contraseña del usuario
       const verificado = await api.verificarPassword(currentUser.ID_usuarios, password);
       if (!verificado) {
         alert('Contraseña incorrecta. Por favor, intenta nuevamente.');
         return;
       }
       
-      // Si la contraseña es correcta, proceder con el cambio de rol
       await api.updateUsuario(id, { rol });
       cambioRolModal.hide();
       document.getElementById('passwordCambioRol').value = '';
@@ -224,6 +193,5 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
   
-  // Renderizar tabla inicial
   await render();
 });

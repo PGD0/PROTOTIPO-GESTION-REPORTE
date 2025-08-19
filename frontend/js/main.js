@@ -1,7 +1,4 @@
-// main.js - Unificado (sidebar y vista de reportes)
 import api from './api.js';
-
-// Función para generar el badge de prioridad
 export function getPrioridadBadge(prioridad) {
     console.log('Generando badge para prioridad:', prioridad);
     let prioridadClass = '';
@@ -28,7 +25,6 @@ export function getPrioridadBadge(prioridad) {
 
 document.addEventListener('DOMContentLoaded', function() {
     setupVistaReportes();
-    // Renderizar reportes siempre al cargar la página de reportes
     if (window.location.pathname.endsWith('reportes.html')) {
         const reportesContainer = document.getElementById('reportesContainer');
         if (reportesContainer) {
@@ -47,18 +43,15 @@ function ocultarGraficaSiVacia(idCanvas, mostrar = true) {
   }
 }
 
-// Variables globales para almacenar los datos
 let todosLosReportes = [];
 let todosLosEquipos = [];
 let todosLosUsuarios = [];
 let todasLasSedes = [];
 
 function renderReportes(filtros = {}) {
-    // Usar API real
     const container = document.getElementById('reportesContainer');
     if (!container) return;
     
-    // Si no tenemos datos cargados, los obtenemos primero
     if (todosLosReportes.length === 0) {
         container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">Cargando reportes...</div></div>';
         
@@ -77,7 +70,6 @@ function renderReportes(filtros = {}) {
             console.log('Reportes cargados:', todosLosReportes);
             console.log('Reportes con prioridad:', todosLosReportes.filter(r => r.prioridad));
             
-            // Actualizar el filtro de sedes con datos dinámicos
             actualizarFiltroSedes();
             
             renderReportesFiltrados(filtros);
@@ -95,45 +87,36 @@ function renderReportesFiltrados(filtros = {}) {
     const container = document.getElementById('reportesContainer');
     if (!container) return;
     
-    // Aplicar filtros
     let reportesFiltrados = todosLosReportes;
     
-    // Filtrar reportes resueltos (siempre se aplica este filtro)
     reportesFiltrados = reportesFiltrados.filter(r => !r.resuelto);
     
-    // Filtro por estado
     if (filtros.estado) {
         reportesFiltrados = reportesFiltrados.filter(r => {
             if (filtros.estado === 'pendiente') {
                 return r.estado_equipo === 'Pendiente' || !r.estado_equipo;
             } else if (filtros.estado === 'en-proceso') {
-                // Modificación: Considerar como "en proceso" los reportes que no están resueltos
-                // y tienen un estado_equipo que no es "Pendiente" ni "Solucionado"
                 return !r.resuelto && r.estado_equipo && 
                        r.estado_equipo !== 'Pendiente' && 
                        r.estado_equipo !== 'Solucionado';
             } else if (filtros.estado === 'resuelto') {
-                return false; // No mostrar reportes resueltos aunque se seleccione este filtro
+                return false; 
             }
             return true;
         });
     }
     
-    // Filtro por sede
     if (filtros.sede) {
         reportesFiltrados = reportesFiltrados.filter(r => {
             const equipo = todosLosEquipos.find(e => e.ID_equipo === r.ID_equipo) || {};
-            // Verificar si el nombre de la sede coincide con el filtro
             if (equipo.sede) {
                 return equipo.sede.toLowerCase().includes(filtros.sede.toLowerCase());
             }
-            // Si no se encuentra la sede, intentar filtrar por el nombre del salón
             const ubicacion = equipo.salon || r.salon || '';
             return ubicacion.toLowerCase().includes(filtros.sede.toLowerCase());
         });
     }
     
-    // Filtro por fecha desde
     if (filtros.fechaDesde) {
         const fechaDesde = new Date(filtros.fechaDesde);
         fechaDesde.setHours(0, 0, 0, 0);
@@ -144,7 +127,6 @@ function renderReportesFiltrados(filtros = {}) {
         });
     }
     
-    // Filtro por fecha hasta
     if (filtros.fechaHasta) {
         const fechaHasta = new Date(filtros.fechaHasta);
         fechaHasta.setHours(23, 59, 59, 999);
@@ -155,33 +137,26 @@ function renderReportesFiltrados(filtros = {}) {
         });
     }
     
-    // Filtro por prioridad
     if (filtros.prioridad) {
         reportesFiltrados = reportesFiltrados.filter(r => {
             if (!r.prioridad) return false;
-            
-            // Normalizar ambos valores para comparación
             const prioridadReporte = r.prioridad.toString().trim().toLowerCase();
             const prioridadFiltro = filtros.prioridad.toString().trim().toLowerCase();
             
-            // Comparación exacta después de normalizar
             return prioridadReporte === prioridadFiltro;
         });
     }
     
-    // Mostrar mensaje si no hay reportes
     if (reportesFiltrados.length === 0) {
         container.innerHTML = '<div class="col-12"><div class="alert alert-info text-center">No hay reportes que coincidan con los filtros seleccionados.</div></div>';
         return;
     }
     
-    // Renderizar reportes filtrados
     container.innerHTML = '';
     reportesFiltrados.forEach(r => {
         const equipo = todosLosEquipos.find(e => e.ID_equipo === r.ID_equipo) || {};
         const usuario = todosLosUsuarios.find(u => u.ID_usuarios === r.ID_usuario) || {};
         
-        // Estado visual y badge
         let estado = 'Pendiente', badge = 'bg-warning text-dark', icon = 'bi-exclamation-circle';
         if (r.estado_equipo && r.estado_equipo.toLowerCase().includes('proceso')) {
             estado = 'En Proceso'; 
@@ -238,7 +213,6 @@ function renderReportesFiltrados(filtros = {}) {
                             <i class="bi bi-geo-alt"></i>
                             <span>
                                 ${(() => {
-                                    // Mostrar sede y salón si están disponibles
                                     if (equipo.sede && equipo.salon) {
                                         return `${equipo.sede} - ${equipo.salon}`;
                                     } else if (equipo.sede) {
@@ -266,18 +240,14 @@ function renderReportesFiltrados(filtros = {}) {
     });
 }
 
-// Función para actualizar el filtro de sedes con datos dinámicos
 function actualizarFiltroSedes() {
     const filtroSede = document.getElementById('filtro-sede');
     if (!filtroSede) return;
     
-    // Guardar el valor seleccionado actualmente (si hay)
     const valorSeleccionado = filtroSede.value;
     
-    // Limpiar opciones actuales, manteniendo solo la opción por defecto
     filtroSede.innerHTML = '<option value="">Todas las sedes</option>';
     
-    // Agregar las sedes desde la API
     if (todasLasSedes && todasLasSedes.length > 0) {
         todasLasSedes.forEach(sede => {
             const option = document.createElement('option');
@@ -287,7 +257,6 @@ function actualizarFiltroSedes() {
         });
     }
     
-    // Restaurar el valor seleccionado si existía
     if (valorSeleccionado) {
         filtroSede.value = valorSeleccionado;
     }
@@ -297,13 +266,11 @@ function setupVistaReportes() {
     const reportesContainer = document.getElementById('reportesContainer');
     if (!reportesContainer) return;
     
-    // Configurar eventos de filtros
     const filtroEstado = document.getElementById('filtro-estado');
     const filtroSede = document.getElementById('filtro-sede');
     const filtroFechaDesde = document.getElementById('filtro-fecha-desde');
     const filtroFechaHasta = document.getElementById('filtro-fecha-hasta');
     
-    // Función para aplicar filtros
     function aplicarFiltros() {
         const filtroPrioridad = document.getElementById('filtro-prioridad');
         
@@ -318,27 +285,21 @@ function setupVistaReportes() {
         renderReportes(filtros);
     }
     
-    // Asignar eventos de cambio a los filtros
     if (filtroEstado) filtroEstado.addEventListener('change', aplicarFiltros);
     if (filtroSede) filtroSede.addEventListener('change', aplicarFiltros);
     if (filtroFechaDesde) filtroFechaDesde.addEventListener('change', aplicarFiltros);
     if (filtroFechaHasta) filtroFechaHasta.addEventListener('change', aplicarFiltros);
     
-    // Añadir evento para el filtro de prioridad
     const filtroPrioridad = document.getElementById('filtro-prioridad');
     if (filtroPrioridad) filtroPrioridad.addEventListener('change', aplicarFiltros);
     
-    // Render inicial de tarjetas
     renderReportes();
 }
 
-// Función para ver detalles del reporte
 async function verDetalleReporte(idReporte) {
-    // Redirigir a la página de información del reporte
     window.location.href = `informacion-reporte.html?id=${idReporte}`;
 }
 
-// Funciones globales para los botones del modal (solo para administradores)
 window.marcarComoResuelto = async function(idReporte) {
     if (confirm('¿Deseas marcar este reporte como resuelto?')) {
         try {
@@ -348,7 +309,6 @@ window.marcarComoResuelto = async function(idReporte) {
                 fecha_solucion: new Date().toISOString() 
             });
             bootstrap.Modal.getInstance(document.getElementById('detalleReporteModal')).hide();
-            // Recargar la vista actual si es necesario
             if (window.location.pathname.endsWith('gestion-reportes.html')) {
                 window.location.reload();
             }
@@ -379,7 +339,6 @@ window.eliminarReporte = async function(idReporte) {
         try {
             await api.deleteReporte(idReporte);
             bootstrap.Modal.getInstance(document.getElementById('detalleReporteModal')).hide();
-            // Recargar la vista actual si es necesario
             if (window.location.pathname.endsWith('gestion-reportes.html')) {
                 window.location.reload();
             }
@@ -391,12 +350,9 @@ window.eliminarReporte = async function(idReporte) {
 };
 
 function pintarGraficasUsuario(data) {
-  // Configuración común para todos los gráficos
   Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
   Chart.defaults.font.size = 13;
   Chart.defaults.color = '#495057';
-  
-  // Paleta de colores consistente
   const colorPalette = {
     primary: '#0d6efd',
     secondary: '#6c757d',
@@ -409,8 +365,6 @@ function pintarGraficasUsuario(data) {
     orange: '#fd7e14',
     teal: '#20c997'
   };
-  
-  // GRAFICA 1 - Resueltos vs Pendientes
   new Chart(document.getElementById('reportesPorEstadoChart'), {
     type: 'doughnut',
     data: {
@@ -454,8 +408,6 @@ function pintarGraficasUsuario(data) {
       }
     }
   });
-
-  // GRAFICA 2 - Reportes por mes (propios)
   if (data.reportes_mensuales && Object.keys(data.reportes_mensuales).length > 0) {
     ocultarGraficaSiVacia('reportesPorMesChart', true);
     new Chart(document.getElementById('reportesPorMesChart'), {
@@ -518,9 +470,7 @@ function pintarGraficasUsuario(data) {
     ocultarGraficaSiVacia('reportesPorMesChart', false);
   }
 
-  // GRAFICA 3 - Estado de últimos reportes
   if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
-    // Crear un nuevo elemento para el gráfico de últimos reportes si no existe
     let ultimosReportesContainer = document.querySelector('.col-lg-6.mb-4:last-child');
     if (ultimosReportesContainer) {
       const newChartDiv = document.createElement('div');
@@ -587,9 +537,7 @@ function pintarGraficasUsuario(data) {
     ocultarGraficaSiVacia('ultimosReportesChart', false);
   }
 
-  // GRAFICA 4 - Últimos reportes por estado
   if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
-    // Crear un nuevo elemento para el gráfico de reportes por estado del usuario si no existe
     let reportesPorEstadoUsuarioContainer = document.querySelector('.col-lg-8.mb-4');
     if (reportesPorEstadoUsuarioContainer) {
       const newChartDiv = document.createElement('div');
@@ -667,17 +615,14 @@ function pintarGraficasUsuario(data) {
 }
 
 function pintarGraficasAdmin(data) {
-  // Actualizar contadores en las tarjetas
   document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
   document.getElementById('reportesPendientes').textContent = data.pendientes;
   document.getElementById('reportesResueltos').textContent = data.resueltos;
   
-  // Configuración común para todos los gráficos
   Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
   Chart.defaults.font.size = 13;
   Chart.defaults.color = '#495057';
   
-  // Paleta de colores consistente
   const colorPalette = {
     primary: '#0d6efd',
     secondary: '#6c757d',
@@ -691,7 +636,6 @@ function pintarGraficasAdmin(data) {
     teal: '#20c997'
   };
   
-  // GRAFICA 1: Pendientes vs Resueltos
   new Chart(document.getElementById('reportesPorEstadoChart'), {
     type: 'doughnut',
     data: {
@@ -736,7 +680,6 @@ function pintarGraficasAdmin(data) {
     }
   });
 
-  // GRAFICA 2: Equipos funcionales vs no funcionales
   new Chart(document.getElementById('equiposPorEstadoChart'), {
     type: 'pie',
     data: {
@@ -779,8 +722,6 @@ function pintarGraficasAdmin(data) {
       }
     }
   });
-
-  // GRAFICA 3: Reportes por sede
   const sedes = data.reportes_por_sede.map(d => d.sede);
   const cantidadesSedes = data.reportes_por_sede.map(d => d.cantidad);
   new Chart(document.getElementById('reportesPorSedeChart'), {
@@ -825,9 +766,7 @@ function pintarGraficasAdmin(data) {
     }
   });
 
-  // GRAFICA 4: Reportes por mes
   const meses = data.reportes_por_mes.map(d => {
-    // Convertir número de mes a nombre
     const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
     return nombresMeses[d.mes - 1] || `Mes ${d.mes}`;
   });
@@ -901,7 +840,6 @@ function pintarGraficasAdmin(data) {
     }
   });
 
-  // GRAFICA 5: Equipos por salón
   const salones = data.equipos_por_salon.map(d => d.salon);
   const cantidadesSalon = data.equipos_por_salon.map(d => d.cantidad);
   new Chart(document.getElementById('equiposPorSalonChart'), {
@@ -920,7 +858,7 @@ function pintarGraficasAdmin(data) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      indexAxis: 'y',  // Barras horizontales para mejor visualización
+      indexAxis: 'y',  
       scales: {
         x: {
           beginAtZero: true,
@@ -940,7 +878,6 @@ function pintarGraficasAdmin(data) {
     }
   });
 
-  // GRAFICA 6: Usuarios por rol
   const roles = data.usuarios_por_rol.map(d => d.rol);
   const cantidadesRol = data.usuarios_por_rol.map(d => d.cantidad);
   new Chart(document.getElementById('usuariosPorRolChart'), {
@@ -978,11 +915,9 @@ function pintarGraficasAdmin(data) {
 
 
 
-// --- PROTECCIÓN DE DASHBOARD ---
 if (window.location.pathname.includes('dashboard.html')) {
   document.addEventListener('DOMContentLoaded', async function() {
     try {
-      // Mostrar mensaje de carga
       document.querySelector('.content-area').innerHTML = `
         <div class="alert alert-info m-4">
           <h5><i class="bi bi-info-circle-fill me-2"></i>Cargando dashboard</h5>
@@ -990,15 +925,12 @@ if (window.location.pathname.includes('dashboard.html')) {
         </div>
       `;
       
-      // Obtener datos reales del dashboard (siempre usar datos reales, nunca datos de prueba)
       const data = await api.getDashboard();
       console.log('Datos del dashboard (API):', data);
       
       const rol = data.rol === 1 ? "admin" : "usuario";
       
-      // Restaurar contenido original con diferente estructura según el rol
       if (rol === 'admin') {
-        // Contenido completo para administradores
         document.querySelector('.content-area').innerHTML = `
           <!-- Resumen de Reportes -->
           <div class="row mb-4">
@@ -1130,15 +1062,12 @@ if (window.location.pathname.includes('dashboard.html')) {
               </div>
           </div>
         `;
-        
-        // Actualizar contadores en las tarjetas
         document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
         document.getElementById('reportesPendientes').textContent = data.pendientes;
         document.getElementById('reportesResueltos').textContent = data.resueltos;
         
         pintarGraficasAdmin(data);
       } else {
-        // Contenido simplificado para usuarios regulares
         document.querySelector('.content-area').innerHTML = `
           <!-- Resumen de Reportes -->
           <div class="row mb-4">
@@ -1245,68 +1174,6 @@ if (window.location.pathname.includes('dashboard.html')) {
   });
 }
 
-// // --- AÑADIR REPORTE ---
-// if (window.location.pathname.endsWith('hacer-reporte.html')) {
-//   document.addEventListener('DOMContentLoaded', async function() {
-//     const token = api.getToken();
-//     if (!token) {
-//       window.location.href = 'login.html';
-//       return;
-//     }
-//     const form = document.querySelector('form');
-//     if (!form) return;
-//     const desc = document.getElementById('descripcion');
-//     const equipo = document.getElementById('equipo');
-//     const errorDiv = document.createElement('div');
-//     errorDiv.className = 'alert alert-danger mt-3 d-none';
-//     form.appendChild(errorDiv);
-//     const successDiv = document.createElement('div');
-//     successDiv.className = 'alert alert-success mt-3 d-none';
-//     form.appendChild(successDiv);
-//     // Cargar equipos en select
-//     if (equipo && equipo.tagName === 'SELECT') {
-//       try {
-//         const equipos = await api.getEquipos();
-//         equipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
-//           equipos.map(eq => `<option value="${eq.ID_equipo}">${eq.codigo_barras} (${eq.marca})</option>`).join('');
-//       } catch (err) {
-//         errorDiv.textContent = 'Error cargando equipos';
-//         errorDiv.classList.remove('d-none');
-//       }
-//     }
-//     form.addEventListener('submit', async function(e) {
-//       e.preventDefault();
-//       errorDiv.classList.add('d-none');
-//       successDiv.classList.add('d-none');
-//       if (!desc.value.trim() || !equipo.value) {
-//         errorDiv.textContent = 'Debes completar todos los campos.';
-//         errorDiv.classList.remove('d-none');
-//         return;
-//       }
-//       try {
-//         // Obtener el usuario actual desde localStorage
-//         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-//         const ID_usuario = currentUser?.ID_usuarios || 1; // Usar ID del usuario actual o 1 como fallback
-//         await api.crearReporte({
-//           ID_equipo: parseInt(equipo.value),
-//           descripcion: desc.value.trim(),
-//           estado_equipo: 'Pendiente',
-//           ID_usuario,
-//           resuelto: false,
-//           imagen: new File([], 'placeholder.png') // Ajustar para subir imagen real
-//         });
-//         successDiv.textContent = 'Reporte añadido correctamente.';
-//         successDiv.classList.remove('d-none');
-//         form.reset();
-//       } catch (err) {
-//         errorDiv.textContent = err.message;
-//         errorDiv.classList.remove('d-none');
-//       }
-//     });
-//   });
-// }
-
-// --- PERFIL DE USUARIO ---
 if (window.location.pathname.endsWith('perfil.html')) {
   document.addEventListener('DOMContentLoaded', function () {
     cargarDatosUsuario();
@@ -1325,7 +1192,6 @@ async function cargarDatosUsuario() {
   const token = localStorage.getItem('token');
   if (!token) return;
 
-  // Decodificar el JWT (sin verificar firma, solo extraer payload)
   const payload = JSON.parse(atob(token.split('.')[1]));
   const userId = payload.id;
 
@@ -1347,19 +1213,16 @@ async function cargarDatosUsuario() {
       rolTexto = 'Profesor';
     }
 
-    // Rellenar elementos en la vista
     document.getElementById('nombreUsuario').textContent = `${user.nombre} ${user.apellido || ''}`;
     document.getElementById('descripcionUsuario').textContent = user.descripcion || 'Sin descripción';
     document.getElementById('correoUsuario').textContent = user.email;
     document.getElementById('rolUsuario').textContent = rolTexto;
     document.getElementById('fechaCreacionUsuario').textContent = user.fecha_creacion || 'N/D';
 
-    // Rellenar modal de edición
     document.getElementById('nombrePerfil').value = user.nombre;
     document.getElementById('emailPerfil').value = user.email;
     document.getElementById('descripcionPerfil').value = user.descripcion || '';
 
-    // Imagen si existe
     if (user.img_usuario) {
       document.querySelector('.perfil-foto').src = user.img_usuario;
       document.getElementById('modalPerfilFoto').src = user.img_usuario;
@@ -1374,7 +1237,6 @@ if (window.location.pathname.endsWith('perfil.html')) {
     cargarDatosUsuario();
     document.getElementById('guardarPerfilBtn').addEventListener('click', actualizarPerfil);
     
-    // Agregar event listener para el cambio de foto
     const cambiarFotoOverlay = document.querySelector('.cambiar-foto-overlay');
     const fotoPerfilInput = document.getElementById('fotoPerfilInput');
     
@@ -1383,7 +1245,6 @@ if (window.location.pathname.endsWith('perfil.html')) {
         fotoPerfilInput.click();
       });
       
-      // Mostrar vista previa de la imagen seleccionada
       fotoPerfilInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {
           const reader = new FileReader();
@@ -1397,7 +1258,6 @@ if (window.location.pathname.endsWith('perfil.html')) {
   });
 }
 
-// Función para validar que un campo solo contenga letras y espacios
 function validarSoloLetras(valor) {
   return /^[A-Za-zÁáÉéÍíÓóÚúÑñÜü\s]+$/.test(valor);
 }
@@ -1420,12 +1280,10 @@ async function actualizarPerfil() {
     return;
   }
   
-  // Validar que el nombre solo contenga letras y espacios
   if (!validarSoloLetras(nombre)) {
     const nombrePerfilInput = document.getElementById('nombrePerfil');
     nombrePerfilInput.classList.add('is-invalid');
     
-    // Verificar si ya existe un mensaje de error
     if (!nombrePerfilInput.nextElementSibling || !nombrePerfilInput.nextElementSibling.classList.contains('invalid-feedback')) {
       const feedback = document.createElement('div');
       feedback.className = 'invalid-feedback';
@@ -1441,7 +1299,7 @@ async function actualizarPerfil() {
   formData.append('nombre', nombre);
   formData.append('email', email);
   formData.append('descripcion', descripcion);
-  formData.append('rol', rol); // Asegurarse de que el rol sea un número válido
+  formData.append('rol', rol);
   if (imagen) formData.append('imagen', imagen);
 
   try {
@@ -1460,10 +1318,8 @@ async function actualizarPerfil() {
 
     const updatedUser = await res.json();
 
-    // Actualizar datos visuales en pantalla
     cargarDatosUsuario();
 
-    // Cerrar modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('editarPerfilModal'));
     modal.hide();
 
@@ -1494,7 +1350,6 @@ export async function cargarUltimosReportes(idUsuario, token) {
       return;
     }
 
-    // Crear contenedor con row y espaciado entre columnas
     const row = document.createElement('div');
     row.className = 'row g-3';
 
@@ -1502,8 +1357,6 @@ export async function cargarUltimosReportes(idUsuario, token) {
       const col = document.createElement('div');
       col.className = 'col-md-8 col-lg-6 mb-4';
       
-      
-      // Determinar estado y badge
       let badge = 'bg-warning text-dark';
       let estadoTexto = 'En proceso';
       if (reporte.estado_equipo?.toLowerCase() === 'pendiente') {

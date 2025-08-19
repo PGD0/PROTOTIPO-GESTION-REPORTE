@@ -1,33 +1,22 @@
-// sidebar-component.js - Componente modular del sidebar para todas las páginas
 import api from './api.js';
-
-// Función principal que inyecta y configura el sidebar
 export function initSidebar() {
-    // Inyectar el HTML del sidebar si no existe
     injectSidebarHTML();
-    // Renderizar los enlaces de navegación según el rol del usuario
     renderSidebarNav();
-    // Configurar la funcionalidad del sidebar
     setupSidebar();
 }
 
-// Función para inyectar el HTML del sidebar
 function injectSidebarHTML() {
-    // Verificar si ya existe un sidebar
     if (document.getElementById('sidebar')) return;
     
-    // Crear el overlay para móviles
     const overlay = document.createElement('div');
     overlay.className = 'sidebar-overlay';
     overlay.id = 'sidebarOverlay';
     document.body.prepend(overlay);
     
-    // Crear el sidebar
     const sidebar = document.createElement('aside');
     sidebar.className = 'sidebar';
     sidebar.id = 'sidebar';
     
-    // Agregar el contenido del sidebar
     sidebar.innerHTML = `
         <div class="sidebar-header">
             <a class="sidebar-brand" id="sidebarBrand" style="cursor:pointer;">
@@ -43,18 +32,14 @@ function injectSidebarHTML() {
         </nav>
     `;
     
-    // Insertar el sidebar al principio del body
     document.body.prepend(sidebar);
     
-    // Verificar si existe el contenedor principal
     let mainContent = document.getElementById('mainContent');
     if (!mainContent) {
-        // Si no existe, crear el contenedor principal
         mainContent = document.createElement('div');
         mainContent.className = 'main-content-wrapper';
         mainContent.id = 'mainContent';
         
-        // Mover todo el contenido del body (excepto el sidebar y overlay) al mainContent
         const bodyChildren = Array.from(document.body.children);
         bodyChildren.forEach(child => {
             if (child !== sidebar && child !== overlay && child.tagName !== 'SCRIPT') {
@@ -62,22 +47,18 @@ function injectSidebarHTML() {
             }
         });
         
-        // Agregar el mainContent al body
         document.body.appendChild(mainContent);
     }
     
-    // Verificar si existe el botón de toggle para móviles
     const topNavbar = mainContent.querySelector('.top-navbar');
     if (topNavbar) {
         const mobileToggle = topNavbar.querySelector('#mobileSidebarToggle');
         if (!mobileToggle) {
-            // Crear el botón de toggle para móviles
             const toggleButton = document.createElement('button');
             toggleButton.className = 'btn btn-link d-lg-none me-3';
             toggleButton.id = 'mobileSidebarToggle';
             toggleButton.innerHTML = '<i class="bi bi-list fs-4"></i>';
             
-            // Insertar al principio del navbar
             const firstChild = topNavbar.querySelector('.d-flex');
             if (firstChild) {
                 firstChild.prepend(toggleButton);
@@ -86,16 +67,13 @@ function injectSidebarHTML() {
     }
 }
 
-// Función para renderizar los enlaces de navegación
 function renderSidebarNav() {
     const nav = document.querySelector('.sidebar-nav');
     if (!nav) return;
     nav.innerHTML = '';
 
-    // Obtener la ruta actual para marcar el enlace activo
     const currentPath = window.location.pathname;
     
-    // Enlaces públicos
     const linksPublicos = [
         {
             href: 'homepage.html',
@@ -137,19 +115,15 @@ function renderSidebarNav() {
         nav.appendChild(crearNavItem(link));
     });
 
-    // Separador
     nav.appendChild(document.createElement('hr')).className = 'my-3';
 
-    // Enlaces administrativos (solo para admin)
     const token = api.getToken();
     let esAdmin = false;
     if (token) {
         try {
-            // Obtener el usuario actual del localStorage (guardado por auth.js)
             const currentUserStr = localStorage.getItem('currentUser');
             if (currentUserStr) {
                 const currentUser = JSON.parse(currentUserStr);
-                // Verificar si el usuario es administrador (rol = 1)
                 esAdmin = currentUser && currentUser.rol === 1;
             }
         } catch (error) {
@@ -190,11 +164,9 @@ function renderSidebarNav() {
         linksAdmin.forEach(link => {
             nav.appendChild(crearNavItem(link));
         });
-        // Otro separador si quieres separar admin de salir
         nav.appendChild(document.createElement('hr')).className = 'my-3';
     }
 
-    // Enlace salir (siempre al final)
     nav.appendChild(crearNavItem({
         href: '../index.html',
         icon: 'bi-box-arrow-right',
@@ -204,7 +176,6 @@ function renderSidebarNav() {
     }));
 }
 
-// Función para crear un elemento de navegación
 function crearNavItem({href, icon, text, id, active}) {
     const div = document.createElement('div');
     div.className = 'nav-item';
@@ -217,7 +188,6 @@ function crearNavItem({href, icon, text, id, active}) {
     return div;
 }
 
-// Función para configurar la funcionalidad del sidebar
 function setupSidebar() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');

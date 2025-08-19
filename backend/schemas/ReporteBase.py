@@ -2,15 +2,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-# ID_reporte = Column(Integer, primary_key=True, index=True)
-# ID_equipo = Column(Integer, ForeignKey("equipos.ID_equipo"))
-# descripcion = Column(String(250))
-# img_equipo = Column(String(250))
-# fecha_registro = Column(DateTime, default=func.now())
-# fecha_solucion = Column(DateTime)
-# estado_equipo = Column(String(50))
-# resuelto = Column(Boolean, default=False)
-# ID_usuario = Column(Integer, ForeignKey("usuarios.ID_usuarios"))
 
 class ReporteBase(BaseModel):
     ID_equipo: int

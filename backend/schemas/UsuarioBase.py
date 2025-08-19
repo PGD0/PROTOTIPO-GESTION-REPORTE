@@ -2,14 +2,6 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 
-# ID_usuarios = Column(Integer, primary_key=True, index=True)
-# nombre = Column(String(100))
-# apellido = Column(String(100))
-# email = Column(String(250), unique=True, index=True)
-# contraseña = Column(String(250))
-# rol = Column(Integer, ForeignKey("roles.ID_rol"))
-# fecha_creacion = Column(DateTime, default=func.now())
-
 class UsuarioBase(BaseModel):
     nombre: str
     apellido: str

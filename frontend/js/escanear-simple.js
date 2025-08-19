@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const codigoDetectado = document.getElementById('codigoDetectado');
     const btnUsarCodigo = document.getElementById('btnUsarCodigo');
     const codigoEquipoInput =  document.getElementById("codigoBarras") || document.getElementById('codigoEquipo');
-    const btnEscanear = document.getElementById('btnEscanear'); // Referencia al botón de escaneo
-
+    const btnEscanear = document.getElementById('btnEscanear'); 
     let html5QrcodeScanner = null;
 
     function onScanSuccess(decodedText, decodedResult) {
@@ -36,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function iniciarCamara() {
         const readerElement = document.getElementById('reader');
-        readerElement.innerHTML = ''; // Limpia por si hay algo viejo
+        readerElement.innerHTML = ''; 
 
         html5QrcodeScanner = new Html5QrcodeScanner(
             "reader",
@@ -100,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("reader").innerHTML = "";
     }
 
-    // 📷 Escanear imagen desde archivo
     imagenQR.addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
@@ -126,7 +124,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // 🎯 Eventos
     btnIniciarCamara.addEventListener('click', iniciarCamara);
     btnDetenerCamara.addEventListener('click', detenerCamara);
     btnUsarCodigo.addEventListener('click', usarCodigo);
@@ -141,10 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Asegurarse de que el botón de escaneo esté siempre visible
-    // Esto evita que el botón desaparezca cuando se abre el menú
     if (btnEscanear) {
-        // Restaurar visibilidad del botón si se oculta
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'attributes' && 
