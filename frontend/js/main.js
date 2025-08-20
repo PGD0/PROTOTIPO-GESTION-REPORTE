@@ -31,6 +31,23 @@ document.addEventListener('DOMContentLoaded', function() {
             renderReportes();
         }
     }
+    if(window.location.pathname.endsWith('dashboard.html')) {
+        api.getDashboardData()
+            .then(data => {
+                if (data) {
+                    if (data.isAdmin) {
+                        pintarGraficasAdmin(data);
+                    } else {
+                        pintarGraficasUsuario(data);
+                    }
+                } else {
+                    console.error('No se recibieron datos del dashboard');
+                }
+            })
+            .catch(error => {
+                console.error('Error al cargar datos del dashboard:', error);
+            });
+    }
 });
 
 function ocultarGraficaSiVacia(idCanvas, mostrar = true) {
@@ -538,27 +555,32 @@ function pintarGraficasUsuario(data) {
   }
 
   if (data.ultimos_reportes && data.ultimos_reportes.length > 0) {
-    let reportesPorEstadoUsuarioContainer = document.querySelector('.col-lg-8.mb-4');
-    if (reportesPorEstadoUsuarioContainer) {
-      const newChartDiv = document.createElement('div');
-      newChartDiv.className = 'col-lg-8 mb-4';
-      newChartDiv.innerHTML = `
-        <div class="dashboard-box card border-0 shadow-sm">
-          <div class="card-header bg-white">
-            <h5 class="card-title"><i class="bi bi-graph-up text-primary"></i> Últimos Reportes por Estado</h5>
-          </div>
-          <div class="card-body">
-            <canvas id="reportesPorEstadoUsuarioChart"></canvas>
-          </div>
+  let reportesPorEstadoUsuarioContainer = document.querySelector('.col-lg-8.mb-4');
+  if (reportesPorEstadoUsuarioContainer) {
+    const newChartDiv = document.createElement('div');
+    newChartDiv.className = 'col-lg-8 mb-4';
+    newChartDiv.innerHTML = `
+      <div class="dashboard-box card border-0 shadow-sm">
+        <div class="card-header bg-white">
+          <h5 class="card-title"><i class="bi bi-graph-up text-primary"></i> Últimos Reportes por Estado</h5>
         </div>
-      `;
-      reportesPorEstadoUsuarioContainer.parentNode.appendChild(newChartDiv);
-    }
-    
-    ocultarGraficaSiVacia('reportesPorEstadoUsuarioChart', true);
+        <div class="card-body">
+          <canvas id="reportesPorEstadoUsuarioChart"></canvas>
+        </div>
+      </div>
+    `;
+    reportesPorEstadoUsuarioContainer.parentNode.appendChild(newChartDiv);
+  }
+
+  ocultarGraficaSiVacia('reportesPorEstadoUsuarioChart', true);
+
+  // ✅ Verificación antes de crear el gráfico
+  const ctxEstadoUsuario = document.getElementById('reportesPorEstadoUsuarioChart');
+  if (ctxEstadoUsuario) {
     const fechas = data.ultimos_reportes.map(r => new Date(r.fecha).toLocaleDateString('es-ES'));
     const estados = data.ultimos_reportes.map(r => r.estado === 'Resuelto' ? 1 : 0);
-    new Chart(document.getElementById('reportesPorEstadoUsuarioChart'), {
+
+    new Chart(ctxEstadoUsuario, {
       type: 'line',
       data: {
         labels: fechas,
@@ -566,12 +588,12 @@ function pintarGraficasUsuario(data) {
           label: 'Estado de reportes',
           data: estados,
           backgroundColor: 'rgba(13,110,253,0.1)',
-          borderColor: colorPalette.primary,
+          borderColor: '#0d6efd',
           fill: true,
           tension: 0.4,
           borderWidth: 2,
           pointBackgroundColor: '#fff',
-          pointBorderColor: colorPalette.primary,
+          pointBorderColor: '#0d6efd',
           pointRadius: 4
         }]
       },
@@ -599,16 +621,18 @@ function pintarGraficasUsuario(data) {
             max: 1
           },
           x: {
-            grid: {
-              display: false
-            }
+            grid: { display: false }
           }
         }
       }
     });
   } else {
-    ocultarGraficaSiVacia('reportesPorMesChart', false);
+    console.warn("⚠️ No se encontró el canvas 'reportesPorEstadoUsuarioChart'.");
   }
+} else {
+  ocultarGraficaSiVacia('reportesPorMesChart', false);
+}
+
 
   ocultarGraficaSiVacia('grafica5', false);
   ocultarGraficaSiVacia('grafica6', false);
@@ -990,7 +1014,7 @@ if (window.location.pathname.includes('dashboard.html')) {
           <!-- Gráficos y Estadísticas -->
           <div class="row">
               <!-- Reportes por Estado -->
-              <div class="col-lg-6 mb-4">
+              <div class="col-lg-4 mb-4">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
@@ -1002,7 +1026,7 @@ if (window.location.pathname.includes('dashboard.html')) {
               </div>
 
               <!-- Reportes por Sede -->
-              <div class="col-lg-6 mb-4">
+              <div class="col-lg-4 mb-4">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-building text-primary"></i> Reportes por Sede</h5>
@@ -1014,7 +1038,7 @@ if (window.location.pathname.includes('dashboard.html')) {
               </div>
 
               <!-- Reportes por Mes -->
-              <div class="col-lg-8 mb-4">
+              <div class="col-lg-4 mb-4">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Reportes por Mes</h5>
@@ -1038,7 +1062,7 @@ if (window.location.pathname.includes('dashboard.html')) {
               </div>
 
               <!-- Equipos por Estado -->
-              <div class="col-lg-6 mb-4">
+              <div class="col-lg-4 mb-4">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-pc-display text-primary"></i> Equipos por Estado</h5>
@@ -1050,7 +1074,7 @@ if (window.location.pathname.includes('dashboard.html')) {
               </div>
 
               <!-- Equipos por Salón -->
-              <div class="col-lg-6 mb-4">
+              <div class="col-lg-4 mb-4">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-geo-alt-fill text-primary"></i> Equipos por Salón</h5>
@@ -1127,7 +1151,7 @@ if (window.location.pathname.includes('dashboard.html')) {
           <!-- Gráficos y Estadísticas -->
           <div class="row">
               <!-- Reportes por Estado -->
-              <div class="col-lg-6 mb-4">
+              <div class="col-lg-4 mb-4">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-pie-chart-fill text-primary"></i> Reportes por Estado</h5>
@@ -1139,7 +1163,7 @@ if (window.location.pathname.includes('dashboard.html')) {
               </div>
 
               <!-- Reportes por Mes -->
-              <div class="col-lg-8 mb-4" id="reportesPorMesContainer">
+              <div class="col-lg-4 mb-4" id="reportesPorMesContainer">
                   <div class="dashboard-box card border-0 shadow-sm">
                       <div class="card-header bg-white">
                           <h5 class="card-title"><i class="bi bi-calendar3 text-primary"></i> Tus Reportes por Mes</h5>
