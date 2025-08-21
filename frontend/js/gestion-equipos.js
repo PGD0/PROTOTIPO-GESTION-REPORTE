@@ -3,7 +3,7 @@ const bloqueSelect = document.getElementById('bloque');
 const salonSelect = document.getElementById('salon');
 const bloqueContainer = document.getElementById('bloqueContainer');
 
-async function cargarEquipos() {
+const cargarEquipos = async () => {
     try {
         const res = await fetch('http://127.0.0.1:8000/equipos/');
         const equipos = await res.json();
@@ -92,7 +92,7 @@ async function cargarEquipos() {
     }
 }
 
-async function editarEquipo(id) {
+const editarEquipo = async (id) => {
     try {
         const res = await fetch(`http://127.0.0.1:8000/equipos/${id}`);
         if (!res.ok) throw new Error("No se pudo obtener el equipo");
@@ -130,7 +130,7 @@ async function editarEquipo(id) {
     }
 }
 
-async function eliminarEquipo(id) {
+const eliminarEquipo = async (id) => {
     const confirmar = confirm("¿Estás seguro de que deseas eliminar este equipo?");
     if (!confirmar) return;
 
@@ -152,7 +152,7 @@ async function eliminarEquipo(id) {
     }
 }
 
-async function cargarSedes() {
+const cargarSedes = async () => {
     try {
         const res = await fetch('http://127.0.0.1:8000/sedes/');
         const sedes = await res.json();
@@ -169,7 +169,7 @@ async function cargarSedes() {
     }
 }
 
-async function cargarBloques(sedeId) {
+const cargarBloques = async (sedeId) => {
     try {
         const res = await fetch(`http://127.0.0.1:8000/bloques/`);
         const bloques = await res.json();
@@ -187,7 +187,7 @@ async function cargarBloques(sedeId) {
     }
 }
 
-async function cargarSalonesPorSede(sedeId) {
+const cargarSalonesPorSede = async (sedeId) => {
     try {
         const res = await fetch(`http://127.0.0.1:8000/salones/por_sede/${sedeId}`);
         if (!res.ok) throw new Error("No se pudieron obtener salones");
@@ -198,7 +198,7 @@ async function cargarSalonesPorSede(sedeId) {
     }
 }
 
-async function cargarSalonesPorBloque(bloqueId) {
+const cargarSalonesPorBloque = async (bloqueId) => {
     try {
         const res = await fetch(`http://127.0.0.1:8000/salones/por_bloque/${bloqueId}`);
         if (!res.ok) throw new Error("No se pudieron obtener salones");
@@ -209,7 +209,7 @@ async function cargarSalonesPorBloque(bloqueId) {
     }
 }
 
-function renderSalones(salones) {
+const renderSalones = (salones) => {
     salonSelect.innerHTML = '<option value="">Selecciona un salón</option>';
     salones.forEach(salon => {
         const option = document.createElement('option');

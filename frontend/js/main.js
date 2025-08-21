@@ -1,5 +1,5 @@
 import api from './api.js';
-export function getPrioridadBadge(prioridad) {
+export const getPrioridadBadge = (prioridad) => {
     console.log('Generando badge para prioridad:', prioridad);
     let prioridadClass = '';
     const prioridadLower = prioridad.toString().trim().toLowerCase();
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function ocultarGraficaSiVacia(idCanvas, mostrar = true) {
+const ocultarGraficaSiVacia = (idCanvas, mostrar = true) => {
   const canvas = document.getElementById(idCanvas);
   if (canvas) {
     const card = canvas.closest('.col-lg-6, .col-lg-8, .col-lg-4');
@@ -65,7 +65,7 @@ let todosLosEquipos = [];
 let todosLosUsuarios = [];
 let todasLasSedes = [];
 
-function renderReportes(filtros = {}) {
+const renderReportes = (filtros = {}) => {
     const container = document.getElementById('reportesContainer');
     if (!container) return;
     
@@ -100,7 +100,7 @@ function renderReportes(filtros = {}) {
     }
 }
 
-function renderReportesFiltrados(filtros = {}) {
+const renderReportesFiltrados = (filtros = {}) => {
     const container = document.getElementById('reportesContainer');
     if (!container) return;
     
@@ -257,7 +257,7 @@ function renderReportesFiltrados(filtros = {}) {
     });
 }
 
-function actualizarFiltroSedes() {
+const actualizarFiltroSedes = () => {
     const filtroSede = document.getElementById('filtro-sede');
     if (!filtroSede) return;
     
@@ -279,7 +279,7 @@ function actualizarFiltroSedes() {
     }
 }
 
-function setupVistaReportes() {
+const setupVistaReportes = () => {
     const reportesContainer = document.getElementById('reportesContainer');
     if (!reportesContainer) return;
     
@@ -313,7 +313,7 @@ function setupVistaReportes() {
     renderReportes();
 }
 
-async function verDetalleReporte(idReporte) {
+const verDetalleReporte = async (idReporte) => {
     window.location.href = `informacion-reporte.html?id=${idReporte}`;
 }
 
@@ -366,7 +366,7 @@ window.eliminarReporte = async function(idReporte) {
     }
 };
 
-function pintarGraficasUsuario(data) {
+const pintarGraficasUsuario = (data) => {
   Chart.defaults.font.family = "'Inter', 'Poppins', sans-serif";
   Chart.defaults.font.size = 13;
   Chart.defaults.color = '#495057';
@@ -638,7 +638,7 @@ function pintarGraficasUsuario(data) {
   ocultarGraficaSiVacia('grafica6', false);
 }
 
-function pintarGraficasAdmin(data) {
+const pintarGraficasAdmin = (data) => {
   document.getElementById('totalReportes').textContent = data.pendientes + data.resueltos;
   document.getElementById('reportesPendientes').textContent = data.pendientes;
   document.getElementById('reportesResueltos').textContent = data.resueltos;
@@ -1212,7 +1212,7 @@ if (window.location.pathname.endsWith('perfil.html')) {
   });
 }
 
-async function cargarDatosUsuario() {
+const cargarDatosUsuario = async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
 
@@ -1282,11 +1282,11 @@ if (window.location.pathname.endsWith('perfil.html')) {
   });
 }
 
-function validarSoloLetras(valor) {
+const validarSoloLetras = (valor) => {
   return /^[A-Za-zÁáÉéÍíÓóÚúÑñÜü\s]+$/.test(valor);
 }
 
-async function actualizarPerfil() {
+const actualizarPerfil = async () => {
   const token = localStorage.getItem('token');
   if (!token) return;
 
@@ -1354,7 +1354,7 @@ async function actualizarPerfil() {
   }
 }
 
-export async function cargarUltimosReportes(idUsuario, token) {
+export const cargarUltimosReportes = async (idUsuario, token) => {
   try {
     const res = await fetch(`http://127.0.0.1:8000/reportes/usuario/${idUsuario}/ultimos`, {
       headers: {

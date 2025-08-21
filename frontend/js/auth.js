@@ -12,25 +12,25 @@ const ADMIN_PAGES = [
   'gestion-usuarios.html'
 ];
 
-function isPublicPage() {
+const isPublicPage = () => {
   const currentPage = window.location.pathname.split('/').pop();
   return PUBLIC_PAGES.includes(currentPage) || currentPage === '';
 }
 
-function isAdminPage() {
+const isAdminPage = () => {
   const currentPage = window.location.pathname.split('/').pop();
   return ADMIN_PAGES.includes(currentPage);
 }
 
-function redirectToLogin() {
+const redirectToLogin = () => {
   window.location.href = '../html/login.html';
 }
 
-function redirectToHome() {
+const redirectToHome = () => {
   window.location.href = '../html/homepage.html';
 }
 
-async function getCurrentUser() {
+const getCurrentUser = async () => {
   try {
     const usuarios = await api.getUsuarios();
     
@@ -53,7 +53,7 @@ async function getCurrentUser() {
   }
 }
 
-function parseJwt(token) {
+const parseJwt = (token) => {
   try {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -67,7 +67,7 @@ function parseJwt(token) {
   }
 }
 
-function isAdmin(user) {
+const isAdmin = (user) => {
   return user && user.rol === 1; 
 }
 

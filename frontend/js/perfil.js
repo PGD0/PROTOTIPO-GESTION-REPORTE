@@ -1,6 +1,6 @@
 import { cargarUltimosReportes } from './main.js';
 
-function validarSoloLetras(valor) {
+const validarSoloLetras = (valor) => {
   return /^[A-Za-zÁáÉéÍíÓóÚúÑñÜü\s]+$/.test(valor);
 }
 

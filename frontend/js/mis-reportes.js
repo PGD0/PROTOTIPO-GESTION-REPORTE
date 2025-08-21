@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-async function cargarReportesUsuario(userId) {
+const cargarReportesUsuario = async (userId) => {
     try {
         document.getElementById('reportesContainer').innerHTML = `
             <div class="col-12 text-center my-5">
@@ -96,7 +96,7 @@ async function cargarReportesUsuario(userId) {
     }
 }
 
-function renderReportes(reportes = [], equipos = [], sedes = []) {
+const renderReportes = (reportes = [], equipos = [], sedes = []) => {
     const container = document.getElementById('reportesContainer');
     if (!container) return;
     

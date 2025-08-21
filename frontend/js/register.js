@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     errorDiv.className = 'alert alert-danger mt-3 d-none';
     registerForm.appendChild(errorDiv);
     
-    function validarSoloLetras(valor) {
+    const validarSoloLetras = (valor) => {
         return /^[A-Za-zÁáÉéÍíÓóÚúÑñÜü\s]+$/.test(valor);
     }
     

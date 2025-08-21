@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     configurarEventListeners();
 });
 
-async function configurarSidebarYNavbar() {
+const configurarSidebarYNavbar = async () => {
     try {
         const sidebarContainer = document.getElementById('sidebar-container');
         if (sidebarContainer) {
@@ -56,7 +56,7 @@ async function configurarSidebarYNavbar() {
     }
 }
 
-function configurarNavbar() {
+const configurarNavbar = () => {
     try {
         const token = api.getToken();
         if (token) {
@@ -75,7 +75,7 @@ function configurarNavbar() {
     }
 }
 
-function configurarSidebarToggle() {
+const configurarSidebarToggle = () => {
     const sidebarToggle = document.getElementById('sidebarToggle');
     const body = document.body;
     
@@ -86,7 +86,7 @@ function configurarSidebarToggle() {
     }
 }
 
-async function cargarDatos(reporteId) {
+const cargarDatos = async (reporteId) => {
     try {
         const [reporte, equiposData, usuariosData] = await Promise.all([
             api.getReporte(reporteId),
@@ -164,7 +164,7 @@ async function cargarDatos(reporteId) {
     }
 }
 
-function configurarBotones(reporte) {
+const configurarBotones = (reporte) => {
     const btnMarcarResuelto = document.getElementById('btnMarcarResuelto');
     const btnNotificarUsuario = document.getElementById('btnNotificarUsuario');
     const estadoSelect = document.getElementById('estadoSelect');
@@ -187,7 +187,7 @@ function configurarBotones(reporte) {
     }
 }
 
-function configurarEventListeners() {
+const configurarEventListeners = () => {
     document.getElementById('estadoSelect').addEventListener('change', async function() {
         if (!esAdmin) return;
         

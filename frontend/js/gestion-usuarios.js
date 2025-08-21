@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const mensajeCambioRol = document.getElementById('mensajeCambioRol');
   const btnConfirmarCambioRol = document.getElementById('btnConfirmarCambioRol');
   
-  async function render() {
+  const render = async () => {
     const usuarios = await api.getUsuarios();
     const roles = await api.getRoles();
     

@@ -29,7 +29,7 @@ let todasLasSedes = [];
 let todosLosBloques = [];
 let todosLosSalones = [];
 
-async function cargarSedes() {
+const cargarSedes = async () => {
     try {
         const sedes = await api.getSedes();
         todasLasSedes = sedes;
@@ -41,7 +41,7 @@ async function cargarSedes() {
     }
 }
 
-async function cargarBloques() {
+const cargarBloques = async () => {
     try {
         const bloques = await api.getBloques();
         todosLosBloques = bloques;
@@ -53,7 +53,7 @@ async function cargarBloques() {
     }
 }
 
-async function cargarSalones() {
+const cargarSalones = async () => {
     try {
         if (todasLasSedes.length === 0) {
             await cargarSedes();
@@ -72,7 +72,7 @@ async function cargarSalones() {
     }
 }
 
-function renderizarTablaSedes(sedes) {
+const renderizarTablaSedes = (sedes) => {
     if ($.fn.DataTable.isDataTable('#tablaSedes')) {
         $('#tablaSedes').DataTable().destroy();
     }
@@ -141,7 +141,7 @@ function renderizarTablaSedes(sedes) {
     });
 }
 
-function renderizarTablaBloques(bloques) {
+const renderizarTablaBloques = (bloques) => {
     if ($.fn.DataTable.isDataTable('#tablaBloques')) {
         $('#tablaBloques').DataTable().destroy();
     }
@@ -215,7 +215,7 @@ function renderizarTablaBloques(bloques) {
     });
 }
 
-function renderizarTablaSalones(salones) {
+const renderizarTablaSalones = (salones) => {
     if ($.fn.DataTable.isDataTable('#tablaSalones')) {
         $('#tablaSalones').DataTable().destroy();
     }
@@ -301,7 +301,7 @@ function renderizarTablaSalones(salones) {
     });
 }
 
-function actualizarSelectSedes() {
+const actualizarSelectSedes = () => {
     sedeBloque.innerHTML = '<option value="">Selecciona una sede</option>';
     sedeSalon.innerHTML = '<option value="">Selecciona una sede</option>';
     
@@ -318,7 +318,7 @@ function actualizarSelectSedes() {
     });
 }
 
-function actualizarSelectBloques(sedeId = null) {
+const actualizarSelectBloques = (sedeId = null) => {
     bloqueSalon.innerHTML = '<option value="">Selecciona un bloque</option>';
     
     let bloquesFiltrados = todosLosBloques;
@@ -334,7 +334,7 @@ function actualizarSelectBloques(sedeId = null) {
     });
 }
 
-async function editarSede(id) {
+const editarSede = async (id) => {
     try {
         const response = await fetch(`http://127.0.0.1:8000/sedes/${id}`, {
             headers: api.authHeaders()
@@ -359,7 +359,7 @@ async function editarSede(id) {
     }
 }
 
-async function editarBloque(id) {
+const editarBloque = async (id) => {
     try {
         const response = await fetch(`http://127.0.0.1:8000/bloques/${id}`, {
             headers: api.authHeaders()
@@ -377,7 +377,7 @@ async function editarBloque(id) {
         alert("Hubo un problema al cargar los datos del bloque.");
     }
 }
-async function editarSalon(id) {
+const editarSalon = async (id) => {
     try {
         const response = await fetch(`http://localhost:8000/salones/${id}`, {
             headers: api.authHeaders()
@@ -435,7 +435,7 @@ async function editarSalon(id) {
     }
 }
 
-function confirmarEliminar(tipo, id, nombre) {
+const confirmarEliminar = (tipo, id, nombre) => {
     const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarModal'));
     eliminarId.value = id;
     eliminarTipo.value = tipo;
@@ -458,7 +458,7 @@ function confirmarEliminar(tipo, id, nombre) {
     eliminarModal.show();
 }
 
-async function guardarSede(e) {
+const guardarSede = async (e) => {
     e.preventDefault();
     
     const data = {
@@ -514,7 +514,7 @@ async function guardarSede(e) {
     }
 }
 
-async function guardarBloque(e) {
+const guardarBloque = async (e) => {
     e.preventDefault();
     
     const data = {
@@ -575,7 +575,7 @@ async function guardarBloque(e) {
     }
 }
 
-async function guardarSalon(e) {
+const guardarSalon = async (e) => {
     e.preventDefault();
     
     const sedeValue = sedeSalon.value.trim();
@@ -660,7 +660,7 @@ async function guardarSalon(e) {
     }
 }
 
-async function eliminarElemento(e) {
+const eliminarElemento = async (e) => {
     e.preventDefault();
     
     const id = eliminarId.value;
@@ -734,7 +734,7 @@ async function eliminarElemento(e) {
     }
 }
 
-function mostrarMensajeVacio(tabla, mensaje) {
+const mostrarMensajeVacio = (tabla, mensaje) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td colspan="5" class="text-center text-muted">
@@ -744,7 +744,7 @@ function mostrarMensajeVacio(tabla, mensaje) {
     tabla.appendChild(tr);
 }
 
-function mostrarError(tabla, mensaje) {
+const mostrarError = (tabla, mensaje) => {
     tabla.innerHTML = `
         <tr>
             <td colspan="5" class="text-center text-danger">
@@ -754,7 +754,7 @@ function mostrarError(tabla, mensaje) {
     `;
 }
 
-async function procesarModificacionConfirmada(e) {
+const procesarModificacionConfirmada = async (e) => {
     e.preventDefault();
     
     const tipo = document.getElementById('confirmarModificacionTipo').value;

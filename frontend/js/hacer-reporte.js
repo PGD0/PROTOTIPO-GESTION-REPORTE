@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    async function cargarSedes() {
+    const cargarSedes = async () => {
         try {
             const sedes = await api.getSedes();
             console.log('Sedes obtenidas de la API:', sedes);
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    async function cargarBloques(sedeId) {
+    const cargarBloques = async (sedeId) => {
         try {
             const bloques = await api.getBloques();
             console.log('Bloques obtenidos de la API:', bloques);
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    async function cargarSalones(sedeId, bloqueId = null) {
+    const cargarSalones = async (sedeId, bloqueId = null) => {
         try {
             const salones = await api.getSalones();
             console.log('Salones obtenidos de la API:', salones);
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function poblarBloques(bloques) {
+    const poblarBloques = (bloques) => {
         bloqueSelect.innerHTML = '<option value="">Seleccionar bloque</option>';
         bloques.forEach(bloque => {
             const option = document.createElement('option');
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function poblarSalones(salones) {
+    const poblarSalones = (salones) => {
         salonSelect.innerHTML = '<option value="">Seleccionar salón</option>';
         
         if (!salones || salones.length === 0) {
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function obtenerDatosFormulario() {
+    const obtenerDatosFormulario = () => {
         const sedeSelect = document.getElementById('sedeSelect');
         const bloqueSelect = document.getElementById('bloqueSelect');
         const salonSelect = document.getElementById('salonSelect');
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    function mostrarMensaje(msg, tipo) {
+    const mostrarMensaje = (msg, tipo) => {
         let msgDiv = document.getElementById('mensajeFeedback');
         if (!msgDiv) {
             msgDiv = document.createElement('div');

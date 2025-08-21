@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnEscanear = document.getElementById('btnEscanear'); 
     let html5QrcodeScanner = null;
 
-    function onScanSuccess(decodedText, decodedResult) {
+    const onScanSuccess = (decodedText, decodedResult) => {
         console.log(`Código detectado = ${decodedText}`, decodedResult);
         codigoDetectado.textContent = decodedText;
         resultadoEscaneo.style.display = 'block';
@@ -29,11 +29,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function onScanFailure(error) {
+    const onScanFailure = (error) => {
         console.warn(`Error de escaneo = ${error}`);
     }
 
-    async function iniciarCamara() {
+    const iniciarCamara = () => {
         const readerElement = document.getElementById('reader');
         readerElement.innerHTML = ''; 
 
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btnDetenerCamara.style.display = 'inline-block';
     }
 
-    function detenerCamara() {
+    const detenerCamara = () => {
         if (html5QrcodeScanner) {
             html5QrcodeScanner.clear().then(() => {
                 document.getElementById("reader").innerHTML = "";
@@ -64,18 +64,18 @@ document.addEventListener('DOMContentLoaded', function () {
         resultadoEscaneo.style.display = 'none';
     }
 
-    function mostrarMensaje(mensaje) {
+    const mostrarMensaje = (mensaje) => {
         codigoDetectado.textContent = mensaje;
         resultadoEscaneo.style.display = 'block';
         btnUsarCodigo.style.display = 'none';
     }
 
-    function validarCodigoEquipo(codigo) {
+    const validarCodigoEquipo = (codigo) => {
         const regex = /^PC-\d{8}-[A-Z]+(-[A-Z]+)?(-\d+)?$/;
         return regex.test(codigo);
     }
 
-    function usarCodigo() {
+    const usarCodigo = () => {
         const codigo = codigoDetectado.textContent;
 
         codigoEquipoInput.value = codigo;
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
         limpiarEstado();
     }
 
-    function limpiarEstado() {
+    const limpiarEstado = () => {
         resultadoEscaneo.style.display = 'none';
         btnUsarCodigo.style.display = 'none';
         imagenPreview.style.display = 'none';

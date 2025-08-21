@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupSidebar();
 });
 
-function renderSidebarNav() {
+const renderSidebarNav = () => {
     const nav = document.querySelector('.sidebar-nav');
     if (!nav) return;
     nav.innerHTML = '';
@@ -98,7 +98,7 @@ function renderSidebarNav() {
     }));
 }
 
-function crearNavItem({href, icon, text, id, active}) {
+const crearNavItem = ({href, icon, text, id, active}) => {
     const div = document.createElement('div');
     div.className = 'nav-item';
     const a = document.createElement('a');
@@ -110,7 +110,7 @@ function crearNavItem({href, icon, text, id, active}) {
     return div;
 }
 
-function setupSidebar() {
+const setupSidebar = () => {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
     const sidebarToggle = document.getElementById('sidebarToggle');
@@ -120,11 +120,11 @@ function setupSidebar() {
     const navLinks = document.querySelectorAll('.sidebar-nav .nav-link');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-    function isMobile() {
+    const isMobile = () => {
         return window.innerWidth <= 991.98;
     }
 
-    function toggleSidebar() {
+    const toggleSidebar = () => {
         if (!isMobile()) {
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('sidebar-collapsed');
@@ -135,12 +135,12 @@ function setupSidebar() {
             }
         }
     }
-    function toggleMobileSidebar() {
+    const toggleMobileSidebar = () => {
         sidebar.classList.toggle('show');
         sidebarOverlay.classList.toggle('show');
         document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
     }
-    function closeMobileSidebar() {
+    const closeMobileSidebar = () => {
         sidebar.classList.remove('show');
         sidebarOverlay.classList.remove('show');
         document.body.style.overflow = '';

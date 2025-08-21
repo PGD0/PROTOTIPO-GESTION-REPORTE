@@ -4,7 +4,7 @@ let equipos = [];
 let usuarios = [];
 const estadosPosibles = ['Pendiente', 'En Proceso', 'Resuelto'];
 
-function getPrioridadBadge(prioridad) {
+const getPrioridadBadge = (prioridad) => {
     console.log('Generando badge para prioridad:', prioridad);
     let prioridadClass = '';
     const prioridadLower = prioridad.toString().trim().toLowerCase();
@@ -39,12 +39,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   equipos = await api.getEquipos();
   usuarios = await api.getUsuarios();
   
-  async function recargarDatos() {
+  const recargarDatos = async () => {
     equipos = await api.getEquipos();
     usuarios = await api.getUsuarios();
   }
 
-  function agregarEventListeners() {
+  const agregarEventListeners = () => {
     console.log('Agregando event listeners...');
     const botones = container.querySelectorAll('.ver-detalle');
     console.log('Botones encontrados:', botones.length);

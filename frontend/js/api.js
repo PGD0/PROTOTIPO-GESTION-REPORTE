@@ -1,23 +1,23 @@
 const API_URL = 'http://127.0.0.1:8000';
 
-function getToken() {
+const getToken = () => {
   return localStorage.getItem('token');
 }
 
-function setToken(token) {
+const setToken = (token) => {
   localStorage.setItem('token', token);
 }
 
-function clearToken() {
+const clearToken = () => {
   localStorage.removeItem('token');
 }
 
-function authHeaders() {
+const authHeaders = () => {
   const token = getToken();
   return token ? { 'Authorization': 'Bearer ' + token } : {};
 }
 
-async function login(email, password) {
+const login = async (email, password) => {
   const form = new URLSearchParams();
   form.append('username', email);
   form.append('password', password);
@@ -35,7 +35,7 @@ async function login(email, password) {
   return data;
 }
 
-async function register({ nombre, apellido, email, contraseña, rol, descripcion = "", imagen = null }) {
+const register = async ({ nombre, apellido, email, contraseña, rol, descripcion = "", imagen = null }) => {
   try {
     console.log('Intentando registrar usuario:', { nombre, apellido, email, contraseña, rol });
 
@@ -68,25 +68,25 @@ async function register({ nombre, apellido, email, contraseña, rol, descripcion
   }
 }
 
-async function getUsuarios() {
+const getUsuarios = async () => {
   const res = await fetch(`${API_URL}/usuarios/`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudieron obtener los usuarios');
   return await res.json();
 }
 
-async function getRoles() {
+const getRoles = async () => {
   const res = await fetch(`${API_URL}/roles/`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudieron obtener los roles');
   return await res.json();
 }
 
-async function getSedes() {
+const getSedes = async() => {
   const res = await fetch(`${API_URL}/sedes/`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudieron obtener las sedes');
   return await res.json();
 }
 
-async function getBloques() {
+const getBloques = async () => {
   try {
     const res = await fetch(`${API_URL}/bloques/`, { headers: authHeaders() });
     if (!res.ok) {
@@ -103,32 +103,32 @@ async function getBloques() {
   }
 }
 
-async function getSalones() {
+const getSalones = async () => {
   const res = await fetch(`${API_URL}/salones/`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudieron obtener los salones');
   return await res.json();
 }
 
-async function getEquipos() {
+const getEquipos = async () => {
   const res = await fetch(`${API_URL}/equipos/`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudieron obtener los equipos');
   return await res.json();
 }
 
-async function getReportes() {
+const getReportes = async () => {
   const res = await fetch(`${API_URL}/reportes/`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudieron obtener los reportes');
   return await res.json();
 }
 
-async function getReporte(id) {
+const getReporte = async (id) => {
   const res = await fetch(`${API_URL}/reportes/${id}`, { headers: authHeaders() });
   if (!res.ok) throw new Error('No se pudo obtener el reporte');
   const data = await res.json();
   return data && data.reporte ? data.reporte : data;
 }
 
-async function getReportesPorUsuario(id) {
+const getReportesPorUsuario = async (id) => {
     const res = await fetch(`${API_URL}/reportes/usuario/${id}/todos`, { 
         headers: authHeaders() 
     });
@@ -139,7 +139,7 @@ async function getReportesPorUsuario(id) {
     return await res.json();
 }
 
-async function crearReporte({
+const crearReporte = async ({
   ID_equipo,
   sede,
   bloque,
@@ -152,7 +152,7 @@ async function crearReporte({
   ID_usuario,
   resuelto,
   imagen
-}) {
+}) => {
   const form = new FormData();
   form.append('ID_equipo', ID_equipo);
   form.append('sede', sede);
@@ -182,7 +182,7 @@ async function crearReporte({
   return await res.json();
 }
 
-async function updateReporte(id, data) {
+const updateReporte = async (id, data) => {
   const res = await fetch(`${API_URL}/reportes/${id}`, {
     method: 'PUT',
     headers: {
@@ -198,7 +198,7 @@ async function updateReporte(id, data) {
   return await res.json();
 }
 
-async function getDashboard() {
+const getDashboard = async () => {
   const token = localStorage.getItem('token');
   const res = await fetch(`${API_URL}/dashboard/`, {
     headers: {
@@ -209,7 +209,7 @@ async function getDashboard() {
   return res.json();
 }
 
-async function verificarPassword(usuarioId, password) {
+const verificarPassword = async (usuarioId, password) => {
   try {
     const res = await fetch(`${API_URL}/usuarios/verificar-password`, {
       method: 'POST',
@@ -235,7 +235,7 @@ async function verificarPassword(usuarioId, password) {
   }
 }
 
-async function notificarUsuario(idReporte) {
+const notificarUsuario = async (idReporte) => {
   try {
     const res = await fetch(`${API_URL}/reportes/${idReporte}/notificar-usuario`, {
       method: 'POST',
@@ -254,7 +254,7 @@ async function notificarUsuario(idReporte) {
   }
 }
 
-async function marcarReporteResuelto(idReporte) {
+const marcarReporteResuelto = async (idReporte) => {
   try {
     const res = await fetch(`${API_URL}/reportes/${idReporte}/marcar-resuelto`, {
       method: 'PUT',
@@ -273,7 +273,7 @@ async function marcarReporteResuelto(idReporte) {
   }
 }
 
-async function deleteReporte(idReporte) {
+const deleteReporte = async (idReporte) => {
   try {
     const res = await fetch(`${API_URL}/reportes/${idReporte}`, {
       method: 'DELETE',
@@ -292,7 +292,7 @@ async function deleteReporte(idReporte) {
   }
 }
 
-async function getEquipoPorCodigo(codigoBarras) {
+const getEquipoPorCodigo = async (codigoBarras) => {
     const res = await fetch(`${API_URL}/equipos/por-codigo/${codigoBarras}`, { 
         headers: authHeaders() 
     });
@@ -303,7 +303,7 @@ async function getEquipoPorCodigo(codigoBarras) {
     return await res.json();
 }
 
-async function updateUsuario(id, data) {
+const updateUsuario = async (id, data) => {
   try {
     if (!data.imagen) {
       const res = await fetch(`${API_URL}/usuarios/${id}`, {
@@ -346,7 +346,7 @@ async function updateUsuario(id, data) {
   }
 }
 
-async function deleteUsuario(id) {
+const deleteUsuario = async (id) => {
   try {
     const res = await fetch(`${API_URL}/usuarios/${id}`, {
       method: 'DELETE',
