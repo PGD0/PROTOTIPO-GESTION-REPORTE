@@ -1,0 +1,136 @@
+/* Estilos específicos para la página del dashboard */
+
+.stat-card {
+    border-radius: var(--bs-border-radius-lg);
+    overflow: hidden;
+    transition: var(--bs-transition);
+    height: 100%;
+}
+
+.stat-card .icon-container {
+    width: var(--bs-icon-size-lg);
+    height: var(--bs-icon-size-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--bs-border-radius);
+    margin-right: var(--bs-spacer-3);
+}
+
+.stat-card .stat-content {
+    flex: 1;
+}
+
+.stat-card .stat-title {
+    font-size: var(--bs-font-size-sm);
+    color: var(--bs-gray-600);
+    margin-bottom: var(--bs-spacer-1);
+}
+
+.stat-card .stat-value {
+    font-size: var(--bs-font-size-xl);
+    font-weight: var(--bs-font-weight-bold);
+    margin: 0;
+    line-height: var(--bs-line-height-sm);
+}
+
+.dashboard-section {
+    background-color: var(--bs-white);
+    border-radius: var(--bs-border-radius);
+    padding: var(--bs-spacer-3);
+    height: 100%;
+    margin-bottom: var(--bs-spacer-3);
+}
+
+.chart-container {
+    position: relative;
+    min-height: 220px;
+    max-height: 320px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1.5/1;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#dashboardTabs {
+    border-bottom: none;
+    padding: 0 var(--bs-spacer-3);
+}
+
+#dashboardTabs .nav-link {
+    color: var(--bs-gray-700);
+    font-weight: var(--bs-font-semibold);
+    padding: var(--bs-spacer-2) var(--bs-spacer-3);
+    border: none;
+    border-radius: 0;
+    margin-right: var(--bs-spacer-2);
+    position: relative;
+}
+
+#dashboardTabs .nav-link.active {
+    color: var(--bs-primary);
+    font-weight: var(--bs-font-weight-bold);
+    background-color: transparent;
+    border: none;
+}
+
+#dashboardTabs .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--bs-primary);
+}
+
+#dashboardTabs .nav-link i {
+    opacity: 0.7;
+}
+
+#dashboardTabs .nav-link.active i {
+    opacity: 1;
+}
+
+@media (max-width: 991.98px) {
+    .chart-container {
+        min-height: 180px;
+        max-height: 280px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .chart-container {
+        min-height: 160px;
+        max-height: 240px;
+    }
+
+    #dashboardTabs .nav-link {
+        padding: var(--bs-spacer-1) var(--bs-spacer-2);
+        font-size: var(--bs-font-size-sm);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .chart-container {
+        min-height: 140px;
+        max-height: 200px;
+    }
+
+    .dashboard-section {
+        padding: var(--bs-spacer-2);
+    }
+
+    .stat-card .icon-container {
+        width: 50px;
+        height: 50px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 1.5rem;
+    }
+}

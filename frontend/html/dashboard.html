@@ -1,318 +1,481 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Control - IUB</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Panel de Control - IUB</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="../css/styles.css">
-  <script type="module" src="../js/auth.js"></script>
-
-  <style>
-    .stat-card {
-      border-radius: var(--bs-border-radius-lg);
-      overflow: hidden;
-      transition: var(--bs-transition);
-      height: 100%;
-    }
-    .stat-card .icon-container {
-      width: var(--bs-icon-size-lg);
-      height: var(--bs-icon-size-lg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--bs-border-radius);
-      margin-right: var(--bs-spacer-3);
-    }
-    .stat-card .stat-content { flex: 1; }
-    .stat-card .stat-title {
-      font-size: var(--bs-font-size-sm);
-      color: var(--bs-gray-600);
-      margin-bottom: var(--bs-spacer-1);
-    }
-    .stat-card .stat-value {
-      font-size: var(--bs-font-size-xl);
-      font-weight: var(--bs-font-weight-bold);
-      margin: 0;
-      line-height: var(--bs-line-height-sm);
-    }
-    .dashboard-section {
-      background-color: var(--bs-white);
-      border-radius: var(--bs-border-radius);
-      padding: var(--bs-spacer-3);
-      height: 100%;
-      margin-bottom: var(--bs-spacer-3);
-    }
-    .chart-container {
-      position: relative;
-      min-height: 220px;
-      max-height: 320px;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1.5/1;
-    }
-    .chart-container canvas {
-      width: 100% !important;
-      height: auto !important;
-    }
-    #dashboardTabs {
-      border-bottom: none;
-      padding: 0 var(--bs-spacer-3);
-    }
-    #dashboardTabs .nav-link {
-      color: var(--bs-gray-700);
-      font-weight: var(--bs-font-semibold);
-      padding: var(--bs-spacer-2) var(--bs-spacer-3);
-      border: none;
-      border-radius: 0;
-      margin-right: var(--bs-spacer-2);
-      position: relative;
-    }
-    #dashboardTabs .nav-link.active {
-      color: var(--bs-primary);
-      font-weight: var(--bs-font-weight-bold);
-      background-color: transparent;
-      border: none;
-    }
-    #dashboardTabs .nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: var(--bs-primary);
-    }
-    #dashboardTabs .nav-link i { opacity: 0.7; }
-    #dashboardTabs .nav-link.active i { opacity: 1; }
-
-    @media (max-width: 991.98px) {
-      .chart-container { min-height: 180px; max-height: 280px; }
-    }
-    @media (max-width: 767.98px) {
-      .chart-container { min-height: 160px; max-height: 240px; }
-      #dashboardTabs .nav-link {
-        padding: var(--bs-spacer-1) var(--bs-spacer-2);
-        font-size: var(--bs-font-size-sm);
-      }
-    }
-    @media (max-width: 575.98px) {
-      .chart-container { min-height: 140px; max-height: 200px; }
-      .dashboard-section { padding: var(--bs-spacer-2); }
-      .stat-card .icon-container { width: 50px; height: 50px; }
-      .stat-card .stat-value { font-size: 1.5rem; }
-    }
-  </style>
-</head>
-<body>
-  <div class="main-content-wrapper" id="mainContent">
-    <nav class="top-navbar">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-          <button class="btn btn-link d-lg-none me-3" id="mobileSidebarToggle">
-            <i class="bi bi-list fs-4"></i>
-          </button>
-          <h4 class="mb-0"><i class="bi bi-speedometer2 me-2"></i>Panel de Control</h4>
-        </div>
-        <div class="d-flex align-items-center">
-          <a href="perfil.html" class="btn btn-link text-decoration-none">
-            <i class="bi bi-person-circle fs-4 text-dark"></i>
-          </a>
-        </div>
-      </div>
-    </nav>
-
-    <div class="content-area">
-      <div class="container-fluid">
-        <div class="row mb-4">
-          <div class="col-12 mb-4">
-            <div class="card shadow-sm border-0">
-              <div class="card-body p-4">
-                <h5 class="fw-bold mb-3">Bienvenido al Panel de Control</h5>
-                <p class="text-muted mb-0">Aquí encontrarás un resumen de la actividad y estadísticas del sistema de gestión de reportes.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cards -->
-        <div class="row mb-4">
-          <div class="col-md-4 mb-3 mb-md-0">
-            <div class="stat-card card border-0 shadow-sm">
-              <div class="card-body p-4 d-flex align-items-center">
-                <div class="icon-container bg-primary bg-opacity-10">
-                  <i class="bi bi-file-earmark-text text-primary fs-4"></i>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        />
+        <link rel="stylesheet" href="../css/styles.css" />
+        <link rel="stylesheet" href="../css/dashboard.css" />
+        <script type="module" src="../js/auth.js"></script>
+    </head>
+    <body>
+        <div class="main-content-wrapper" id="mainContent">
+            <nav class="top-navbar">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <button
+                            class="btn btn-link d-lg-none me-3"
+                            id="mobileSidebarToggle"
+                        >
+                            <i class="bi bi-list fs-4"></i>
+                        </button>
+                        <h4 class="mb-0">
+                            <i class="bi bi-speedometer2 me-2"></i>Panel de
+                            Control
+                        </h4>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <a
+                            href="perfil.html"
+                            class="btn btn-link text-decoration-none"
+                        >
+                            <i class="bi bi-person-circle fs-4 text-dark"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="stat-content">
-                  <div class="stat-title">Total Reportes</div>
-                  <div class="stat-value text-primary" id="totalReportes">0</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 mb-3 mb-md-0">
-            <div class="stat-card card border-0 shadow-sm">
-              <div class="card-body p-4 d-flex align-items-center">
-                <div class="icon-container bg-warning bg-opacity-10">
-                  <i class="bi bi-hourglass-split text-warning fs-4"></i>
-                </div>
-                <div class="stat-content">
-                  <div class="stat-title">Reportes Pendientes</div>
-                  <div class="stat-value text-warning" id="reportesPendientes">0</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="stat-card card border-0 shadow-sm">
-              <div class="card-body p-4 d-flex align-items-center">
-                <div class="icon-container bg-success bg-opacity-10">
-                  <i class="bi bi-check-circle text-success fs-4"></i>
-                </div>
-                <div class="stat-content">
-                  <div class="stat-title">Reportes Resueltos</div>
-                  <div class="stat-value text-success" id="reportesResueltos">0</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            </nav>
 
-        <!-- Tabs -->
-        <div class="row">
-          <div class="col-12">
-            <div class="card border-0 shadow-sm mb-4">
-              <div class="card-header bg-white border-bottom-0">
-                <h5 class="card-title"><i class="bi bi-graph-up text-primary"></i> Estadísticas y Análisis</h5>
-              </div>
-              <div class="card-body p-0 pt-2">
-                <ul class="nav nav-tabs mb-3" id="dashboardTabs" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="reportes-tab" data-bs-toggle="tab" data-bs-target="#reportes-tab-pane" type="button" role="tab" aria-controls="reportes-tab-pane" aria-selected="true">
-                      <i class="bi bi-file-earmark-text me-2"></i>Reportes
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="equipos-tab" data-bs-toggle="tab" data-bs-target="#equipos-tab-pane" type="button" role="tab" aria-controls="equipos-tab-pane" aria-selected="false">
-                      <i class="bi bi-pc-display me-2"></i>Equipos
-                    </button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="usuarios-tab" data-bs-toggle="tab" data-bs-target="#usuarios-tab-pane" type="button" role="tab" aria-controls="usuarios-tab-pane" aria-selected="false">
-                      <i class="bi bi-people me-2"></i>Usuarios
-                    </button>
-                  </li>
-                </ul>
-
-                <div class="tab-content px-3" id="dashboardTabsContent">
-                  <!-- Reportes Tab -->
-                  <div class="tab-pane fade show active" id="reportes-tab-pane" role="tabpanel" aria-labelledby="reportes-tab" tabindex="0">
-                    <div class="row">
-                      <div class="col-lg-4 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Reportes por Estado</h6>
-                          <div class="chart-container">
-                            <canvas id="reportesPorEstadoChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-4 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-building text-primary me-2"></i>Reportes por Sede</h6>
-                          <div class="chart-container">
-                            <canvas id="reportesPorSedeChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-4 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-calendar3 text-primary me-2"></i>Reportes por Mes</h6>
-                          <div class="chart-container">
-                            <canvas id="reportesPorMesChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
-                    <div class="col-lg-6 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                            <h6 class="fw-semibold mb-3"><i class="bi bi-graph-up text-primary me-2"></i>Últimos Reportes por Estado</h6>
-                            <div class="chart-container">
-                            <canvas id="reportesPorEstadoUsuarioChart"></canvas>
+            <div class="content-area">
+                <div class="container-fluid">
+                    <div class="row mb-4">
+                        <div class="col-12 mb-4">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-3">
+                                        Bienvenido al Panel de Control
+                                    </h5>
+                                    <p class="text-muted mb-0">
+                                        Aquí encontrarás un resumen de la
+                                        actividad y estadísticas del sistema de
+                                        gestión de reportes.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        </div>
-                      <!-- NUEVOS CANVAS QUE FALTABAN -->
-                      <div class="col-lg-6 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Estado de Últimos Reportes</h6>
-                          <div class="chart-container">
-                            <canvas id="ultimosReportesChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-6 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-graph-up text-primary me-2"></i>Últimos Reportes por Estado</h6>
-                          <div class="chart-container">
-                            <canvas id="reportesPorEstadoUsuarioChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                  </div>
 
-                  <!-- Equipos Tab -->
-                  <div class="tab-pane fade" id="equipos-tab-pane" role="tabpanel" aria-labelledby="equipos-tab" tabindex="0">
+                    <!-- Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="stat-card card border-0 shadow-sm">
+                                <div
+                                    class="card-body p-4 d-flex align-items-center"
+                                >
+                                    <div
+                                        class="icon-container bg-primary bg-opacity-10"
+                                    >
+                                        <i
+                                            class="bi bi-file-earmark-text text-primary fs-4"
+                                        ></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-title">
+                                            Total Reportes
+                                        </div>
+                                        <div
+                                            class="stat-value text-primary"
+                                            id="totalReportes"
+                                        >
+                                            0
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="stat-card card border-0 shadow-sm">
+                                <div
+                                    class="card-body p-4 d-flex align-items-center"
+                                >
+                                    <div
+                                        class="icon-container bg-warning bg-opacity-10"
+                                    >
+                                        <i
+                                            class="bi bi-hourglass-split text-warning fs-4"
+                                        ></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-title">
+                                            Reportes Pendientes
+                                        </div>
+                                        <div
+                                            class="stat-value text-warning"
+                                            id="reportesPendientes"
+                                        >
+                                            0
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card card border-0 shadow-sm">
+                                <div
+                                    class="card-body p-4 d-flex align-items-center"
+                                >
+                                    <div
+                                        class="icon-container bg-success bg-opacity-10"
+                                    >
+                                        <i
+                                            class="bi bi-check-circle text-success fs-4"
+                                        ></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-title">
+                                            Reportes Resueltos
+                                        </div>
+                                        <div
+                                            class="stat-value text-success"
+                                            id="reportesResueltos"
+                                        >
+                                            0
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
                     <div class="row">
-                      <div class="col-lg-4 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-pc-display text-primary me-2"></i>Equipos por Estado</h6>
-                          <div class="chart-container">
-                            <canvas id="equiposPorEstadoChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-lg-4 mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-geo-alt-fill text-primary me-2"></i>Equipos por Salón</h6>
-                          <div class="chart-container">
-                            <canvas id="equiposPorSalonChart"></canvas>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div
+                                    class="card-header bg-white border-bottom-0"
+                                >
+                                    <h5 class="card-title">
+                                        <i
+                                            class="bi bi-graph-up text-primary"
+                                        ></i>
+                                        Estadísticas y Análisis
+                                    </h5>
+                                </div>
+                                <div class="card-body p-0 pt-2">
+                                    <ul
+                                        class="nav nav-tabs mb-3"
+                                        id="dashboardTabs"
+                                        role="tablist"
+                                    >
+                                        <li
+                                            class="nav-item"
+                                            role="presentation"
+                                        >
+                                            <button
+                                                class="nav-link active"
+                                                id="reportes-tab"
+                                                data-bs-toggle="tab"
+                                                data-bs-target="#reportes-tab-pane"
+                                                type="button"
+                                                role="tab"
+                                                aria-controls="reportes-tab-pane"
+                                                aria-selected="true"
+                                            >
+                                                <i
+                                                    class="bi bi-file-earmark-text me-2"
+                                                ></i
+                                                >Reportes
+                                            </button>
+                                        </li>
+                                        <li
+                                            class="nav-item"
+                                            role="presentation"
+                                        >
+                                            <button
+                                                class="nav-link"
+                                                id="equipos-tab"
+                                                data-bs-toggle="tab"
+                                                data-bs-target="#equipos-tab-pane"
+                                                type="button"
+                                                role="tab"
+                                                aria-controls="equipos-tab-pane"
+                                                aria-selected="false"
+                                            >
+                                                <i
+                                                    class="bi bi-pc-display me-2"
+                                                ></i
+                                                >Equipos
+                                            </button>
+                                        </li>
+                                        <li
+                                            class="nav-item"
+                                            role="presentation"
+                                        >
+                                            <button
+                                                class="nav-link"
+                                                id="usuarios-tab"
+                                                data-bs-toggle="tab"
+                                                data-bs-target="#usuarios-tab-pane"
+                                                type="button"
+                                                role="tab"
+                                                aria-controls="usuarios-tab-pane"
+                                                aria-selected="false"
+                                            >
+                                                <i class="bi bi-people me-2"></i
+                                                >Usuarios
+                                            </button>
+                                        </li>
+                                    </ul>
 
-                  <!-- Usuarios Tab -->
-                  <div class="tab-pane fade" id="usuarios-tab-pane" role="tabpanel" aria-labelledby="usuarios-tab" tabindex="0">
-                    <div class="row">
-                      <div class="col-lg-4 mx-auto mb-4">
-                        <div class="dashboard-section shadow-sm rounded">
-                          <h6 class="fw-semibold mb-3"><i class="bi bi-people-fill text-primary me-2"></i>Usuarios por Rol</h6>
-                          <div class="chart-container">
-                            <canvas id="usuariosPorRolChart"></canvas>
-                          </div>
+                                    <div
+                                        class="tab-content px-3"
+                                        id="dashboardTabsContent"
+                                    >
+                                        <!-- Reportes Tab -->
+                                        <div
+                                            class="tab-pane fade show active"
+                                            id="reportes-tab-pane"
+                                            role="tabpanel"
+                                            aria-labelledby="reportes-tab"
+                                            tabindex="0"
+                                        >
+                                            <div class="row">
+                                                <div class="col-lg-4 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-pie-chart-fill text-primary me-2"
+                                                            ></i
+                                                            >Reportes por Estado
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="reportesPorEstadoChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-4 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-building text-primary me-2"
+                                                            ></i
+                                                            >Reportes por Sede
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="reportesPorSedeChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-4 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-calendar3 text-primary me-2"
+                                                            ></i
+                                                            >Reportes por Mes
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="reportesPorMesChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-graph-up text-primary me-2"
+                                                            ></i
+                                                            >Últimos Reportes
+                                                            por Estado
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="reportesPorEstadoUsuarioChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- NUEVOS CANVAS QUE FALTABAN -->
+                                                <div class="col-lg-6 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-pie-chart-fill text-primary me-2"
+                                                            ></i
+                                                            >Estado de Últimos
+                                                            Reportes
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="ultimosReportesChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-6 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-graph-up text-primary me-2"
+                                                            ></i
+                                                            >Últimos Reportes
+                                                            por Estado
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="reportesPorEstadoUsuarioChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Equipos Tab -->
+                                        <div
+                                            class="tab-pane fade"
+                                            id="equipos-tab-pane"
+                                            role="tabpanel"
+                                            aria-labelledby="equipos-tab"
+                                            tabindex="0"
+                                        >
+                                            <div class="row">
+                                                <div class="col-lg-4 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-pc-display text-primary me-2"
+                                                            ></i
+                                                            >Equipos por Estado
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="equiposPorEstadoChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4 mb-4">
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-geo-alt-fill text-primary me-2"
+                                                            ></i
+                                                            >Equipos por Salón
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="equiposPorSalonChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Usuarios Tab -->
+                                        <div
+                                            class="tab-pane fade"
+                                            id="usuarios-tab-pane"
+                                            role="tabpanel"
+                                            aria-labelledby="usuarios-tab"
+                                            tabindex="0"
+                                        >
+                                            <div class="row">
+                                                <div
+                                                    class="col-lg-4 mx-auto mb-4"
+                                                >
+                                                    <div
+                                                        class="dashboard-section shadow-sm rounded"
+                                                    >
+                                                        <h6
+                                                            class="fw-semibold mb-3"
+                                                        >
+                                                            <i
+                                                                class="bi bi-people-fill text-primary me-2"
+                                                            ></i
+                                                            >Usuarios por Rol
+                                                        </h6>
+                                                        <div
+                                                            class="chart-container"
+                                                        >
+                                                            <canvas
+                                                                id="usuariosPorRolChart"
+                                                            ></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Fin Usuarios Tab -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
-                  <!-- Fin Usuarios Tab -->
+                    <!-- end row -->
                 </div>
-              </div>
             </div>
-          </div>
-        </div><!-- end row -->
-      </div>
-    </div>
-  </div>
+        </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="../js/sidebar-loader.js"></script>
-  <script type="module" src="../js/main.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="module" src="../js/sidebar-loader.js"></script>
+        <script type="module" src="../js/main.js"></script>
+    </body>
 </html>

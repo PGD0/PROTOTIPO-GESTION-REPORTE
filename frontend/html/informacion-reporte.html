@@ -1,273 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Información del Reporte - Sistema IUB</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../css/styles.css" rel="stylesheet">
-    <link href="../css/fonts.css" rel="stylesheet">
-    
-    <style>
-        .main-content-wrapper {
-            margin-left: 200px; 
-            transition: margin-left 0.3s ease;
-        }
-        
-        .sidebar-collapsed .main-content-wrapper {
-            margin-left: 60px;
-        }
-        
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-            border-radius: 0 0 15px 15px;
-        }
-        
-        .info-card {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .info-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .info-card .card-header {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-bottom: 2px solid #dee2e6;
-            border-radius: 15px 15px 0 0 !important;
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .equipo-image {
-            max-height: 300px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
-        }
-        
-        .equipo-image:hover {
-            transform: scale(1.02);
-        }
-        
-        .action-buttons {
-            position: sticky;
-            top: 20px;
-        }
-        
-        .status-badge {
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-        }
-        
-        .btn-action {
-            border-radius: 25px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .btn-volver {
-            background: white;
-            border: black 2px solid;
-            color: #000000 !important;
-            border-radius: 25px;
-            padding: 0.75rem 1.5rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
-        }
-        
-        .btn-volver:hover {
-            background: gray ;
-            color: #fff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
-        }
-        
-        .breadcrumb {
-            background: transparent;
-            padding: 0.75rem 0;
-        }
-        
-        .breadcrumb-item a {
-            color: #6c757d;
-            transition: color 0.3s ease;
-        }
-        
-        .breadcrumb-item a:hover {
-            color: #495057;
-        }
-        
-        .breadcrumb-item.active {
-            color: #495057;
-            font-weight: 600;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content-wrapper {
-                margin-left: 0;
-            }
-            
-            .sidebar-collapsed .main-content-wrapper {
-                margin-left: 0;
-            }
-            
-            .page-header .row {
-                text-align: center;
-            }
-            
-            .page-header .col-md-4 {
-                margin-top: 1rem;
-            }
-            
-            .btn-volver {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div id="sidebar-container"></div>
-    
-    <div class="main-content-wrapper">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Información del Reporte - Sistema IUB</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+        <link href="../css/styles.css" rel="stylesheet" />
+        <link href="../css/fonts.css" rel="stylesheet" />
+        <link href="../css/informacion-reporte.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div id="sidebar-container"></div>
 
-        <nav aria-label="breadcrumb" class="px-3 py-2">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="gestion-reportes.html" class="text-decoration-none">Gestión de Reportes</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Información del Reporte</li>
-            </ol>
-        </nav>
+        <div class="main-content-wrapper">
+            <nav aria-label="breadcrumb" class="px-3 py-2">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="dashboard.html" class="text-decoration-none"
+                            >Dashboard</a
+                        >
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a
+                            href="gestion-reportes.html"
+                            class="text-decoration-none"
+                            >Gestión de Reportes</a
+                        >
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        Información del Reporte
+                    </li>
+                </ol>
+            </nav>
 
-        <div class="px-3 mb-3">
-            <a href="gestion-reportes.html" class="btn btn-volver d-inline-flex align-items-center">
-                <i class="bi bi-arrow-left me-2"></i> Volver a Gestión de Reportes
-            </a>
-        </div>
+            <div class="px-3 mb-3">
+                <a
+                    href="gestion-reportes.html"
+                    class="btn btn-volver d-inline-flex align-items-center"
+                >
+                    <i class="bi bi-arrow-left me-2"></i> Volver a Gestión de
+                    Reportes
+                </a>
+            </div>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="card info-card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-info-circle me-2"></i>Información del Reporte
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>ID:</strong> <span id="reporteId" class="text-primary fw-bold"></span></p>
-                                    <p><strong>Estado:</strong> <span id="reporteEstado"></span></p>
-                                    <p><strong>Prioridad:</strong> <span id="reportePrioridad"></span></p>
-                                    <p><strong>Resuelto:</strong> <span id="reporteResuelto"></span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Fecha de registro:</strong> <span id="reporteFechaRegistro"></span></p>
-                                    <p><strong>Fecha de solución:</strong> <span id="reporteFechaSolucion"></span></p>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Código:</strong> <span id="equipoCodigo"></span></p>
-                                    <p><strong>Marca:</strong> <span id="equipoMarca"></span></p>
-                                    <p><strong>Modelo:</strong> <span id="equipoModelo"></span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Sede:</strong> <span id="equipoSede"></span></p>
-                                    <p><strong>Salón:</strong> <span id="equipoSalon"></span></p>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <img id="equipoImagen" class="equipo-image img-fluid" alt="Imagen del equipo">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card info-card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-person me-2"></i>Información del Usuario
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Nombre:</strong> <span id="usuarioNombre"></span></p>
-                                    <p><strong>Email:</strong> <span id="usuarioEmail"></span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Rol:</strong> <span id="usuarioRol"></span></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card info-card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-exclamation-triangle me-2"></i>Descripción del Problema
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <p id="reporteDescripcion" class="mb-0"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="action-buttons">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
                         <div class="card info-card">
                             <div class="card-header">
                                 <h5 class="mb-0">
-                                    <i class="bi bi-gear me-2"></i>Acciones Disponibles
+                                    <i class="bi bi-info-circle me-2"></i
+                                    >Información del Reporte
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div class="mb-3">
-                                    <label class="form-label"><strong>Cambiar Estado:</strong></label>
-                                    <select class="form-select" id="estadoSelect">
-                                        <option value="Pendiente">Pendiente</option>
-                                        <option value="En Proceso">En Proceso</option>
-                                        <option value="Resuelto">Resuelto</option>
-                                    </select>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>
+                                            <strong>ID:</strong>
+                                            <span
+                                                id="reporteId"
+                                                class="text-primary fw-bold"
+                                            ></span>
+                                        </p>
+                                        <p>
+                                            <strong>Estado:</strong>
+                                            <span id="reporteEstado"></span>
+                                        </p>
+                                        <p>
+                                            <strong>Prioridad:</strong>
+                                            <span id="reportePrioridad"></span>
+                                        </p>
+                                        <p>
+                                            <strong>Resuelto:</strong>
+                                            <span id="reporteResuelto"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>
+                                            <strong>Fecha de registro:</strong>
+                                            <span
+                                                id="reporteFechaRegistro"
+                                            ></span>
+                                        </p>
+                                        <p>
+                                            <strong>Fecha de solución:</strong>
+                                            <span
+                                                id="reporteFechaSolucion"
+                                            ></span>
+                                        </p>
+                                    </div>
                                 </div>
-
-                                <div class="d-grid gap-2">
-                                    <button type="button" class="btn btn-success btn-action" id="btnMarcarResuelto">
-                                        <i class="bi bi-check2 me-2"></i>Marcar como Resuelto
-                                    </button>
-                                    
-                                    <button type="button" class="btn btn-info btn-action" id="btnNotificarUsuario" style="display: none;">
-                                        <i class="bi bi-envelope me-2"></i>Notificar Usuario
-                                    </button>
-                                    
-                                    <button type="button" class="btn btn-danger btn-action" id="btnEliminarReporte">
-                                        <i class="bi bi-trash me-2"></i>Eliminar Reporte
-                                    </button>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>
+                                            <strong>Código:</strong>
+                                            <span id="equipoCodigo"></span>
+                                        </p>
+                                        <p>
+                                            <strong>Marca:</strong>
+                                            <span id="equipoMarca"></span>
+                                        </p>
+                                        <p>
+                                            <strong>Modelo:</strong>
+                                            <span id="equipoModelo"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>
+                                            <strong>Sede:</strong>
+                                            <span id="equipoSede"></span>
+                                        </p>
+                                        <p>
+                                            <strong>Salón:</strong>
+                                            <span id="equipoSalon"></span>
+                                        </p>
+                                    </div>
                                 </div>
+                                <div class="text-center">
+                                    <img
+                                        id="equipoImagen"
+                                        class="equipo-image img-fluid"
+                                        alt="Imagen del equipo"
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
-                                <div class="mt-3 p-3 bg-light rounded">
-                                    <small class="text-muted">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Solo administradores pueden realizar acciones
-                                    </small>
+                        <div class="card info-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person me-2"></i>Información
+                                    del Usuario
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>
+                                            <strong>Nombre:</strong>
+                                            <span id="usuarioNombre"></span>
+                                        </p>
+                                        <p>
+                                            <strong>Email:</strong>
+                                            <span id="usuarioEmail"></span>
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>
+                                            <strong>Rol:</strong>
+                                            <span id="usuarioRol"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card info-card">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i
+                                        class="bi bi-exclamation-triangle me-2"
+                                    ></i
+                                    >Descripción del Problema
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p id="reporteDescripcion" class="mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="action-buttons">
+                            <div class="card info-card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-gear me-2"></i>Acciones
+                                        Disponibles
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label"
+                                            ><strong
+                                                >Cambiar Estado:</strong
+                                            ></label
+                                        >
+                                        <select
+                                            class="form-select"
+                                            id="estadoSelect"
+                                        >
+                                            <option value="Pendiente">
+                                                Pendiente
+                                            </option>
+                                            <option value="En Proceso">
+                                                En Proceso
+                                            </option>
+                                            <option value="Resuelto">
+                                                Resuelto
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-success btn-action"
+                                            id="btnMarcarResuelto"
+                                        >
+                                            <i class="bi bi-check2 me-2"></i
+                                            >Marcar como Resuelto
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-info btn-action"
+                                            id="btnNotificarUsuario"
+                                            style="display: none"
+                                        >
+                                            <i class="bi bi-envelope me-2"></i
+                                            >Notificar Usuario
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-danger btn-action"
+                                            id="btnEliminarReporte"
+                                        >
+                                            <i class="bi bi-trash me-2"></i
+                                            >Eliminar Reporte
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-3 p-3 bg-light rounded">
+                                        <small class="text-muted">
+                                            <i
+                                                class="bi bi-info-circle me-1"
+                                            ></i>
+                                            Solo administradores pueden realizar
+                                            acciones
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -275,10 +255,9 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="../js/sidebar-loader.js"></script>
-    <script type="module" src="../js/informacion-reporte.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script type="module" src="../js/sidebar-loader.js"></script>
+        <script type="module" src="../js/informacion-reporte.js"></script>
+    </body>
 </html>
