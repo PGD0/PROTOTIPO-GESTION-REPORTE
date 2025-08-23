@@ -3,9 +3,11 @@ const bloqueSelect = document.getElementById('bloque');
 const salonSelect = document.getElementById('salon');
 const bloqueContainer = document.getElementById('bloqueContainer');
 
+const API_URL = 'https://prototipo-gestion-reporte.onrender.com';
+
 const cargarEquipos = async () => {
     try {
-        const res = await fetch('http://127.0.0.1:8000/equipos/');
+        const res = await fetch(`${API_URL}/equipos/`);
         const equipos = await res.json();
 
         if ($.fn.DataTable.isDataTable('#tablaEquipos')) {
@@ -94,7 +96,7 @@ const cargarEquipos = async () => {
 
 const editarEquipo = async (id) => {
     try {
-        const res = await fetch(`http://127.0.0.1:8000/equipos/${id}`);
+        const res = await fetch(`${API_URL}/equipos/${id}`);
         if (!res.ok) throw new Error("No se pudo obtener el equipo");
         const equipo = await res.json();
 
@@ -135,7 +137,7 @@ const eliminarEquipo = async (id) => {
     if (!confirmar) return;
 
     try {
-        const res = await fetch(`http://127.0.0.1:8000/equipos/${id}`, {
+        const res = await fetch(`${API_URL}/equipos/${id}`, {
             method: 'DELETE'
         });
 
@@ -154,7 +156,7 @@ const eliminarEquipo = async (id) => {
 
 const cargarSedes = async () => {
     try {
-        const res = await fetch('http://127.0.0.1:8000/sedes/');
+        const res = await fetch(`${API_URL}/sedes/`);
         const sedes = await res.json();
 
         sedeSelect.innerHTML = '<option value="">Selecciona una sede</option>';
@@ -171,7 +173,7 @@ const cargarSedes = async () => {
 
 const cargarBloques = async (sedeId) => {
     try {
-        const res = await fetch(`http://127.0.0.1:8000/bloques/`);
+        const res = await fetch(`${API_URL}/bloques/`);
         const bloques = await res.json();
         const bloquesFiltrados = bloques.filter(b => b.sede_id === parseInt(sedeId));
 
@@ -189,7 +191,7 @@ const cargarBloques = async (sedeId) => {
 
 const cargarSalonesPorSede = async (sedeId) => {
     try {
-        const res = await fetch(`http://127.0.0.1:8000/salones/por_sede/${sedeId}`);
+        const res = await fetch(`${API_URL}/salones/por_sede/${sedeId}`);
         if (!res.ok) throw new Error("No se pudieron obtener salones");
         const salones = await res.json();
         renderSalones(salones);
@@ -200,7 +202,7 @@ const cargarSalonesPorSede = async (sedeId) => {
 
 const cargarSalonesPorBloque = async (bloqueId) => {
     try {
-        const res = await fetch(`http://127.0.0.1:8000/salones/por_bloque/${bloqueId}`);
+        const res = await fetch(`${API_URL}/salones/por_bloque/${bloqueId}`);
         if (!res.ok) throw new Error("No se pudieron obtener salones");
         const salones = await res.json();
         renderSalones(salones);
@@ -268,8 +270,8 @@ formEquipo.addEventListener('submit', async (e) => {
     }
 
     const url = equipoId
-        ? `http://127.0.0.1:8000/equipos/${equipoId}` 
-        : `http://127.0.0.1:8000/equipos/`;
+        ? `${API_URL}/equipos/${equipoId}` 
+        : `${API_URL}/equipos/`;
 
     const method = equipoId ? 'PUT' : 'POST';
 

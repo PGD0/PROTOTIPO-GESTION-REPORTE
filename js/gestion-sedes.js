@@ -336,7 +336,7 @@ const actualizarSelectBloques = (sedeId = null) => {
 
 const editarSede = async (id) => {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/sedes/${id}`, {
+        const response = await fetch(`${API_URL}/sedes/${id}`, {
             headers: api.authHeaders()
         });
         if (!response.ok) throw new Error("No se pudo obtener la sede");
@@ -361,7 +361,7 @@ const editarSede = async (id) => {
 
 const editarBloque = async (id) => {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/bloques/${id}`, {
+        const response = await fetch(`${API_URL}/bloques/${id}`, {
             headers: api.authHeaders()
         });
         if (!response.ok) throw new Error("No se pudo obtener el bloque");
@@ -379,7 +379,7 @@ const editarBloque = async (id) => {
 }
 const editarSalon = async (id) => {
     try {
-        const response = await fetch(`http://localhost:8000/salones/${id}`, {
+        const response = await fetch(`${API_URL}/salones/${id}`, {
             headers: api.authHeaders()
         });
         if (!response.ok) throw new Error("No se pudo obtener la información del salón");
@@ -401,7 +401,7 @@ const editarSalon = async (id) => {
             await cargarSedes();
         }
 
-        const bloqueResponse = await fetch(`http://localhost:8000/bloques/por_sede/${sedeId}`, {
+        const bloqueResponse = await fetch(`${API_URL}/bloques/por_sede/${sedeId}`, {
             headers: api.authHeaders()
         });
         const bloques = await bloqueResponse.json();
@@ -481,7 +481,7 @@ const guardarSede = async (e) => {
         return;
     }
     
-    const url = `http://127.0.0.1:8000/sedes/`;
+    const url = `${API_URL}/sedes/`;
     const method = 'POST';
     
     try {
@@ -542,7 +542,7 @@ const guardarBloque = async (e) => {
         return;
     }
     
-    const url = `http://127.0.0.1:8000/bloques/`;
+    const url = `${API_URL}/bloques/`;
     const method = 'POST';
     
     try {
@@ -620,7 +620,7 @@ const guardarSalon = async (e) => {
         return;
     }
     
-    const url = `http://127.0.0.1:8000/salones/`;
+    const url = `${API_URL}/salones/`;
     const method = 'POST';
     
     try {
@@ -687,13 +687,13 @@ const eliminarElemento = async (e) => {
         let url = '';
         switch (tipo) {
             case 'sede':
-                url = `http://127.0.0.1:8000/sedes/${id}`;
+                url = `${API_URL}/sedes/${id}`;
                 break;
             case 'bloque':
-                url = `http://127.0.0.1:8000/bloques/${id}`;
+                url = `${API_URL}/bloques/${id}`;
                 break;
             case 'salon':
-                url = `http://127.0.0.1:8000/salones/${id}`;
+                url = `${API_URL}/salones/${id}`;
                 break;
             default:
                 throw new Error("Tipo de elemento no válido");
@@ -784,13 +784,13 @@ const procesarModificacionConfirmada = async (e) => {
         
         switch (tipo) {
             case 'sede':
-                url = `http://127.0.0.1:8000/sedes/${id}`;
+                url = `${API_URL}/sedes/${id}`;
                 break;
             case 'bloque':
-                url = `http://127.0.0.1:8000/bloques/${id}`;
+                url = `${API_URL}/bloques/${id}`;
                 break;
             case 'salon':
-                url = `http://127.0.0.1:8000/salones/${id}`;
+                url = `${API_URL}/salones/${id}`;
                 break;
             default:
                 throw new Error("Tipo de elemento no válido");

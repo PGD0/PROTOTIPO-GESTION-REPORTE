@@ -1220,7 +1220,7 @@ const cargarDatosUsuario = async () => {
   const userId = payload.id;
 
   try {
-    const res = await fetch(`http://127.0.0.1:8000/usuarios/${userId}`, {
+    const res = await fetch(`${API_URL}/usuarios/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -1327,7 +1327,7 @@ const actualizarPerfil = async () => {
   if (imagen) formData.append('imagen', imagen);
 
   try {
-    const res = await fetch(`http://127.0.0.1:8000/usuarios/${userId}`, {
+    const res = await fetch(`${API_URL}/usuarios/${userId}`, {
       method: 'PUT',
       headers: {
         'Authorization': 'Bearer ' + token
@@ -1356,7 +1356,7 @@ const actualizarPerfil = async () => {
 
 export const cargarUltimosReportes = async (idUsuario, token) => {
   try {
-    const res = await fetch(`http://127.0.0.1:8000/reportes/usuario/${idUsuario}/ultimos`, {
+    const res = await fetch(`${API_URL}/reportes/usuario/${idUsuario}/ultimos`, {
       headers: {
         'Authorization': 'Bearer ' + token
       }
