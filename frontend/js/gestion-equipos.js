@@ -130,26 +130,26 @@ const editarEquipo = async (id) => {
     }
 }
 
-const eliminarEquipo = async (id) => {
-    const confirmar = confirm("¿Estás seguro de que deseas eliminar este equipo?");
-    if (!confirmar) return;
+async function eliminarEquipo(id) {
+  if (!confirm("¿Seguro que quieres eliminar este equipo?")) return;
 
-    try {
-        const res = await fetch(`http://127.0.0.1:8000/equipos/${id}`, {
-            method: 'DELETE'
-        });
+  try {
+    const res = await fetch(`http://127.0.0.1:8000/equipos/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
 
-        if (!res.ok) {
-            const error = await res.json();
-            throw new Error(error.detail || 'No se pudo eliminar el equipo');
-        }
-
-        alert("Equipo eliminado correctamente.");
-        cargarEquipos(); 
-    } catch (error) {
-        console.error("Error al eliminar equipo:", error);
-        alert("Hubo un problema al eliminar el equipo.");
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || "No se pudo eliminar el equipo");
     }
+
+    alert("Equipo eliminado correctamente.");
+    cargarEquipos();
+  } catch (error) {
+    console.error("Error al eliminar equipo:", error);
+    alert(error.message);
+  }
 }
 
 const cargarSedes = async () => {
@@ -171,12 +171,11 @@ const cargarSedes = async () => {
 
 const cargarBloques = async (sedeId) => {
     try {
-        const res = await fetch(`http://127.0.0.1:8000/bloques/`);
+        const res = await fetch(`http://127.0.0.1:8000/bloques/por_sede/${sedeId}`);
         const bloques = await res.json();
-        const bloquesFiltrados = bloques.filter(b => b.sede_id === parseInt(sedeId));
 
         bloqueSelect.innerHTML = '<option value="">Selecciona un bloque</option>';
-        bloquesFiltrados.forEach(bloque => {
+        bloques.forEach(bloque => {
             const option = document.createElement('option');
             option.value = bloque.ID_bloque;
             option.textContent = bloque.nombre_bloque;
@@ -222,13 +221,17 @@ const renderSalones = (salones) => {
 // Eventos
 sedeSelect.addEventListener('change', async () => {
     const sedeId = parseInt(sedeSelect.value);
-    const nombreSeleccionado = sedeSelect.options[sedeSelect.selectedIndex].text;
+    if (!sedeId) return;
 
-    if (nombreSeleccionado.toLowerCase().includes("soledad")) {
+    // Primero cargar bloques de la sede
+    await cargarBloques(sedeId);
+
+    if (bloqueSelect.options.length > 1) {
+        // Hay bloques, se muestra el contenedor
         bloqueContainer.style.display = 'block';
-        await cargarBloques(sedeId);
         salonSelect.innerHTML = '<option value="">Selecciona un bloque primero</option>';
     } else {
+        // No hay bloques, ocultamos el contenedor y cargamos salones directamente
         bloqueContainer.style.display = 'none';
         await cargarSalonesPorSede(sedeId);
     }
@@ -254,8 +257,29 @@ formEquipo.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const equipoId = document.getElementById('equipoId').value;
+    const codigoBarras = document.getElementById('codigoBarras').value.trim();
+
+    // Verificar duplicado en los equipos cargados
+    const filas = document.querySelectorAll('#tablaEquipos tbody tr');
+    for (let fila of filas) {
+        const idExistente = fila.children[0]?.textContent.trim();
+        const codigoExistente = fila.children[1]?.textContent.trim();
+
+        // Si estamos creando uno nuevo y ya existe ese código
+        if (!equipoId && codigoExistente === codigoBarras) {
+            alert("Ya existe un equipo con este código de barras.");
+            return;
+        }
+
+        // Si estamos editando, ignorar el mismo ID, pero verificar contra otros
+        if (equipoId && idExistente !== equipoId && codigoExistente === codigoBarras) {
+            alert("Ese código de barras ya está registrado en otro equipo.");
+            return;
+        }
+    }
+
     const data = {
-        codigo_barras: document.getElementById('codigoBarras').value.trim(),
+        codigo_barras: codigoBarras,
         marca: document.getElementById('marca').value.trim(),
         sede: parseInt(document.getElementById('sede').value),
         salon: parseInt(document.getElementById('salon').value),
@@ -268,17 +292,16 @@ formEquipo.addEventListener('submit', async (e) => {
     }
 
     const url = equipoId
-        ? `http://127.0.0.1:8000/equipos/${equipoId}` 
+        ? `http://127.0.0.1:8000/equipos/${equipoId}`
         : `http://127.0.0.1:8000/equipos/`;
+
 
     const method = equipoId ? 'PUT' : 'POST';
 
     try {
         const res = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            method,
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
@@ -287,17 +310,10 @@ formEquipo.addEventListener('submit', async (e) => {
             throw new Error(error.detail || 'Error al guardar el equipo');
         }
 
-        const mensaje = equipoId ? "Equipo actualizado correctamente." : "Equipo creado correctamente.";
-        alert(mensaje);
-
+        alert(equipoId ? "Equipo actualizado correctamente." : "Equipo creado correctamente.");
         const modal = bootstrap.Modal.getInstance(document.getElementById('equipoModal'));
         modal.hide();
-
         formEquipo.reset();
-        salonSelect.innerHTML = '<option value="">Selecciona un salón</option>';
-        bloqueSelect.innerHTML = '<option value="">Selecciona un bloque</option>';
-        bloqueContainer.style.display = 'none';
-
         cargarEquipos();
     } catch (error) {
         console.error("Error al guardar equipo:", error);
@@ -315,3 +331,4 @@ document.querySelector('[data-bs-target="#equipoModal"]').addEventListener('clic
 });
 
 window.editarEquipo = editarEquipo;
+window.eliminarEquipo = eliminarEquipo;

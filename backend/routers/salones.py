@@ -61,8 +61,10 @@ async def eliminar_salon(id: int, db: Session = Depends(get_db)):
 async def salones_por_sede(sede_id: int, db: Session = Depends(get_db)):
     from models.models import Bloque
 
-    if sede_id == 2:
-        salones = db.query(Salon).filter(Salon.bloque_id != None, Salon.sede == sede_id).all()
+    tiene_bloques = db.query(Bloque).filter(Bloque.sede_id == sede_id).count() > 0
+
+    if tiene_bloques:
+        salones = db.query(Salon).filter(Salon.sede == sede_id, Salon.bloque != None).all()
     else:
         salones = db.query(Salon).filter(Salon.sede == sede_id).all()
 
