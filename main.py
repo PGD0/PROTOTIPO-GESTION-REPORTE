@@ -13,6 +13,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
+origins = [
+    "https://pgd0.github.io",
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
